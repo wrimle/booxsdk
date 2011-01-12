@@ -61,7 +61,8 @@ void ConnectingDialog::onPppConnectionChanged(const QString &message, int status
     {
         QTimer::singleShot(1500, this, SLOT(accept()));
     }
-    else if (status == TG_DISCONNECTED)
+    else if (status == TG_DISCONNECTED ||
+        status == TG_STOP)
     {
 //        state_widget_.setText(tr("Disconnected."));
         QTimer::singleShot(1500, this, SLOT(reject()));
