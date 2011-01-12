@@ -306,6 +306,7 @@ bool Calendar::event(QEvent *e)
 void Calendar::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
     QDate date(QDate::currentDate().addMonths(page_tag_*month_count_));
     drawPage(&painter,date);
 }

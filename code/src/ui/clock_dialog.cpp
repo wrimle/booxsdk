@@ -140,6 +140,7 @@ FullScreenClock::~FullScreenClock(void)
 void FullScreenClock::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
     drawTime(&painter);
     drawDate(&painter);
 }
