@@ -41,7 +41,7 @@
 #include "browser_navigation_actions.h"
 #include "toolbar.h"
 #include "keyboard_navigator.h"
-
+#include "paging_manager.h"
 
 #endif  // ONYX_UI_LIBRARY_H_
 
