@@ -175,7 +175,8 @@
 
     <file>images/left_arrow.png</file>
     <file>images/right_arrow.png</file>
-
+    <file>images/left_arrow_white.png</file>
+    <file>images/right_arrow_white.png</file>
 
     <file>images/toolbar_forward.png</file>
     <file>images/toolbar_backward.png</file>
