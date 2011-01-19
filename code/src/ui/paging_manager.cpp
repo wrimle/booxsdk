@@ -48,7 +48,6 @@ void PagingManager::resetCurrentItemList()
             i < current_page_*page_size_ + page_size_;
             ++i)
     {
-        qDebug()<<"i="<<i;
         total_item_list_[i]->show();
     }
     if (current_page_ != 0)
