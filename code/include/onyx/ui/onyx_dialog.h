@@ -14,7 +14,7 @@ class OnyxDialog : public QDialog
     Q_OBJECT
 
 public:
-    OnyxDialog(QWidget *parent);
+    OnyxDialog(QWidget *parent, bool show_shadow = true);
     ~OnyxDialog(void);
 
     void updateTitle(const QString &message);
@@ -36,6 +36,7 @@ protected Q_SLOTS:
     virtual void onCloseClicked();
 
 protected:
+    bool show_shadows_;
     Shadows shadows_;
     QVBoxLayout  vbox_;
 
