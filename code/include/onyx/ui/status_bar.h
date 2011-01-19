@@ -21,11 +21,11 @@ namespace ui
 /// - Menu area.
 /// - Message area.
 /// - System area.
-class StatusBar : public QWidget
+class StatusBar : public QStatusBar
 {
     Q_OBJECT
 public:
-    StatusBar(QWidget *parent, StatusBarItemTypes items = MENU|PROGRESS|MESSAGE|BATTERY);
+    StatusBar(QWidget *parent, StatusBarItemTypes items = MENU|PROGRESS|MESSAGE|BATTERY|MUSIC_PLAYER);
     ~StatusBar(void);
 
 public:
@@ -53,6 +53,7 @@ public Q_SLOTS:
     void onInputUrlClicked();
     void onInputTextClicked();
     void onVolumeClicked();
+    void onMusicPlayerClicked();
 
 Q_SIGNALS:
     void progressClicked(const int percent, const int value);
@@ -104,7 +105,6 @@ private:
 
 private:
     StatusBarItemTypes items_;
-    QHBoxLayout        layout_;
     StatusBarItems     widgets_;
     bool               enable_jump_to_page_;
     scoped_ptr<USBConnectionDialog> usb_connection_dialog_;

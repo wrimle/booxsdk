@@ -22,6 +22,7 @@ static const QString TETHERED_DEVICE = "tethered";
 static const QString DEVICE_NAME = "OnyxBoox";
 static const QString ROOT_FOLDER = "/";
 static const QString DRM_CONTENT_DIR = "media/flash/DRM Contents";
+static const QString ADOBE_RESOURCE_FOLDER = "adobe/resources/";
 static const QString DEVICE_FILE     = "media/flash/.adobe-digital-editions/device.xml";
 static const QString ACTIVATION_FILE = "media/flash/.adobe-digital-editions/activation.xml";
 
@@ -56,6 +57,20 @@ static void putDocumentFolder()
     QDir dir(path);
     qputenv("ADOBE_DE_DOC_FOLDER", dir.absoluteFilePath(DRM_CONTENT_DIR).toAscii());
     qDebug("ADOBE_DE_DOC_FOLDER : %s", qgetenv("ADOBE_DE_DOC_FOLDER").constData());
+}
+
+static void putResourceFolder()
+{
+    // set the folder of Digital Edition
+    QString path;
+#ifdef Q_WS_QWS
+    path = SHARE_ROOT;
+#else
+    path = QDir::home().path();
+#endif
+    QDir dir(path);
+    qputenv("ADOBE_RESOURCE_FOLDER", dir.absoluteFilePath(ADOBE_RESOURCE_FOLDER).toAscii());
+    qDebug("ADOBE_RESOURCE_FOLDER : %s", qgetenv("ADOBE_RESOURCE_FOLDER").constData());
 }
 
 static void putDeviceName()
@@ -325,7 +340,14 @@ void SysStatus::installSlots()
     {
         qDebug("\nCan not connect the volumeDownPressed signal\n");
     }
-    
+   
+    if (!connection_.connect(service, object, iface,
+                             "hardwareTimerTimeout",
+                             this,
+                             SLOT(onHardwareTimerTimeout())))
+    {
+        qDebug("\nCan not connect the hardwareTimerTimeout signal\n");
+    }
 }
 
 namespace {
@@ -422,6 +444,32 @@ bool SysStatus::isFlashMounted()
     return file.readAll().contains(LIBRARY_ROOT);
 }
 
+bool SysStatus::isMusicPlayerRunning()
+{
+    return isProcessRunning("music_player");
+}
+
+bool SysStatus::isProcessRunning(const QString & proc_name)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "isProcessRunning"      // method.
+    );
+    message << proc_name;
+    QDBusMessage reply = connection_.call(message);
+
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
+        return checkAndReturnBool(reply.arguments());
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return false;
+}
 
 bool SysStatus::umountUSB()
 {
@@ -609,6 +657,11 @@ void SysStatus::rotateScreen()
         {
             setScreenTransformation(0);
         }
+    }
+    else if (default_rotation == 90)
+    {
+        degree = (degree + 90) % 360;
+        setScreenTransformation(degree);
     }
 }
 
@@ -1377,6 +1430,12 @@ void SysStatus::addDRMEnvironment()
     putDocumentFolder();
     putDeviceName();
     putDeviceFile();
+
+    QByteArray res_folder = getenv( "ADOBE_RESOURCE_FOLDER" );
+    if (res_folder.isEmpty())
+    {
+        putResourceFolder();
+    }
 }
 
 // TODO, implement in system manager later.
@@ -1462,6 +1521,37 @@ void SysStatus::dbgUpdateBattery(int left, int status)
     );
     message << left;
     message << status;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+void SysStatus::startSingleShotHardwareTimer(const int seconds)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "startSingleShotHardwareTimer"      // method.
+    );
+    message << seconds;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+void SysStatus::setDefaultHardwareTimerInterval()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "setDefaultHardwareTimerInterval"      // method.
+    );
     QDBusMessage reply = connection_.call(message);
     if (reply.type() == QDBusMessage::ErrorMessage)
     {
@@ -1617,6 +1707,11 @@ void SysStatus::onReportWorkflowError(const QString & workflow, const QString & 
 void SysStatus::onReport3GNetwork(const int signal, const int total, const int network)
 {
     emit report3GNetwork(signal, total, network);
+}
+
+void SysStatus::onHardwareTimerTimeout()
+{
+    emit hardwareTimerTimeout();
 }
 
 }   // namespace sys

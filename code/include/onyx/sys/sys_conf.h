@@ -43,6 +43,7 @@ public:
     bool rssService(Service &);
     bool sudokuService(Service &);
     bool officeViewerService(Service & service);
+    bool hasOfficeViewer();
     bool onyxReaderService(Service & service);
     bool nabooReaderService(Service &  service);
     bool registerService(const Service &, const QString &);
@@ -106,6 +107,7 @@ public:
     bool setMiscValue(const QString &key, const QString &value);
     QString miscValue(const QString &key);
     int screenUpdateGCInterval();
+    int screenUpdateGrayScaleSetting();
 
     // Page turning direction.
     static int direction(const QPoint & old_position, const QPoint & new_position);

@@ -15,6 +15,7 @@
 #include "onyx/ui/status_bar_item_connection.h"
 #include "onyx/ui/status_bar_item_3g_connection.h"
 #include "onyx/ui/status_bar_item_volume.h"
+#include "onyx/ui/status_bar_item_music_player.h"
 #include "onyx/ui/number_dialog.h"
 #include "onyx/ui/power_management_dialog.h"
 #include "onyx/ui/clock_dialog.h"
@@ -23,9 +24,8 @@ namespace ui
 {
 
 StatusBar::StatusBar(QWidget *parent, StatusBarItemTypes items)
-    : QWidget(parent)
+    : QStatusBar(parent)
     , items_(0)
-    , layout_(this)
     , enable_jump_to_page_(true)
 {
     createLayout();
@@ -104,7 +104,7 @@ void StatusBar::addItems(StatusBarItemTypes items)
     const StatusBarItemType all[] =
     {
         MENU, PROGRESS, MESSAGE, STYLUS, CLOCK, INPUT_TEXT, VOLUME, SCREEN_REFRESH, INPUT_URL,THREEG_CONNECTION,
-        CONNECTION, BATTERY
+        CONNECTION, MUSIC_PLAYER, BATTERY
     };
     const int size = sizeof(all)/sizeof(all[0]);
     for(int i = 0; i < size; ++i)
@@ -312,6 +312,10 @@ void StatusBar::onBatteryClicked()
 {
     PowerManagementDialog dialog(0, sys::SysStatus::instance());
     dialog.exec();
+}
+
+void StatusBar::onMusicPlayerClicked()
+{
 }
 
 void StatusBar::onClockClicked()
@@ -598,8 +602,10 @@ VolumeControlDialog *StatusBar::volumeDialog(bool create)
 void StatusBar::createLayout()
 {
     setFixedHeight(35);
-    layout_.setSpacing(4);
-    layout_.setContentsMargins(1, 2, 1, 0);
+    layout()->setSpacing(4);
+    layout()->setContentsMargins(1, 2, 1, 0);
+    setSizeGripEnabled(false);
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum);
 }
 
 StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
@@ -633,6 +639,10 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
         item = new StatusBarItemBattery(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onBatteryClicked()));
         break;
+    case MUSIC_PLAYER:
+        item = new StatusBarItemMusicPlayer(this);
+        connect(item, SIGNAL(clicked()), this, SLOT(onMusicPlayerClicked()));
+        break; 
     case CLOCK:
         item = new StatusBarItemClock(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onClockClicked()));
@@ -682,7 +692,14 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
     widgets_.push_back(ptr);
 
     // Place this one into the layout.
-    layout_.addWidget(ptr.get());
+    if (type == PROGRESS)
+    {
+        addWidget(ptr.get(), 1);
+    }
+    else
+    {
+        addWidget(ptr.get());
+    }
     return ptr.get();
 }
 
