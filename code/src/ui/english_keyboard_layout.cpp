@@ -1,3 +1,4 @@
+#include "onyx/base/base.h"
 #include "onyx/ui/english_keyboard_layout.h"
 #include "onyx/sys/sys.h"
 
@@ -7,7 +8,6 @@ namespace ui
 EnglishKeyboardLayout::EnglishKeyboardLayout()
 : KeyboardLayout()
 {
-    standard_key_size_ = QSize(44, 44);
     initCode();
     initShiftMap();
     initSpecialMaps();
@@ -20,8 +20,19 @@ EnglishKeyboardLayout::~EnglishKeyboardLayout()
 
 QSize EnglishKeyboardLayout::getKeySize(int code)
 {
-    QChar ch(code);
+    if (!standard_key_size_.isValid())
+    {
+#ifndef Q_WS_QWS
+        QSize desktop_size = QSize(600, 800);
+#else
+        QSize desktop_size = qApp->desktop()->screenGeometry().size();
+#endif
+        int keyboard_width = std::min(desktop_size.width(), desktop_size.height());
+        int key_length = (keyboard_width - 4 * (keys_[0].size() + 1) - 20) / keys_[0].size();
+        standard_key_size_ = QSize(key_length, key_length);
+    }
 
+    QChar ch(code);
     if (ch.isNumber())
     {
         return standard_key_size_;

@@ -7,7 +7,6 @@ namespace ui
 RussianKeyboardLayout::RussianKeyboardLayout()
 : KeyboardLayout()
 {
-    standard_key_size_ = QSize(43, 43);
     initCode();
     initShiftMap();
     initSpecialMaps();
@@ -20,10 +19,22 @@ RussianKeyboardLayout::~RussianKeyboardLayout()
 
 QSize RussianKeyboardLayout::getKeySize(int code)
 {
+    if (!standard_key_size_.isValid())
+    {
+#ifndef Q_WS_QWS
+        QSize desktop_size = QSize(600, 800);
+#else
+        QSize desktop_size = qApp->desktop()->screenGeometry().size();
+#endif
+        int keyboard_width = std::min(desktop_size.width(), desktop_size.height());
+        int key_length = (keyboard_width - 4 * (keys_[0].size() + 1) - 20) / keys_[0].size();
+        standard_key_size_ = QSize(key_length, key_length);
+    }
+
     QChar ch(code);
     if (ch.isNumber())
     {
-        return QSize(52, 52);
+        return standard_key_size_;
     }
 
     if (code < BSCode)
@@ -39,7 +50,7 @@ QSize RussianKeyboardLayout::getKeySize(int code)
     if (code == Blank)
     {
         bool has_touch = SysStatus::instance().hasTouchScreen();
-        int len = (standard_key_size_.width() * (has_touch ? 4 : 6)) + (has_touch ? 12 : 20);
+        int len = standard_key_size_.width() * (has_touch ? 5 : 6) + (has_touch ? 16 : 20);
         return QSize(len, standard_key_size_.height());
     }
 
@@ -50,7 +61,7 @@ QSize RussianKeyboardLayout::getKeySize(int code)
 
     if (code == BackSpace)
     {
-        return QSize(((standard_key_size_.width() << 1) + 4), standard_key_size_.height());
+        return standard_key_size_;
     }
 
     if (code == BackSlash)
@@ -65,22 +76,22 @@ QSize RussianKeyboardLayout::getKeySize(int code)
 
     if (code == ShiftCode)
     {
-        return QSize(((standard_key_size_.width() << 1) + 4), standard_key_size_.height());
+        return standard_key_size_;
     }
 
     if (code == HandWriting)
     {
-        return QSize(((standard_key_size_.width() << 1) + 4), standard_key_size_.height());
+        return standard_key_size_;
     }
 
     if (code == SwitchLanguage)
     {
-        return QSize(((standard_key_size_.width() << 1) + 4), standard_key_size_.height());
+        return standard_key_size_;
     }
 
     if (code == CapLock)
     {
-        return QSize(((standard_key_size_.width() << 1) + 4), standard_key_size_.height());
+        return standard_key_size_;
     }
 
     return standard_key_size_;
@@ -121,6 +132,7 @@ void RussianKeyboardLayout::initCode()
     code_vector_.push_back(QChar(0x044D));     // 29
     code_vector_.push_back(QChar(0x044E));     // 30
     code_vector_.push_back(QChar(0x044F));     // 31
+    code_vector_.push_back(QChar('.'));        // 32
 }
 
 void RussianKeyboardLayout::initKeys()
@@ -131,7 +143,7 @@ void RussianKeyboardLayout::initKeys()
     int index = 0;
 
     // row 0
-    keys_[0].resize(10);
+    keys_[0].resize(11);
     setKey(0, index++, '1');
     setKey(0, index++, '2');
     setKey(0, index++, '3');
@@ -142,9 +154,10 @@ void RussianKeyboardLayout::initKeys()
     setKey(0, index++, '8');
     setKey(0, index++, '9');
     setKey(0, index++, '0');
+    setKeyUnicode(0, index++, BackSpace);
 
     index = 0;
-    keys_[1].resize(12);
+    keys_[1].resize(11);
     setKey(1, index++, code_vector_[9]);
     setKey(1, index++, code_vector_[22]);
     setKey(1, index++, code_vector_[19]);
@@ -156,10 +169,10 @@ void RussianKeyboardLayout::initKeys()
     setKey(1, index++, code_vector_[25]);
     setKey(1, index++, code_vector_[7]);
     setKey(1, index++, code_vector_[21]);
-    setKey(1, index++, code_vector_[26]);
 
     index = 0;
-    keys_[2].resize(12);
+    keys_[2].resize(11);
+    setKey(2, index++, code_vector_[26]);
     setKey(2, index++, code_vector_[20]);
     setKey(2, index++, code_vector_[27]);
     setKey(2, index++, code_vector_[2]);
@@ -170,12 +183,10 @@ void RussianKeyboardLayout::initKeys()
     setKey(2, index++, code_vector_[11]);
     setKey(2, index++, code_vector_[4]);
     setKey(2, index++, code_vector_[6]);
-    setKey(2, index++, code_vector_[29]);
-    setKey(2, index++, code_vector_[30]);
 
     index = 0;
-    keys_[3].resize(10);
-    setKeyUnicode(3, index++, CapLock);
+    keys_[3].resize(11);
+    setKey(3, index++, code_vector_[30]);
     setKey(3, index++, code_vector_[31]);
     setKey(3, index++, code_vector_[23]);
     setKey(3, index++, code_vector_[17]);
@@ -184,11 +195,13 @@ void RussianKeyboardLayout::initKeys()
     setKey(3, index++, code_vector_[18]);
     setKey(3, index++, code_vector_[28]);
     setKey(3, index++, code_vector_[1]);
-    setKeyUnicode(3, index++, BackSpace);
+    setKey(3, index++, code_vector_[29]);
+    setKey(3, index++, code_vector_[32]);
 
     index = 0;
     bool has_touch = SysStatus::instance().hasTouchScreen();
-    keys_[4].resize(has_touch ? 5 : 4);
+    keys_[4].resize(has_touch ? 6 : 5);
+    setKeyUnicode(4, index++, CapLock);
     setKeyUnicode(4, index++, ShiftCode);
     setKeyUnicode(4, index++, Blank);
     setKeyUnicode(4, index++, EnterCode);
