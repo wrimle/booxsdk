@@ -15,22 +15,18 @@
 #include "onyx/ui/status_bar_item_connection.h"
 #include "onyx/ui/status_bar_item_3g_connection.h"
 #include "onyx/ui/status_bar_item_volume.h"
+#include "onyx/ui/status_bar_item_music_player.h"
 #include "onyx/ui/number_dialog.h"
 #include "onyx/ui/power_management_dialog.h"
 #include "onyx/ui/clock_dialog.h"
-#include "onyx/ui/volume_control.h"
 
 namespace ui
 {
 
-static const int HIDE_VOLUME_DIALOG_INTERVAL = 3000;
-
 StatusBar::StatusBar(QWidget *parent, StatusBarItemTypes items)
-    : QWidget(parent)
+    : QStatusBar(parent)
     , items_(0)
-    , layout_(this)
     , enable_jump_to_page_(true)
-    , hide_volume_dialog_timer_(HIDE_VOLUME_DIALOG_INTERVAL, this, SLOT(onHideVolumeDialog()))
 {
     createLayout();
     setupConnections();
@@ -74,9 +70,14 @@ void StatusBar::setupConnections()
             this,
             SLOT(onConnectToPC(bool)));
     connect(&sys_status,
-            SIGNAL(volumeChanged(int, bool)),
+            SIGNAL(volumeUpPressed()),
             this,
-            SLOT(onVolumeChanged(int, bool)));
+            SLOT(onVolumeButtonsPressed()));
+    connect(&sys_status,
+            SIGNAL(volumeDownPressed()),
+            this,
+            SLOT(onVolumeButtonsPressed()));
+
     connect(&sys_status,
             SIGNAL(report3GNetwork(const int, const int, const int)),
             this,
@@ -103,7 +104,7 @@ void StatusBar::addItems(StatusBarItemTypes items)
     const StatusBarItemType all[] =
     {
         MENU, PROGRESS, MESSAGE, STYLUS, CLOCK, INPUT_TEXT, VOLUME, SCREEN_REFRESH, INPUT_URL,THREEG_CONNECTION,
-        CONNECTION, BATTERY
+        CONNECTION, MUSIC_PLAYER, BATTERY
     };
     const int size = sizeof(all)/sizeof(all[0]);
     for(int i = 0; i < size; ++i)
@@ -197,6 +198,7 @@ void StatusBar::clear()
 void StatusBar::closeChildrenDialogs()
 {
     closeUSBDialog();
+    closeVolumeDialog();
 }
 
 void StatusBar::closeUSBDialog()
@@ -206,6 +208,17 @@ void StatusBar::closeUSBDialog()
     {
         dialog->reject();
         usb_connection_dialog_.reset(0);
+        onyx::screen::instance().flush(0, onyx::screen::ScreenProxy::GU);
+    }
+}
+
+void StatusBar::closeVolumeDialog()
+{
+    VolumeControlDialog *dialog = volumeDialog(false);
+    if (dialog)
+    {
+        dialog->reject();
+        volume_dialog_.reset(0);
     }
 }
 
@@ -272,7 +285,7 @@ void StatusBar::onMessageAreaClicked()
 
     int current = 1, total = 1;
     StatusBarItem * wnd = item(PROGRESS, false);
-    if (wnd && wnd->isVisible())
+    if (wnd)
     {
         StatusBarItemProgress * p = static_cast<StatusBarItemProgress *>(wnd);
         p->progress(current, total);
@@ -299,7 +312,10 @@ void StatusBar::onBatteryClicked()
 {
     PowerManagementDialog dialog(0, sys::SysStatus::instance());
     dialog.exec();
-    onyx::screen::instance().flush(0, onyx::screen::ScreenProxy::GU);
+}
+
+void StatusBar::onMusicPlayerClicked()
+{
 }
 
 void StatusBar::onClockClicked()
@@ -313,62 +329,40 @@ void StatusBar::onClockClicked()
     }
 }
 
-void StatusBar::onHideVolumeDialog()
+void StatusBar::onVolumeButtonsPressed()
 {
-    VolumeControlDialog * volume_control_dialog = VolumeControlDialog::instance();
-    if (volume_control_dialog->isVisible() && !volume_control_dialog->alwaysActive())
-    {
-        qDebug("Hide Volume Dialog");
-        volume_control_dialog->hide();
-        onyx::screen::instance().flush(0, onyx::screen::ScreenProxy::GU);
-    }
-}
-
-void StatusBar::onVolumeChanged(int new_volume, bool is_mute)
-{
-    QRegion region = this->visibleRegion();
+    QRegion region = visibleRegion();
     if (region.isEmpty())
     {
-        qDebug("Hidden Status Bar");
         return;
     }
 
     QRect visible_rect = region.boundingRect();
     if (visible_rect.width() < height() && visible_rect.height() < height())
     {
-        qDebug("Almost Hidden Status Bar");
         return;
     }
 
-    VolumeControlDialog * volume_control_dialog = VolumeControlDialog::instance();
-    hide_volume_dialog_timer_.stop();
-    if (!volume_control_dialog->isVisible())
+    VolumeControlDialog * dialog = volumeDialog(true);
+    if (!dialog->isVisible())
     {
-        qDebug("Volume Changed, Ensure Volume Dialog Visible");
-        volume_control_dialog->ensureVisible();
-        onyx::screen::instance().flush(0, onyx::screen::ScreenProxy::GU);
+        dialog->ensureVisible();
+        onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GU, false, onyx::screen::ScreenCommand::WAIT_COMMAND_FINISH);
     }
-    hide_volume_dialog_timer_.start();
+    else
+    {
+        dialog->resetTimer();
+    }
+}
+
+void StatusBar::onHideVolumeDialog()
+{
 }
 
 void StatusBar::onVolumeClicked()
 {
-    VolumeControlDialog * volume_control_dialog = VolumeControlDialog::instance();
-    hide_volume_dialog_timer_.stop();
-    qDebug("Volume Clicked");
-    if (!volume_control_dialog->isVisible())
-    {
-        qDebug("Ensure volume control visible");
-        volume_control_dialog->ensureVisible();
-        volume_control_dialog->setAlwaysActive(true);
-    }
-    else
-    {
-        qDebug("Hide volume control");
-        volume_control_dialog->hide();
-        volume_control_dialog->setAlwaysActive(false);
-    }
-    onyx::screen::instance().flush(0, onyx::screen::ScreenProxy::GU);
+    VolumeControlDialog * dialog = volumeDialog(true);
+    dialog->ensureVisible();
 }
 
 void StatusBar::onScreenRefreshClicked()
@@ -506,6 +500,7 @@ void StatusBar::onConnectToPC(bool connected)
         closeUSBDialog();
         if (ret != QMessageBox::Yes)
         {
+            onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GU);
             return;
         }
         onyx::screen::instance().flush();
@@ -562,7 +557,7 @@ void StatusBar::changeBatteryStatus(const int value,
         onyx::screen::instance().enableUpdate(true);
         if (update_screen && changed && isActiveWindow())
         {
-            onyx::screen::instance().updateWidget(wnd, onyx::screen::ScreenProxy::GC, false);
+            onyx::screen::instance().updateWidget(wnd, onyx::screen::ScreenProxy::GU, false);
         }
     }
 }
@@ -595,11 +590,22 @@ ClockDialog * StatusBar::clockDialog(bool create, const QDateTime & start)
     return clock_dialog_.get();
 }
 
+VolumeControlDialog *StatusBar::volumeDialog(bool create)
+{
+    if (!volume_dialog_ && create)
+    {
+        volume_dialog_.reset(new VolumeControlDialog(0));
+    }
+    return volume_dialog_.get();
+}
+
 void StatusBar::createLayout()
 {
     setFixedHeight(35);
-    layout_.setSpacing(4);
-    layout_.setContentsMargins(1, 2, 1, 0);
+    layout()->setSpacing(4);
+    layout()->setContentsMargins(1, 2, 1, 0);
+    setSizeGripEnabled(false);
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum);
 }
 
 StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
@@ -633,6 +639,10 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
         item = new StatusBarItemBattery(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onBatteryClicked()));
         break;
+    case MUSIC_PLAYER:
+        item = new StatusBarItemMusicPlayer(this);
+        connect(item, SIGNAL(clicked()), this, SLOT(onMusicPlayerClicked()));
+        break; 
     case CLOCK:
         item = new StatusBarItemClock(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onClockClicked()));
@@ -682,7 +692,14 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
     widgets_.push_back(ptr);
 
     // Place this one into the layout.
-    layout_.addWidget(ptr.get());
+    if (type == PROGRESS)
+    {
+        addWidget(ptr.get(), 1);
+    }
+    else
+    {
+        addWidget(ptr.get());
+    }
     return ptr.get();
 }
 
