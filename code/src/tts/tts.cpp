@@ -13,17 +13,26 @@ static const int CHANNELS = 1;
 TTS::TTS(const QLocale & locale)
 : span_(3000), tts_impl_(0)
 {
-    qDebug()<<"TTS begins to initialise";
-    if(loadPlugin())
+    if (loadPlugin())
     {
-        tts_impl_->initialize(locale, sound());
+        if (tts_impl_->initialize(locale, sound()))
+        {
+            connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
+                    this, SLOT(onSynthDone(bool, QByteArray &)));
+            connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
+            connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-        connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
-            this, SLOT(onSynthDone(bool, QByteArray &)));
-        connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
-        connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
-
-        setState(TTS_STOPPED);
+            setState(TTS_STOPPED);
+            setValid(TTS_VALID);
+        }
+        else
+        {
+            setValid(TTS_DATA_INVALID);
+        }
+    }
+    else
+    {
+        setValid(TTS_PLUGIN_INVALID);
     }
 }
 
@@ -119,6 +128,12 @@ void TTS::onTimeout()
     qDebug("Send to play.");
     AsyncPlayer::instance().play(sound(), data_);
     data_.clear();
+}
+
+void TTS::setValid(TTS_Valid valid)
+{
+    valid_ = valid;
+    emit TTSInitError();
 }
 
 void TTS::setState(TTS_State state)

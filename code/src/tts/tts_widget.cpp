@@ -71,6 +71,35 @@ TTSWidget::~TTSWidget()
 {
 }
 
+void TTSWidget::onTTSInitError()
+{
+    QString err_msg;
+    if (tts_.valid() == TTS_DATA_INVALID)
+    {
+        err_msg = tr("Invalid TTS data!");
+    }
+    else if (tts_.valid() == TTS_PLUGIN_INVALID)
+    {
+        err_msg = tr("Can not load TTS plugin!");
+    }
+    else
+    {
+        err_msg = tr("Unknown error!");
+    }
+    ErrorDialog err_dialog(err_msg);
+    err_dialog.exec();
+    QTimer::singleShot(0, this, SLOT(close()));
+}
+
+void TTSWidget::showEvent(QShowEvent* event)
+{
+    if(tts_.valid() == TTS_DATA_INVALID || tts_.valid() == TTS_PLUGIN_INVALID)
+    {
+        event->ignore();
+        onTTSInitError();
+    }
+}
+
 void TTSWidget::ensureVisible()
 {
     if (!isVisible())

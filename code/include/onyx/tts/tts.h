@@ -19,6 +19,12 @@ enum TTS_State
     TTS_STOPPED,
 };
 
+enum TTS_Valid
+{
+    TTS_DATA_INVALID = 0,
+    TTS_PLUGIN_INVALID,
+    TTS_VALID,
+};
 /// TTS engine container.
 class TTS : public QObject
 {
@@ -30,7 +36,9 @@ public:
 public:
     bool support();
     TTS_State state() { return state_; }
+    TTS_Valid valid() { return valid_; }
     void setState(TTS_State state);
+    void setValid(TTS_Valid valid);
     bool isPlaying() const { return state_ == TTS_PLAYING; }
 
     int span() { return span_; }
@@ -60,6 +68,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void speakDone();
+    void TTSInitError();
 
 private Q_SLOTS:
     void onSynthDone(bool ok, QByteArray &data);
@@ -70,6 +79,7 @@ private:
 private:
     scoped_ptr<Sound> sound_;
     TTS_State state_;
+    TTS_Valid valid_;
     QByteArray data_;   ///< Cached data.
     scoped_ptr<TTSInterface> tts_impl_; ///< Backend instance.
     QTimer timer_;
@@ -79,3 +89,4 @@ private:
 }   // namespace tts
 
 #endif  // ONYX_LIB_TTS_H_
+

@@ -47,6 +47,7 @@ private Q_SLOTS:
     void onTextPlayed();
     void onPopupMenu(bool);
     void onSystemVolumeChanged(int value, bool muted);
+    void onTTSInitError();
 
 private:
     bool event(QEvent *e);
@@ -54,8 +55,9 @@ private:
     void keyPressEvent(QKeyEvent *ke);
     void keyReleaseEvent(QKeyEvent *ke);
     void resizeEvent(QResizeEvent *e);
-    void createLayout();
+    void showEvent(QShowEvent* e);
 
+    void createLayout();
     void updateActions();
 
 private:
