@@ -439,7 +439,8 @@ void DictFrame::changeInternalState(int state)
 bool DictFrame::event(QEvent *e)
 {
     int ret = QDialog::event(e);
-    if (e->type() == QEvent::UpdateRequest)
+    if (e->type() == QEvent::UpdateRequest
+            && onyx::screen::instance().isUpdateEnabled())
     {
         if (sys::SysStatus::instance().isSystemBusy())
         {
@@ -448,7 +449,16 @@ bool DictFrame::event(QEvent *e)
 
         static int count = 0;
         qDebug("Update request %d", ++count);
-        onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+        if (1 == onyx::screen::instance().userData()) {
+            onyx::screen::instance().updateWidget(this,
+                    onyx::screen::ScreenProxy::GC);
+        }
+        else
+        {
+            onyx::screen::instance().updateWidget(this,
+                    onyx::screen::ScreenProxy::GU);
+        }
+        ++onyx::screen::instance().userData();
         e->accept();
     }
 
