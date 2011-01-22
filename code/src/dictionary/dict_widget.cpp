@@ -329,7 +329,10 @@ bool DictWidget::eventFilter(QObject *obj, QEvent *event)
         else if (keyEvent->key() == Qt::Key_PageDown ||
                  keyEvent->key() == Qt::Key_PageUp)
         {
-            if (internalState() == LOOKUP)
+            if (internalState() == LOOKUP
+                    || internalState() == DETAILS
+                    || internalState() == WORD_LIST
+                    || internalState() == DICTIONARY_LIST)
             {
                 keyEvent->ignore();
                 return true;
