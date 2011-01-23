@@ -19,8 +19,8 @@ MainWindow::MainWindow(QObject *parent)
     , hlayout_(0)
     , status_bar_(this,
                   (SysStatus::instance().hasTouchScreen() ? 
-                  (MENU | PROGRESS | MESSAGE | STYLUS | BATTERY | CLOCK | VOLUME | SCREEN_REFRESH) :
-                  (MENU | PROGRESS | MESSAGE | STYLUS | BATTERY )))
+                  (MENU | PROGRESS | MESSAGE | STYLUS | BATTERY | MUSIC_PLAYER | CLOCK | VOLUME | SCREEN_REFRESH) :
+                  (MENU | PROGRESS | MESSAGE | STYLUS | BATTERY | MUSIC_PLAYER)))
     , mandatory_update_(false)
 {
     setAutoFillBackground(true);
@@ -72,6 +72,8 @@ MainWindow::MainWindow(QObject *parent)
             SIGNAL(musicPlayerStateChanged(int)),
             this,
             SLOT(onMusicPlayerStateChanged(int)));
+    sys::SystemConfig conf;
+    onyx::screen::instance().setGCInterval(conf.screenUpdateGCInterval());
 }
 
 MainWindow::~MainWindow()
@@ -248,15 +250,24 @@ bool MainWindow::event(QEvent * event)
         (isActiveWindow() || mandatory_update_))
     {
         static int count = 0;
-        if (mandatory_update_)
+        if (onyx::screen::instance().userData() == 1)
+        {
+            onyx::screen::instance().updateWidgetWithGCInterval(this,
+                    NULL,
+                    onyx::screen::ScreenProxy::GC);
+            ++onyx::screen::instance().userData();
+        }
+        else if (mandatory_update_)
         {
             qDebug("Update request %d, Default", ++count);
-            onyx::screen::instance().updateWidget(this);
+            onyx::screen::instance().updateWidgetWithGCInterval(this);
         }
         else
         {
             qDebug("Update request %d, GU", ++count);
-            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+            onyx::screen::instance().updateWidgetWithGCInterval(this,
+                    NULL,
+                    onyx::screen::ScreenProxy::GU);
         }
 
         mandatory_update_ = false;

@@ -11,7 +11,7 @@
 #include "status_bar_item.h"
 #include "common_dialogs.h"
 #include "clock_dialog.h"
-#include "single_shot_timer.h"
+#include "volume_control.h"
 
 namespace ui
 {
@@ -21,11 +21,11 @@ namespace ui
 /// - Menu area.
 /// - Message area.
 /// - System area.
-class StatusBar : public QWidget
+class StatusBar : public QStatusBar
 {
     Q_OBJECT
 public:
-    StatusBar(QWidget *parent, StatusBarItemTypes items = MENU|PROGRESS|MESSAGE|BATTERY);
+    StatusBar(QWidget *parent, StatusBarItemTypes items = MENU|PROGRESS|MESSAGE|BATTERY|MUSIC_PLAYER);
     ~StatusBar(void);
 
 public:
@@ -45,6 +45,7 @@ public Q_SLOTS:
     void clear();
     void closeChildrenDialogs();
     void closeUSBDialog();
+    void closeVolumeDialog();
     void onMessageAreaClicked();
     void onBatteryClicked();
     void onClockClicked();
@@ -52,6 +53,7 @@ public Q_SLOTS:
     void onInputUrlClicked();
     void onInputTextClicked();
     void onVolumeClicked();
+    void onMusicPlayerClicked();
 
 Q_SIGNALS:
     void progressClicked(const int percent, const int value);
@@ -75,7 +77,7 @@ private Q_SLOTS:
     void onPppConnectionChanged(const QString &message, int value);
     void onStylusChanged(bool inserted);
     void onConnectToPC(bool);
-    void onVolumeChanged(int new_volume, bool is_mute);
+    void onVolumeButtonsPressed();
     void onHideVolumeDialog();
 
 private:
@@ -94,6 +96,7 @@ private:
 
     USBConnectionDialog * usbConnectionDialog(bool create);
     ClockDialog * clockDialog(bool create, const QDateTime & start);
+    VolumeControlDialog *volumeDialog(bool create);
 
 private:
     typedef shared_ptr<StatusBarItem>          StatusBarItemPtr;
@@ -102,12 +105,11 @@ private:
 
 private:
     StatusBarItemTypes items_;
-    QHBoxLayout        layout_;
     StatusBarItems     widgets_;
     bool               enable_jump_to_page_;
     scoped_ptr<USBConnectionDialog> usb_connection_dialog_;
     scoped_ptr<ClockDialog> clock_dialog_;
-    OnyxSingleShotTimer hide_volume_dialog_timer_;
+    scoped_ptr<VolumeControlDialog> volume_dialog_;
 };
 
 };  // namespace ui

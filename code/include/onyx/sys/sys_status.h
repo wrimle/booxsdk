@@ -49,10 +49,13 @@ class SysStatus : public QObject
 
   public slots:
     bool batteryStatus(int& left, int& status);
+    bool updateBatteryStatus();
 
     bool isUSBMounted();
     bool isSDMounted();
     bool isFlashMounted();
+    bool isMusicPlayerRunning();
+    bool isProcessRunning(const QString & proc_name);
 
     bool umountUSB();
     bool umountSD();
@@ -123,6 +126,12 @@ class SysStatus : public QObject
     void snapshot(const QString &path);
 
     bool hasTouchScreen();
+    bool isTTSEnabled();
+    bool isDictionaryEnabled();
+    //bool isMusicPlayerRunning();
+
+    void startSingleShotHardwareTimer(const int seconds);
+    void setDefaultHardwareTimerInterval();
 
     // The following signals must be the same with system manager.
     // Need a better way to sync them.
@@ -146,6 +155,8 @@ class SysStatus : public QObject
     void inUSBSlaveMode();
 
     void volumeChanged(int new_volume, bool is_mute);
+    void volumeUpPressed();
+    void volumeDownPressed();
 
     void aboutToSuspend();
     void wakeup();
@@ -167,6 +178,8 @@ class SysStatus : public QObject
 
     void report3GNetwork(const int signal, const int total, const int network);
 
+    void hardwareTimerTimeout();
+
   private slots:
     void onBatteryChanged(int, int);
     void onMountTreeChanged(bool mounted, const QString &mount_point);
@@ -176,6 +189,8 @@ class SysStatus : public QObject
     void onScreenRotated(const int);
 
     void onVolumeChanged(int new_volume, bool is_mute);
+    void onVolumeUpPressed();
+    void onVolumeDownPressed();
 
     void onAboutToSuspend();
     void onWakeup();
@@ -197,6 +212,8 @@ class SysStatus : public QObject
     void onLoanReturnFinished(const QString & string);
     void onReportWorkflowError(const QString & workflow, const QString & error_code);
     void onReport3GNetwork(const int signal, const int total, const int network);
+
+    void onHardwareTimerTimeout();
 
   private:
     SysStatus();

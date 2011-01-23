@@ -71,6 +71,35 @@ TTSWidget::~TTSWidget()
 {
 }
 
+void TTSWidget::onTTSInitError()
+{
+    QString err_msg;
+    if (tts_.valid() == TTS_DATA_INVALID)
+    {
+        err_msg = tr("Invalid TTS data!");
+    }
+    else if (tts_.valid() == TTS_PLUGIN_INVALID)
+    {
+        err_msg = tr("Can not load TTS plugin!");
+    }
+    else
+    {
+        err_msg = tr("Unknown error!");
+    }
+    ErrorDialog err_dialog(err_msg);
+    err_dialog.exec();
+    QTimer::singleShot(0, this, SLOT(close()));
+}
+
+void TTSWidget::showEvent(QShowEvent* event)
+{
+    if(tts_.valid() == TTS_DATA_INVALID || tts_.valid() == TTS_PLUGIN_INVALID)
+    {
+        event->ignore();
+        onTTSInitError();
+    }
+}
+
 void TTSWidget::ensureVisible()
 {
     if (!isVisible())
@@ -314,8 +343,10 @@ void TTSWidget::onPopupMenu(bool)
 
 void TTSWidget::keyPressEvent(QKeyEvent *ke)
 {
+    // Need to ignore the escape and return key, otherwise,
+    // the tts widget will also change play button state.
     int key = ke->key();
-    if (key == Qt::Key_Escape)
+    if (key == Qt::Key_Escape || key == Qt::Key_Return || key == Qt::Key_Enter)
     {
         ke->ignore();
         return;
@@ -341,7 +372,6 @@ void TTSWidget::keyReleaseEvent(QKeyEvent *ke)
 
 void TTSWidget::onCloseClicked(bool)
 {
-    qDebug("Close TTS Widget");
     if (!isVisible())
     {
         return;

@@ -32,7 +32,7 @@ inline static void sendCommand(
     socket_.write(reinterpret_cast<const char *>(&command), sizeof(command));
     if (wait & ScreenCommand::WAIT_COMMAND_FINISH)
     {
-        if (socket_.waitForReadyRead(1000))
+        if (socket_.waitForReadyRead(3000))
         {
             socket_.read(reinterpret_cast<char *>(&command), sizeof(command));
         }
@@ -40,16 +40,24 @@ inline static void sendCommand(
 }
 
 ScreenProxy::ScreenProxy()
-  : enable_update_(true)
+: enable_update_(true)
+, policy_(INVALID_POLICY)
   , waveform_(ScreenProxy::GC)
   , previous_waveform_(ScreenProxy::GC)
   , user_data_(0)
+  , gc_interval_(1)
+  , gu_count_(0)
 {
     connect();
 }
 
 ScreenProxy::~ScreenProxy()
 {
+}
+
+void ScreenProxy::setGCInterval(const int interval)
+{
+    this->gc_interval_ = interval;
 }
 
 /// Make sure the previous update request has been processed.
@@ -113,6 +121,16 @@ QRect & ScreenProxy::screenRegion(const QWidget *widget,
                       rect_.height(),
                       rect_.width());
         desk.setSize(QSize(desk.height(), desk.width()));
+    }
+    else if (degree == 180)
+    {
+        qDebug("destk %d %d rect %d %d %d %d", desk.width(), desk.height(), rect_.left(), rect_.top(), rect_.width(), rect_.height());
+
+        rect_.setRect(desk.width() - rect_.x() - rect_.width(),
+                      desk.height() - rect_.y() - rect_.height(),
+                      rect_.width(),
+                      rect_.height());
+        desk.setSize(QSize(desk.width(), desk.height()));
     }
     else if (degree == 270)
     {
@@ -326,5 +344,55 @@ void ScreenProxy::fillScreen(unsigned char color)
     sendCommand(command_);
 }
 
+void ScreenProxy::setWaveformPolicy(WaveformPolicy policy)
+{
+    policy_ = policy;
 }
+
+ScreenProxy::WaveformPolicy ScreenProxy::waveformPolicy()
+{
+    return policy_;
 }
+
+void ScreenProxy::updateWidgetWithGCInterval(const QWidget *widget,
+        const QRect *rect,
+        Waveform waveform,
+        bool update_whole,
+        ScreenCommand::WaitMode wait)
+{
+    if (INVALID == waveform || GU == waveform)
+    {
+        waveform = GU;
+        increaseGUCount();
+        if (0 != gc_interval_ && gu_count_ >= gc_interval_)
+        {
+            waveform = GC;
+        }
+    }
+    if (GC == waveform)
+    {
+        resetGUCount();
+    }
+    if (NULL == rect)
+    {
+        updateWidget(widget, waveform, update_whole, wait);
+    }
+    else
+    {
+        updateWidgetRegion(widget, *rect, waveform, update_whole, wait);
+    }
+}
+
+void ScreenProxy::increaseGUCount()
+{
+    ++gu_count_;
+}
+
+void ScreenProxy::resetGUCount()
+{
+    gu_count_ = 0;
+}
+
+}  //namespace screen
+
+}  //namespace onyx

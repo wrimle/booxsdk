@@ -13,18 +13,27 @@ static const int CHANNELS = 1;
 TTS::TTS(const QLocale & locale)
 : span_(3000), tts_impl_(0)
 {
-    qDebug()<<"TTS begins to initialise";
-    if(loadPlugin()) {
-    tts_impl_->initialize(locale, sound());
+    if (loadPlugin())
+    {
+        if (tts_impl_->initialize(locale, sound()))
+        {
+            connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
+                    this, SLOT(onSynthDone(bool, QByteArray &)));
+            connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
+            connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-    connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
-            this, SLOT(onSynthDone(bool, QByteArray &)));
-    connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
-    connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
-
-    setState(TTS_STOPPED);
+            setState(TTS_STOPPED);
+            setValid(TTS_VALID);
+        }
+        else
+        {
+            setValid(TTS_DATA_INVALID);
+        }
     }
-    qDebug("Error", "Could not load the plugin");
+    else
+    {
+        setValid(TTS_PLUGIN_INVALID);
+    }
 }
 
 TTS::~TTS()
@@ -119,6 +128,12 @@ void TTS::onTimeout()
     qDebug("Send to play.");
     AsyncPlayer::instance().play(sound(), data_);
     data_.clear();
+}
+
+void TTS::setValid(TTS_Valid valid)
+{
+    valid_ = valid;
+    emit TTSInitError();
 }
 
 void TTS::setState(TTS_State state)
@@ -244,26 +259,47 @@ Sound & TTS::sound()
 {
     if (!sound_)
     {
-        sound_.reset(new Sound);
-        sound_->setBitsPerSample(BPS);
-        sound_->setChannels(CHANNELS);
-        sound_->setSamplingRate(SAMPLE_RATE);
+        bool open = (qgetenv("DISABLE_TTS_SOUND_DEV").toInt() <= 0);
+        qDebug("open sound device or not %d", open);
+        sound_.reset(new Sound(open));
+        if (open)
+        {
+            sound_->setBitsPerSample(BPS);
+            sound_->setChannels(CHANNELS);
+            sound_->setSamplingRate(SAMPLE_RATE);
+        }
     }
     return *sound_;
 }
 
 bool TTS::loadPlugin()
 {
-    QPluginLoader pluginLoader("/usr/share/tts/plugins/libtts_ej.so", this);
-    qDebug()<<"TTS begins to create a plugin instance";
-    pluginLoader.load();//explicitly load
-    if (!pluginLoader.isLoaded()) return false;
-    QObject *plugin = pluginLoader.instance();
-    if (plugin) {
-        qDebug()<<"TTS gets plugin, is to reset tts_impl_";
-        tts_impl_.reset(qobject_cast<TTSInterface *>(plugin));
-        if (tts_impl_)
-            return true;
+    QDir dir("/usr/share/tts/plugins");
+    QDir::Filters filters = QDir::Files|QDir::NoDotAndDotDot;
+    QFileInfoList all = dir.entryInfoList(filters);
+    for(QFileInfoList::iterator iter = all.begin(); iter != all.end(); ++iter)
+    {
+        if (iter->isFile())
+        {
+            QPluginLoader pluginLoader(iter->absoluteFilePath(), this);
+            qDebug() << "TTS begins to create a plugin instance " << iter->absoluteFilePath();
+            pluginLoader.load();
+            if (!pluginLoader.isLoaded())
+            {
+                qDebug() << "Could not load tts plugin: " << iter->absoluteFilePath(); 
+                continue;
+            }
+            QObject *plugin = pluginLoader.instance();
+            if (plugin)
+            {
+                qDebug() << "TTS gets plugin, is to reset tts_impl_";
+                tts_impl_.reset(qobject_cast<TTSInterface *>(plugin));
+                if (tts_impl_)
+                {
+                    return true;
+                }
+            }
+        }
     }
     return false;
 }
