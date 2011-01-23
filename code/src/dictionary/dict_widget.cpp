@@ -10,7 +10,7 @@ static const int DICTIONARY_LIST = 3;
 static const int RETRIEVING_WORD = 4;
 
 DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
-    : OnyxDialog(parent)
+    : OnyxDialog(parent, false)
     , dict_(dict)
     , tts_(tts)
     , hbox_(&content_widget_)
@@ -47,7 +47,6 @@ bool DictWidget::ensureVisible(const QRectF & rect,
                                bool update_parent)
 {
     bool changed = false;
-    shadows_.show(true);
     if (!isVisible())
     {
         changed = true;
@@ -60,7 +59,7 @@ bool DictWidget::ensureVisible(const QRectF & rect,
     {
         border = Shadows::PIXELS;
     }
-    int width = parent_rect.width() - border * 2;
+    int width = parent_rect.width();
     if (size().width() != width)
     {
         changed = true;
@@ -68,10 +67,10 @@ bool DictWidget::ensureVisible(const QRectF & rect,
     }
 
     // Check position.
-    QPoint new_pos(border, border);
+    QPoint new_pos(0, 0);
     if (rect.bottom() < parent_rect.height() / 2)
     {
-        new_pos.ry() = parent_rect.height() - height() - border * 2;
+        new_pos.ry() = parent_rect.height() - height();
     }
 
     if (pos() != new_pos)
@@ -352,8 +351,6 @@ bool DictWidget::event(QEvent *e)
     int ret = QDialog::event(e);
     if (e->type() == QEvent::UpdateRequest)
     {
-        onyx::screen::instance().sync(&shadows_.hor_shadow());
-        onyx::screen::instance().sync(&shadows_.ver_shadow());
         if (update_parent_)
         {
             onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GC, true);
@@ -372,7 +369,6 @@ bool DictWidget::event(QEvent *e)
 
 void DictWidget::moveEvent(QMoveEvent *e)
 {
-    shadows_.onWidgetMoved(this);
     update_parent_ = true;
 }
 
@@ -385,7 +381,6 @@ void DictWidget::resizeEvent(QResizeEvent *e)
 void DictWidget::hideEvent(QHideEvent * event)
 {
     QDialog::hideEvent(event);
-    shadows_.show(false);
 }
 
 void DictWidget::createLayout()
@@ -597,7 +592,6 @@ void DictWidget::onRetrieveWordClicked(bool)
 void DictWidget::onCloseClicked()
 {
     releaseKeyboard();
-    shadows_.show(false);
     hide();
     emit closeClicked();
 }
