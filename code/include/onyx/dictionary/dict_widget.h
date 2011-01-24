@@ -11,9 +11,21 @@ namespace ui
 
 /// The dictionary widget library. It provides a gui frontend
 /// for LibDict to enable user to search in dictionary.
-class DictWidget : public OnyxDialog
+class DictWidget : public QDialog
 {
     Q_OBJECT
+
+public:
+    struct FunctionDescription
+    {
+        const char * description;
+        int index;
+    };
+
+private:
+    static const int SPACING;
+    static const FunctionDescription DICT_FUNC_DESCRIPTION[];
+
 public:
     DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts = 0);
     ~DictWidget();
@@ -72,14 +84,19 @@ private:
     QVBoxLayout   vbox1_;
     QVBoxLayout   vbox2_;
 
-    OnyxPushButton dict_list_button_;
-    OnyxPushButton lookup_button_;
-    OnyxPushButton retrieve_word_button_;
-    OnyxPushButton word_list_button_;
-    OnyxPushButton details_button_;
+    QVBoxLayout   big_vbox_;
+    QHBoxLayout   top_hbox_;
 
-    OnyxTextBrowser  details_; ///< The lookup result.
-    OnyxTreeView list_widget_;
+    // TODO should be deleted after refactoring
+    OnyxPushButton lookup_button_;
+
+    OnyxPushButton explanation_button_;
+    OnyxPushButton similar_words_button_;
+    OnyxPushButton dictionaries_button_;
+    OnyxPushButton open_dictionary_tool_button_;
+
+    OnyxTextBrowser  explanation_text_; ///< The lookup result.
+    OnyxTreeView similar_words_view_;
 
     QButtonGroup    button_group_;
     QTextDocument   doc_;
@@ -93,6 +110,8 @@ private:
 
     int internal_state_;
     bool update_parent_;
+
+    QLabel func_discription_label_;
 };
 
 };  // namespace ui
