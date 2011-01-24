@@ -207,6 +207,10 @@ void DialUpDialog::keyPressEvent(QKeyEvent *ke)
 void DialUpDialog::keyReleaseEvent(QKeyEvent *ke)
 {
     ke->accept();
+    if (ke->key() == Qt::Key_Escape)
+    {
+        accept();
+    }
 }
 
 bool DialUpDialog::event(QEvent * e)
@@ -231,8 +235,9 @@ void DialUpDialog::paintEvent(QPaintEvent *e)
     painter.drawPath(path);
 }
 
-void DialUpDialog::resizeEvent(QResizeEvent *)
+void DialUpDialog::resizeEvent(QResizeEvent *event)
 {
+    QDialog::resizeEvent(event);
 }
 
 void DialUpDialog::mousePressEvent(QMouseEvent *)
@@ -351,6 +356,28 @@ void DialUpDialog::clear()
 {
 }
 
+void DialUpDialog::myShow(bool max)
+{
+    if (max)
+    {
+        for(int i = 0; i < buttons_.size(); ++i)
+        {
+            buttons_[i]->show();
+        }
+        showMaximized();
+    }
+    else
+    {
+        for(int i = 0; i < buttons_.size(); ++i)
+        {
+            buttons_[i]->hide();
+        }
+        setFixedSize(500, 150);
+        show();
+    }
+
+}
+
 void DialUpDialog::connect(const QString & peer,
                            const QString & username,
                            const QString & password)
@@ -373,7 +400,7 @@ void DialUpDialog::onTimeout()
 
 void DialUpDialog::onConnectClicked(bool)
 {
-    state_widget_.setText(tr("Connecting..."));
+    state_widget_.setText(tr("Establishing 3G-connection... Please wait"));
 }
 
 void DialUpDialog::onPppConnectionChanged(const QString &message, int status)
@@ -384,18 +411,52 @@ void DialUpDialog::onPppConnectionChanged(const QString &message, int status)
     }
     else if (status == TG_CONNECTING)
     {
-        state_widget_.setText(tr("Connecting..."));
+        state_widget_.setText(tr("Establishing 3G-connection... Please wait"));
     }
     else if (status == TG_CONNECTED)
     {
-        QString result("Connected. Address: %1");
+        QString result(tr("Connected. Address: %1"));
         result = result.arg(qPrintable(address()));
         state_widget_.setText(result);
+        saveConf();
         QTimer::singleShot(1500, this, SLOT(accept()));
     }
     else if (status == TG_DISCONNECTED)
     {
-        state_widget_.setText(tr("Disconnected."));
+        if (message.isEmpty())
+        {
+            if (!sys_.isPowerSwitchOn())
+            {
+                showOffMessage();
+            }
+            else
+            {
+                state_widget_.setText(tr("Communication is not established."));
+            }
+        }
+        else
+        {
+            if (message.compare("Sim-card Error", Qt::CaseInsensitive) == 0)
+            {
+                state_widget_.setText(tr("Sim-card Error"));
+            }
+            else if (message.compare("Modem error", Qt::CaseInsensitive) == 0)
+            {
+                state_widget_.setText(tr("Modem error"));
+            }
+            else if (message.compare("EXIT_CONNECT_FAILED", Qt::CaseInsensitive) == 0)
+            {
+                state_widget_.setText(tr("EXIT_CONNECT_FAILED"));
+            }
+            else if (message.compare("EXIT_HANGUP", Qt::CaseInsensitive) == 0)
+            {
+                state_widget_.setText(tr("Communication is not established."));
+            }
+            else
+            {
+                state_widget_.setText(message);
+            }
+        }
     }
 }
 
