@@ -80,15 +80,10 @@ private:
     DictionaryManager&      dict_;
     tts::TTS *tts_;
 
-    QHBoxLayout   hbox_;
-    QVBoxLayout   vbox1_;
-    QVBoxLayout   vbox2_;
+    QVBoxLayout   content_vbox_;
 
     QVBoxLayout   big_vbox_;
     QHBoxLayout   top_hbox_;
-
-    // TODO should be deleted after refactoring
-    OnyxPushButton lookup_button_;
 
     OnyxPushButton explanation_button_;
     OnyxPushButton similar_words_button_;

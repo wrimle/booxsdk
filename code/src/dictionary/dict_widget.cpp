@@ -25,9 +25,8 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , dict_(dict)
     , tts_(tts)
     , big_vbox_(this)
-    , vbox2_(0)
+    , content_vbox_(0)
     , top_hbox_(0)
-    , lookup_button_(tr("Lookup"), 0)
     , explanation_button_(tr("Explanation"), 0)
     , similar_words_button_(tr("Similar Words"), 0)
     , dictionaries_button_(tr("Dictionaries"), 0)
@@ -50,7 +49,7 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     setModal(false);
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Mid);
-    setContentsMargins(SPACING, SPACING, SPACING, SPACING);
+//    setContentsMargins(SPACING, SPACING, SPACING, SPACING);
 }
 
 DictWidget::~DictWidget()
@@ -338,7 +337,6 @@ bool DictWidget::eventFilter(QObject *obj, QEvent *event)
         {
             keyEvent->accept();
             changeInternalState(DETAILS);
-//            lookup_button_.setFocus();
             explanation_button_.setFocus();
             return true;
         }
@@ -401,15 +399,13 @@ void DictWidget::hideEvent(QHideEvent * event)
 
 void DictWidget::createLayout()
 {
-//    title_icon_label_.setPixmap(QPixmap(":/images/dictionary_title.png"));
-
     big_vbox_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
     big_vbox_.setSpacing(SPACING);
     big_vbox_.addLayout(&top_hbox_);
-    big_vbox_.addLayout(&vbox2_);
+    big_vbox_.addLayout(&content_vbox_);
 
-    top_hbox_.addWidget(&func_discription_label_);
     top_hbox_.setSpacing(SPACING);
+    top_hbox_.addWidget(&func_discription_label_);
     top_hbox_.addWidget(&explanation_button_);
     top_hbox_.addWidget(&similar_words_button_);
     top_hbox_.addWidget(&dictionaries_button_);
@@ -418,22 +414,19 @@ void DictWidget::createLayout()
     explanation_button_.useDefaultHeight();
     similar_words_button_.useDefaultHeight();
     dictionaries_button_.useDefaultHeight();
-//    lookup_button_.useDefaultHeight();
+    open_dictionary_tool_button_.useDefaultHeight();
 
     // vbox 2
-    vbox2_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
-    vbox2_.setSpacing(SPACING);
-    vbox2_.addWidget(&explanation_text_);
-    vbox2_.addWidget(&similar_words_view_);
+    content_vbox_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
+    content_vbox_.setSpacing(SPACING);
+    content_vbox_.addWidget(&explanation_text_);
+    content_vbox_.addWidget(&similar_words_view_);
     similar_words_view_.showHeader(false);
     similar_words_view_.hide();
 
     // Setup connection.
     connect(&explanation_button_, SIGNAL(clicked(bool)), this,
         SLOT(onDetailsClicked(bool)), Qt::QueuedConnection);
-
-//    connect(&lookup_button_, SIGNAL(clicked(bool)), this,
-//            SLOT(onLookupClicked(bool)), Qt::QueuedConnection);
 
     connect(&similar_words_button_, SIGNAL(clicked(bool)), this,
             SLOT(onWordListClicked(bool)), Qt::QueuedConnection);
