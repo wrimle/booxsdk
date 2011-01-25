@@ -11,21 +11,9 @@ namespace ui
 
 /// The dictionary widget library. It provides a gui frontend
 /// for LibDict to enable user to search in dictionary.
-class DictWidget : public QDialog
+class DictWidget : public OnyxDialog
 {
     Q_OBJECT
-
-public:
-    struct FunctionDescription
-    {
-        const char * description;
-        int index;
-    };
-
-private:
-    static const int SPACING;
-    static const FunctionDescription DICT_FUNC_DESCRIPTION[];
-    static const int WIDGET_HEIGHT;
 
 public:
     DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts = 0);
@@ -42,6 +30,13 @@ protected:
     void moveEvent(QMoveEvent *e);
     void resizeEvent(QResizeEvent *e);
     void hideEvent(QHideEvent * event);
+
+public:
+    struct FunctionDescription
+    {
+        const char * description;
+        int index;
+    };
 
 Q_SIGNALS:
     void keyReleaseSignal(int);
@@ -85,6 +80,8 @@ private:
     QHBoxLayout   top_hbox_;
     QVBoxLayout   content_vbox_;
 
+    OnyxLabel func_description_label_;
+
     OnyxPushButton explanation_button_;
     OnyxPushButton similar_words_button_;
     OnyxPushButton dictionaries_button_;
@@ -106,7 +103,9 @@ private:
     int internal_state_;
     bool update_parent_;
 
-    OnyxLabel func_description_label_;
+private:
+    static const FunctionDescription DICT_FUNC_DESCRIPTION[];
+
 };
 
 };  // namespace ui

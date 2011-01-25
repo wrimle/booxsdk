@@ -9,25 +9,22 @@ static const int WORD_LIST = 2;
 static const int DICTIONARY_LIST = 3;
 static const int RETRIEVING_WORD = 4;
 
-const int DictWidget::SPACING = 2;
-const int DictWidget::WIDGET_HEIGHT = 36;
-
 /// Define all descriptions
 const DictWidget::FunctionDescription DictWidget::DICT_FUNC_DESCRIPTION[] =
 {
-    {"Lookup", LOOKUP},
     {"Explanation", DETAILS},
     {"Similar Words", WORD_LIST},
     {"Dictionaries", DICTIONARY_LIST},
 };
 
 DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
-    : QDialog(parent, Qt::FramelessWindowHint)
+    : OnyxDialog(parent, false)
     , dict_(dict)
     , tts_(tts)
-    , big_vbox_(this)
+    , big_vbox_(&content_widget_)
     , top_hbox_(0)
     , content_vbox_(0)
+    , func_description_label_(DICT_FUNC_DESCRIPTION[0].description, 0)
     , explanation_button_(tr("Explanation"), 0)
     , similar_words_button_(tr("Similar Words"), 0)
     , dictionaries_button_(tr("Dictionaries"), 0)
@@ -38,18 +35,16 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , timer_(this)
     , internal_state_(-1)
     , update_parent_(false)
-    , func_description_label_(DICT_FUNC_DESCRIPTION[0].description)
 {
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    QPalette pal(parent->palette());
+    pal.setColor(QPalette::Background, Qt::gray);
+    setPalette(pal);
+
     createLayout();
     initBrowser();
     initDictionaries();
 
     connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
-
-    setModal(false);
-    setAutoFillBackground(true);
-    setBackgroundRole(QPalette::Button);
 }
 
 DictWidget::~DictWidget()
@@ -172,7 +167,7 @@ void DictWidget::keyReleaseEvent(QKeyEvent *ke)
     case Qt::Key_Return:
         if (internalState() != RETRIEVING_WORD)
         {
-            wnd = focusWidget();
+            wnd = content_widget_.focusWidget();
             btn = qobject_cast<QPushButton*>(wnd);
             if (btn != 0)
             {
@@ -210,7 +205,7 @@ void DictWidget::keyPressEvent(QKeyEvent * ke)
     else if (ke->key() == Qt::Key_Return)
     {
         ke->accept();
-        QWidget * wnd = focusWidget();
+        QWidget * wnd = content_widget_.focusWidget();
         QPushButton * btn = qobject_cast<QPushButton*>(wnd);
         if (btn != 0)
         {
@@ -399,31 +394,31 @@ void DictWidget::hideEvent(QHideEvent * event)
 
 void DictWidget::createLayout()
 {
+    // remove the title bar from the OnyxDialog
+    this->vbox_.removeWidget(&this->title_widget_);
+
     big_vbox_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
     big_vbox_.setSpacing(SPACING);
     big_vbox_.addLayout(&top_hbox_);
     big_vbox_.addLayout(&content_vbox_);
 
-    func_description_label_.setPixmap(QPixmap(":/images/dictionary_search.png"));
     func_description_label_.setAlignment(Qt::AlignLeft);
     func_description_label_.setAlignment(Qt::AlignVCenter);
-    func_description_label_.setFixedHeight(WIDGET_HEIGHT);
-    func_description_label_.setFixedHeight(WIDGET_HEIGHT);
-    func_description_label_.useTitleBarStyle();
+    func_description_label_.setFixedHeight(WIDGET_HEIGHT-SPACING*2);
+    func_description_label_.setFixedHeight(WIDGET_HEIGHT-SPACING*2);
 
     top_hbox_.setSpacing(SPACING);
     top_hbox_.addWidget(&func_description_label_);
     top_hbox_.addWidget(&explanation_button_);
     top_hbox_.addWidget(&similar_words_button_);
     top_hbox_.addWidget(&dictionaries_button_);
-    top_hbox_.addWidget(&open_dictionary_tool_button_);
+//    top_hbox_.addWidget(&open_dictionary_tool_button_);
 
     explanation_button_.useDefaultHeight();
     similar_words_button_.useDefaultHeight();
     dictionaries_button_.useDefaultHeight();
     open_dictionary_tool_button_.useDefaultHeight();
 
-    // vbox 2
     content_vbox_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
     content_vbox_.setSpacing(SPACING);
     content_vbox_.addWidget(&explanation_text_);
