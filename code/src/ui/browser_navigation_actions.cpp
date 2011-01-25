@@ -20,15 +20,6 @@ void BrowserNavigationActions::generateActions(QWebHistory *history)
 
     actions_.clear();
 
-    shared_ptr<QAction> ozon(new QAction(exclusiveGroup()));
-    ozon->setText(QCoreApplication::tr("OZON"));
-    ozon->setIcon(QIcon(QPixmap(":/images/home.png")));
-    ozon->setData(NAVIGATE_HOME);
-    ozon->setEnabled(true);
-    ozon->setCheckable(true);
-    ozon->setChecked(false);
-    actions_.push_back(ozon);
-
     shared_ptr<QAction> backward(new QAction(exclusiveGroup()));
     backward->setText(QCoreApplication::tr("Backward"));
     backward->setIcon(QIcon(QPixmap(":/images/backward.png")));
