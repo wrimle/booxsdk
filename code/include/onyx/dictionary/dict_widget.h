@@ -25,6 +25,7 @@ public:
 private:
     static const int SPACING;
     static const FunctionDescription DICT_FUNC_DESCRIPTION[];
+    static const int WIDGET_HEIGHT;
 
 public:
     DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts = 0);
@@ -80,10 +81,9 @@ private:
     DictionaryManager&      dict_;
     tts::TTS *tts_;
 
-    QVBoxLayout   content_vbox_;
-
     QVBoxLayout   big_vbox_;
     QHBoxLayout   top_hbox_;
+    QVBoxLayout   content_vbox_;
 
     OnyxPushButton explanation_button_;
     OnyxPushButton similar_words_button_;
@@ -106,7 +106,7 @@ private:
     int internal_state_;
     bool update_parent_;
 
-    QLabel func_discription_label_;
+    OnyxLabel func_description_label_;
 };
 
 };  // namespace ui

@@ -10,6 +10,7 @@ static const int DICTIONARY_LIST = 3;
 static const int RETRIEVING_WORD = 4;
 
 const int DictWidget::SPACING = 2;
+const int DictWidget::WIDGET_HEIGHT = 36;
 
 /// Define all descriptions
 const DictWidget::FunctionDescription DictWidget::DICT_FUNC_DESCRIPTION[] =
@@ -25,8 +26,8 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , dict_(dict)
     , tts_(tts)
     , big_vbox_(this)
-    , content_vbox_(0)
     , top_hbox_(0)
+    , content_vbox_(0)
     , explanation_button_(tr("Explanation"), 0)
     , similar_words_button_(tr("Similar Words"), 0)
     , dictionaries_button_(tr("Dictionaries"), 0)
@@ -34,10 +35,10 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , explanation_text_(0)
     , similar_words_view_(0, 0)
     , similar_words_offset_(0)
-    , func_discription_label_(DICT_FUNC_DESCRIPTION[0].description)
     , timer_(this)
     , internal_state_(-1)
     , update_parent_(false)
+    , func_description_label_(DICT_FUNC_DESCRIPTION[0].description)
 {
     setWindowFlags(Qt::WindowStaysOnTopHint);
     createLayout();
@@ -48,8 +49,7 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
 
     setModal(false);
     setAutoFillBackground(true);
-    setBackgroundRole(QPalette::Mid);
-//    setContentsMargins(SPACING, SPACING, SPACING, SPACING);
+    setBackgroundRole(QPalette::Button);
 }
 
 DictWidget::~DictWidget()
@@ -404,8 +404,15 @@ void DictWidget::createLayout()
     big_vbox_.addLayout(&top_hbox_);
     big_vbox_.addLayout(&content_vbox_);
 
+    func_description_label_.setPixmap(QPixmap(":/images/dictionary_search.png"));
+    func_description_label_.setAlignment(Qt::AlignLeft);
+    func_description_label_.setAlignment(Qt::AlignVCenter);
+    func_description_label_.setFixedHeight(WIDGET_HEIGHT);
+    func_description_label_.setFixedHeight(WIDGET_HEIGHT);
+    func_description_label_.useTitleBarStyle();
+
     top_hbox_.setSpacing(SPACING);
-    top_hbox_.addWidget(&func_discription_label_);
+    top_hbox_.addWidget(&func_description_label_);
     top_hbox_.addWidget(&explanation_button_);
     top_hbox_.addWidget(&similar_words_button_);
     top_hbox_.addWidget(&dictionaries_button_);
@@ -525,7 +532,6 @@ void DictWidget::onDetailsClicked(bool)
     explanation_button_.setChecked(true);
     dictionaries_button_.setChecked(false);
     similar_words_button_.setChecked(false);
-    open_dictionary_tool_button_.setChecked(false);
     explanation_text_.show();
     explanation_text_.setFocus();
     similar_words_view_.hide();
@@ -545,7 +551,6 @@ void DictWidget::onLookupClicked(bool)
     explanation_button_.setChecked(true);
     similar_words_button_.setChecked(false);
     dictionaries_button_.setChecked(false);
-    open_dictionary_tool_button_.setChecked(false);
 }
 
 void DictWidget::onWordListClicked(bool)
