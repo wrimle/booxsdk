@@ -65,9 +65,10 @@ void FontFamilyActions::scan(QDir &dir, QVector<int> * ids)
             name.endsWith(".ttc", Qt::CaseInsensitive) ||
             name.endsWith(".otf", Qt::CaseInsensitive))
         {
+            int font_id = QFontDatabase::addApplicationFont(info.absoluteFilePath());
             if (ids)
             {
-                ids->push_back(QFontDatabase::addApplicationFont(info.absoluteFilePath()));
+                ids->push_back(font_id);
             }
         }
     }

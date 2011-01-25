@@ -451,7 +451,8 @@ bool DictFrame::event(QEvent *e)
         qDebug("Update request %d", ++count);
         if (1 == onyx::screen::instance().userData()) {
             onyx::screen::instance().updateWidget(this,
-                    onyx::screen::ScreenProxy::GC);
+                    onyx::screen::ScreenProxy::GC, true,
+                    onyx::screen::ScreenCommand::WAIT_ALL);
         }
         else
         {
