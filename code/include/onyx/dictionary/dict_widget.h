@@ -61,7 +61,11 @@ private:
     void changeInternalState(int);
     int  internalState() { return internal_state_; }
 
-    bool handleLeftRightKey(QPushButton *selected_one);
+    int getPreviousFocusButtonId(const int current_checked);
+    int getNextFocusButtonId(const int current_checked);
+    bool handleLeftRightKey(const int checked_id, const int key);
+    void changeDescription(const int button_id);
+    bool handleUpDownKey(QKeyEvent * ke);
 
 private Q_SLOTS:
     void onTimeout();
@@ -86,13 +90,13 @@ private:
     OnyxPushButton similar_words_button_;
     OnyxPushButton dictionaries_button_;
     OnyxPushButton open_dictionary_tool_button_;
+    QButtonGroup    button_group_;
 
     OnyxLabel func_description_label_;
 
     OnyxTextBrowser  explanation_text_; ///< The lookup result.
     OnyxTreeView similar_words_view_;
 
-    QButtonGroup    button_group_;
     QTextDocument   doc_;
     QString         word_;                  ///< Word currently queried.
     QStringList     similar_words_;
@@ -107,6 +111,7 @@ private:
 
 private:
     static const FunctionDescription DICT_FUNC_DESCRIPTION[];
+    static const int DESCRIPTION_COUNT;
 
 };
 
