@@ -61,11 +61,12 @@ private:
     void changeInternalState(int);
     int  internalState() { return internal_state_; }
 
+    bool handleLeftRightKey(QPushButton *selected_one);
+
 private Q_SLOTS:
     void onTimeout();
     void onItemClicked(const QModelIndex & index);
     void onDetailsClicked(bool);
-    void onLookupClicked(bool);
     void onWordListClicked(bool);
     void onDictListClicked(bool);
     void onRetrieveWordClicked(bool);
@@ -80,12 +81,13 @@ private:
     QHBoxLayout   top_hbox_;
     QVBoxLayout   content_vbox_;
 
-    OnyxLabel func_description_label_;
-
+    OnyxPushButton retrieve_words_button_;
     OnyxPushButton explanation_button_;
     OnyxPushButton similar_words_button_;
     OnyxPushButton dictionaries_button_;
     OnyxPushButton open_dictionary_tool_button_;
+
+    OnyxLabel func_description_label_;
 
     OnyxTextBrowser  explanation_text_; ///< The lookup result.
     OnyxTreeView similar_words_view_;
