@@ -45,7 +45,7 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , update_parent_(false)
 {
     QPalette pal(parent->palette());
-    pal.setColor(QPalette::Background, Qt::gray);
+    pal.setColor(QPalette::Background, Qt::darkGray);
     setPalette(pal);
 
     createLayout();
@@ -284,11 +284,6 @@ void DictWidget::keyReleaseEvent(QKeyEvent *ke)
             if (btn != 0)
             {
                  btn->click();
-                 if (btn == &retrieve_words_button_
-                         && retrieve_words_button_.hasFocus())
-                 {
-                     retrieve_words_button_.clearFocus();
-                 }
             }
             ke->accept();
         }
@@ -715,6 +710,11 @@ void DictWidget::onRetrieveWordClicked(bool)
     similar_words_button_.setChecked(false);
     dictionaries_button_.setChecked(false);
     open_dictionary_tool_button_.setChecked(false);
+
+    if (retrieve_words_button_.hasFocus())
+    {
+        retrieve_words_button_.clearFocus();
+    }
 }
 
 void DictWidget::onCloseClicked()
