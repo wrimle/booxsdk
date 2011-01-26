@@ -25,10 +25,10 @@ DictWidget::DictWidget(QWidget *parent, DictionaryManager & dict, tts::TTS *tts)
     , top_hbox_(0)
     , content_vbox_(0)
     , func_description_label_(DICT_FUNC_DESCRIPTION[0].description, 0)
-    , explanation_button_(tr("Explanation"), 0)
-    , similar_words_button_(tr("Similar Words"), 0)
-    , dictionaries_button_(tr("Dictionaries"), 0)
-    , open_dictionary_tool_button_(tr("Dictionary Tool"), 0)
+    , explanation_button_(QIcon(":/images/lookup.png"), 0)
+    , similar_words_button_(QIcon(":/images/similar_words.png"), 0)
+    , dictionaries_button_(QIcon(":/images/dictionary_list.png"), 0)
+    , open_dictionary_tool_button_(QIcon(":/images/open_dictionary_tool.png"), 0)
     , explanation_text_(0)
     , similar_words_view_(0, 0)
     , similar_words_offset_(0)
@@ -412,7 +412,7 @@ void DictWidget::createLayout()
     top_hbox_.addWidget(&explanation_button_);
     top_hbox_.addWidget(&similar_words_button_);
     top_hbox_.addWidget(&dictionaries_button_);
-//    top_hbox_.addWidget(&open_dictionary_tool_button_);
+    top_hbox_.addWidget(&open_dictionary_tool_button_);
 
     explanation_button_.useDefaultHeight();
     similar_words_button_.useDefaultHeight();
@@ -456,6 +456,7 @@ void DictWidget::createLayout()
     open_dictionary_tool_button_.setCheckable(true);
 
     explanation_button_.setChecked(true);
+    explanation_button_.setFocus();
 
     // Install event filter.
     explanation_text_.installEventFilter(this);

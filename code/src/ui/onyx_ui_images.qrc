@@ -214,5 +214,11 @@
     <file>images/music_player_playing.png</file>
     <file>images/music_player_paused.png</file>
     <file>images/music_player_stopped.png</file>
+    
+    <file>images/dictionary_list.png</file>
+    <file>images/dictionary_tts.png</file>
+    <file>images/lookup.png</file>
+    <file>images/open_dictionary_tool.png</file>
+    <file>images/similar_words.png</file>
   </qresource>
 </RCC>
