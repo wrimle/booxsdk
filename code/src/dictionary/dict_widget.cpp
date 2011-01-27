@@ -277,17 +277,7 @@ void DictWidget::keyReleaseEvent(QKeyEvent *ke)
         return;
     case Qt::Key_Enter:
     case Qt::Key_Return:
-        if (internalState() != RETRIEVING_WORD)
-        {
-            wnd = content_widget_.focusWidget();
-            btn = qobject_cast<QPushButton*>(wnd);
-            if (btn != 0)
-            {
-                 btn->click();
-            }
-            ke->accept();
-        }
-        else
+        if (internalState() == RETRIEVING_WORD)
         {
             emit keyReleaseSignal(ke->key());
         }
