@@ -696,6 +696,10 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
     {
         addWidget(ptr.get(), 1);
     }
+    else if (type != MENU && type != MESSAGE)
+    {
+        addPermanentWidget(ptr.get());
+    }
     else
     {
         addWidget(ptr.get());
