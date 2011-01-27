@@ -465,6 +465,7 @@ bool DictWidget::eventFilter(QObject *obj, QEvent *event)
 void DictWidget::changeInternalState(int state)
 {
     internal_state_ = state;
+    changeDescription(internal_state_);
 }
 
 bool DictWidget::event(QEvent *e)
@@ -559,6 +560,9 @@ void DictWidget::createLayout()
     connect(&dictionaries_button_, SIGNAL(clicked(bool)), this,
             SLOT(onDictListClicked(bool)), Qt::QueuedConnection);
 
+    connect(&open_dictionary_tool_button_, SIGNAL(clicked(bool)), this,
+                SLOT(onOpenDictionaryToolClicked(bool)), Qt::QueuedConnection);
+
     connect(&similar_words_view_, SIGNAL(activated(const QModelIndex &)),
             this, SLOT(onItemClicked(const QModelIndex &)));
     connect(&similar_words_view_, SIGNAL(exceed(bool)),
@@ -648,15 +652,20 @@ void DictWidget::moreSimilarWords(bool begin)
     updateSimilarWords();
 }
 
+void DictWidget::checkSelectedButton(bool clear_focus)
+{
+    QAbstractButton *buttonPtr = button_group_.button(internalState());
+    buttonPtr->setChecked(true);
+    if (clear_focus)
+    {
+        buttonPtr->clearFocus();
+    }
+}
+
 void DictWidget::onDetailsClicked(bool)
 {
     changeInternalState(EXPLANATION);
-
-    retrieve_words_button_.setChecked(false);
-    explanation_button_.setChecked(true);
-    dictionaries_button_.setChecked(false);
-    similar_words_button_.setChecked(false);
-    open_dictionary_tool_button_.setChecked(false);
+    checkSelectedButton();
 
     explanation_text_.show();
     explanation_text_.setFocus();
@@ -674,12 +683,7 @@ void DictWidget::onDetailsClicked(bool)
 void DictWidget::onWordListClicked(bool)
 {
     changeInternalState(SIMILAR_WORDS);
-
-    retrieve_words_button_.setChecked(false);
-    explanation_button_.setChecked(false);
-    similar_words_button_.setChecked(true);
-    dictionaries_button_.setChecked(false);
-    open_dictionary_tool_button_.setChecked(false);
+    checkSelectedButton();
 
     explanation_text_.hide();
     updateSimilarWords();
@@ -689,12 +693,7 @@ void DictWidget::onWordListClicked(bool)
 void DictWidget::onDictListClicked(bool)
 {
     changeInternalState(DICTIONARY_LIST);
-
-    retrieve_words_button_.setChecked(false);
-    explanation_button_.setChecked(false);
-    similar_words_button_.setChecked(false);
-    dictionaries_button_.setChecked(true);
-    open_dictionary_tool_button_.setChecked(false);
+    checkSelectedButton();
 
     explanation_text_.hide();
     updateDictionaryList();
@@ -704,17 +703,13 @@ void DictWidget::onDictListClicked(bool)
 void DictWidget::onRetrieveWordClicked(bool)
 {
     changeInternalState(RETRIEVING_WORD);
+    checkSelectedButton();
+}
 
-    retrieve_words_button_.setChecked(true);
-    explanation_button_.setChecked(false);
-    similar_words_button_.setChecked(false);
-    dictionaries_button_.setChecked(false);
-    open_dictionary_tool_button_.setChecked(false);
-
-    if (retrieve_words_button_.hasFocus())
-    {
-        retrieve_words_button_.clearFocus();
-    }
+void DictWidget::onOpenDictionaryToolClicked(bool)
+{
+    changeInternalState(OPEN_DICTIONARY_TOOL);
+    checkSelectedButton();
 }
 
 void DictWidget::onCloseClicked()

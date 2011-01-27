@@ -67,6 +67,8 @@ private:
     void changeDescription(const int button_id);
     bool handleUpDownKey(QKeyEvent * ke);
 
+    void checkSelectedButton(bool clear_focus = true);
+
 private Q_SLOTS:
     void onTimeout();
     void onItemClicked(const QModelIndex & index);
@@ -74,6 +76,7 @@ private Q_SLOTS:
     void onWordListClicked(bool);
     void onDictListClicked(bool);
     void onRetrieveWordClicked(bool);
+    void onOpenDictionaryToolClicked(bool);
     void onCloseClicked();
     void moreSimilarWords(bool);
 
