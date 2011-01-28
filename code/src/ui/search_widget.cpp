@@ -402,6 +402,8 @@ bool SearchWidget::eventFilter(QObject *obj, QEvent *event)
         if (key_event->key() == Qt::Key_Escape)
         {
             onCloseClicked();
+            event->accept();
+            return true;
         }
     }
     // standard event processing
