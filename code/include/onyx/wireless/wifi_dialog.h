@@ -52,7 +52,7 @@ private Q_SLOTS:
     void enableChildren(bool enable);
 
     void onScanReturned(WifiProfiles & list);
-    void onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState state);
+    void onConnectionChanged(WifiProfile , WpaConnection::ConnectionState state);
     void onNeedPassword(WifiProfile profile);
 
     void onComplete();

@@ -30,10 +30,14 @@ public Q_SLOTS:
     void enableAutoConnect(bool e) { auto_connect_ = e; }
     bool allowAutoConnect() { return auto_connect_; }
 
+    void enableAutoReconnect(bool e) { auto_reconnect_ = e; }
+    bool allowAutoReconnect() { return auto_reconnect_; }
+
     bool start();
     bool stop();
 
     void scanResults(WifiProfiles &);
+    WifiProfile connectingAP();
 
 private Q_SLOTS:
     // slots for WpaConnection
@@ -45,7 +49,7 @@ private Q_SLOTS:
     void onScanReturned(WifiProfiles & list);
 
     void onNeedPassword(WifiProfile profile);
-    void onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState state);
+    void onConnectionChanged(WifiProfile, WpaConnection::ConnectionState state);
     void onConnectionTimeout();
 
     void onComplete();
@@ -53,7 +57,7 @@ private Q_SLOTS:
 Q_SIGNALS:
     // signals for caller
     void wpaStateChanged(bool running);
-    void connectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state);
+    void connectionChanged(WifiProfile profile, WpaConnection::ConnectionState state);
     void passwordRequired(WifiProfile profile);
 
 private:
@@ -87,6 +91,7 @@ private:
 
     WpaConnection::ConnectionState internal_state_;
     bool auto_connect_;
+    bool auto_reconnect_;
     bool wifi_enabled_;
 
     WifiProfiles scan_results_;     ///< Also serves as connect list.

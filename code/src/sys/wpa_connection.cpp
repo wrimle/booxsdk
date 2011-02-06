@@ -365,7 +365,7 @@ bool WpaConnection::stop()
 }
 
 /// Connect to specified access point.
-bool WpaConnection::connectTo(WifiProfile & ap)
+bool WpaConnection::connectTo(WifiProfile ap)
 {
     if (ap.bssid().contains(INVALID_BSSID) && ap.ssid().isEmpty())
     {
@@ -479,6 +479,11 @@ bool WpaConnection::connectTo(WifiProfile & ap)
     // Just to update status immediately. The status is changed
     // slow on embedded device.
     return update();
+}
+
+WifiProfile WpaConnection::connectingAP()
+{
+    return connecting_ap_;
 }
 
 /// Disconnect from network.

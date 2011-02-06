@@ -9,6 +9,7 @@ WpaConnectionManager::WpaConnectionManager()
 , scan_count_(0)
 , internal_state_(WpaConnection::STATE_UNKNOWN)
 , auto_connect_(true)
+, auto_reconnect_(true)
 , wifi_enabled_(true)
 {
     setupConnections();
@@ -85,9 +86,14 @@ void WpaConnectionManager::scanResults(WifiProfiles &ret)
     ret = scan_results_;
 }
 
+WifiProfile WpaConnectionManager::connectingAP()
+{
+    return proxy_.connectingAP();
+}
+
 void WpaConnectionManager::onNeedPassword(WifiProfile profile)
 {
-    // ic is incorrect
+    // check if it is correct
     if (checkAuthentication(profile))
     {
         proxy_.connectTo(profile);
@@ -97,7 +103,7 @@ void WpaConnectionManager::onNeedPassword(WifiProfile profile)
     emit passwordRequired(profile);
 }
 
-void WpaConnectionManager::onConnectionChanged(WifiProfile &profile,
+void WpaConnectionManager::onConnectionChanged(WifiProfile profile,
                                                WpaConnection::ConnectionState state)
 {
     qDebug("state changed %d", state);
@@ -197,8 +203,8 @@ void WpaConnectionManager::setupConnections()
 
     QObject::connect(&proxy_, SIGNAL(scanResultsReady(WifiProfiles &)),
             this, SLOT(onScanReturned(WifiProfiles &)));
-    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile &,WpaConnection::ConnectionState)),
-        this, SLOT(onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState)));
+    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile,WpaConnection::ConnectionState)),
+        this, SLOT(onConnectionChanged(WifiProfile, WpaConnection::ConnectionState)));
     QObject::connect(&proxy_, SIGNAL(needPassword(WifiProfile )),
             this, SLOT(onNeedPassword(WifiProfile )));
 
@@ -213,6 +219,7 @@ void WpaConnectionManager::triggerScan()
 
 void WpaConnectionManager::scan()
 {
+    // Always check wifi device.
     if (!checkWifiDevice())
     {
         return;
@@ -335,6 +342,13 @@ bool WpaConnectionManager::connectToBestAP()
 {
     if (!allowAutoConnect())
     {
+        qDebug("Auto connect is disabled.");
+        return false;
+    }
+
+    if (scan_results_.size() <= 0)
+    {
+        qDebug("Don't connect as there is no access points available.");
         return false;
     }
 
@@ -364,8 +378,8 @@ bool WpaConnectionManager::connectToBestAP()
     sortByCount(scan_results_);
 
     setConnecting(true);
+    emit connectionChanged(scan_results_.front(), WpaConnection::STATE_CONNECTING);
     proxy_.connectTo(scan_results_.front());
-
     return true;
 }
 

@@ -334,8 +334,8 @@ void WifiDialog::setupConnections()
 
     QObject::connect(&proxy_, SIGNAL(scanResultsReady(WifiProfiles &)),
             this, SLOT(onScanReturned(WifiProfiles &)));
-    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile &,WpaConnection::ConnectionState)),
-        this, SLOT(onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState)));
+    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile,WpaConnection::ConnectionState)),
+        this, SLOT(onConnectionChanged(WifiProfile, WpaConnection::ConnectionState)));
     QObject::connect(&proxy_, SIGNAL(needPassword(WifiProfile )),
             this, SLOT(onNeedPassword(WifiProfile )));
     QObject::connect(&sys_, SIGNAL(sdioChangedSignal(bool)), this, SLOT(onSdioChanged(bool)));
@@ -607,7 +607,7 @@ void WifiDialog::onScanReturned(WifiProfiles & list)
     }
 }
 
-void WifiDialog::onConnectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state)
+void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::ConnectionState state)
 {
     updateStateLable(state);
     if (state == WpaConnection::STATE_CONNECTED)
