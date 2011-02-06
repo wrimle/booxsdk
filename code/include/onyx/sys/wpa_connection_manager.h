@@ -8,7 +8,6 @@
 #include "onyx/sys/wpa_connection.h"
 #include "onyx/sys/wifi_conf.h"
 #include "onyx/sys/sys_conf.h"
-#include "onyx/sys/sys_status.h"
 
 using namespace sys;
 
@@ -38,6 +37,13 @@ public Q_SLOTS:
 
     void scanResults(WifiProfiles &);
     WifiProfile connectingAP();
+
+    bool enableSdio(bool enable = true) const;
+    bool sdioState() const ;
+    bool enableSdio(bool enable = true);
+    bool isWpaSupplicantRunning();
+    bool startWpaSupplicant(const QString & conf_file_path);
+    bool stopWpaSupplicant();
 
 private Q_SLOTS:
     // slots for WpaConnection
@@ -81,10 +87,11 @@ private:
     void stopAllTimers();
 
     WifiProfiles & records(sys::SystemConfig& conf);
+    WpaConnection & proxy();
 
 private:
-    sys::SysStatus & sys_;
-    WpaConnection& proxy_;
+    QDBusConnection connection_;    ///< Connection to system manager.
+    scoped_ptr<WpaConnection> proxy_;
 
     QTimer scan_timer_;
     int scan_count_;     ///< Scan retry.

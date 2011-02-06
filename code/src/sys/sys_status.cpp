@@ -9,13 +9,12 @@
 #include "onyx/sys/sys_status.h"
 #include "onyx/sys/sys_conf.h"
 #include "onyx/sys/platform.h"
+#include "onyx/sys/service.h"
+
 
 namespace sys
 {
 
-static const QString service = "com.onyx.service.system_manager";
-static const QString object  = "/com/onyx/object/system_manager";
-static const QString iface   = "com.onyx.interface.system_manager";
 
 static const QString MOBILE_DEVICE = "mobile";
 static const QString TETHERED_DEVICE = "tethered";
@@ -349,17 +348,6 @@ void SysStatus::installSlots()
         qDebug("\nCan not connect the hardwareTimerTimeout signal\n");
     }
 }
-
-namespace {
-bool checkAndReturnBool(const QList<QVariant> & args)
-{
-    if (args.size() > 0)
-    {
-        return args.at(0).toBool();
-    }
-    return false;
-}
-}  // namespace
 
 bool SysStatus::batteryStatus(int& current,
                               int& status)
@@ -1233,6 +1221,15 @@ WpaConnection & SysStatus::wpa_proxy(const QString & name)
         wpa_proxy_.reset(new WpaConnection(name));
     }
     return *wpa_proxy_;
+}
+
+WpaConnectionManager & SysStatus::connectionManager()
+{
+    if (!connection_manager_)
+    {
+        connection_manager_.reset(new WpaConnectionManager);
+    }
+    return *connection_manager_;
 }
 
 void SysStatus::setSystemBusy(bool busy,

@@ -10,6 +10,7 @@
 #include "onyx/base/dbus.h"
 #include "onyx/base/device.h"
 #include "wpa_connection.h"
+#include "wpa_connection_manager.h"
 
 namespace sys
 {
@@ -97,7 +98,9 @@ class SysStatus : public QObject
     bool isWpaSupplicantRunning();
     bool startWpaSupplicant(const QString & conf_file_path);
     bool stopWpaSupplicant();
+
     WpaConnection & wpa_proxy(const QString & if_name = "eth0");
+    WpaConnectionManager & connectionManager();
 
     bool connect3g(const QString & chat_file, const QString & username, const QString & password);
     void disconnect3g();
@@ -226,6 +229,7 @@ class SysStatus : public QObject
     bool flash_mounted_;
     bool system_busy_;
     scoped_ptr<WpaConnection> wpa_proxy_;
+    scoped_ptr<WpaConnectionManager> connection_manager_;
 };
 
 };  // namespace sys
