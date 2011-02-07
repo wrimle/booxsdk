@@ -35,18 +35,17 @@ public Q_SLOTS:
     bool start();
     bool stop();
 
+    WpaConnection::ConnectionState state() { return internal_state_; }
     void scanResults(WifiProfiles &);
     WifiProfile connectingAP();
 
+private Q_SLOTS:
     bool enableSdio(bool enable = true) const;
     bool sdioState() const ;
     bool enableSdio(bool enable = true);
     bool isWpaSupplicantRunning();
     bool startWpaSupplicant(const QString & conf_file_path);
     bool stopWpaSupplicant();
-
-private Q_SLOTS:
-    // slots for WpaConnection
     void onSdioChanged(bool on);
 
     void triggerScan();
@@ -85,6 +84,7 @@ private:
     bool isConnecting();
     void setConnecting(bool c);
     void stopAllTimers();
+    void setState(WpaConnection::ConnectionState s);
 
     WifiProfiles & records(sys::SystemConfig& conf);
     WpaConnection & proxy();

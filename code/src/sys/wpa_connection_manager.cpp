@@ -80,6 +80,7 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
         return;
     }
 
+    setState(WpaConnection::STATE_SCANNED);
     emit connectionChanged(dummy, WpaConnection::STATE_SCANNED);
 
     scan_results_ = list;
@@ -157,10 +158,12 @@ void WpaConnectionManager::onConnectionChanged(WifiProfile profile,
 
 void WpaConnectionManager::onConnectionTimeout()
 {
+    qWarning("Connection timeout, maybe need to reconnect.");
 }
 
 void WpaConnectionManager::onComplete()
 {
+    setState(WpaConnection::STATE_COMPLETE);
 }
 
 bool WpaConnectionManager::checkWifiDevice()
@@ -172,6 +175,7 @@ bool WpaConnectionManager::checkWifiDevice()
     wifi_enabled_ = sdioState();
     if (!wifi_enabled_)
     {
+        setState(WpaConnection::STATE_DISABLED);
         return false;
     }
     return true;
@@ -238,10 +242,12 @@ void WpaConnectionManager::scan()
     bool wpa_ok = checkWpaSupplicant();
     if (wpa_ok && canScanRetry())
     {
+        setState(WpaConnection::STATE_SCANNING);
         proxy().scan();
     }
     else
     {
+        // Wait a little bit to rescan.
         scan_timer_.stop();
         if (canScanRetry())
         {
@@ -252,7 +258,7 @@ void WpaConnectionManager::scan()
             // Wifi device is detected, but wpa_supplicant can not be launched
             // Hardware issue, but user can try to turn off and turn on the
             // wifi switcher again.
-
+            setState(WpaConnection::STATE_HARDWARE_ERROR);
         }
     }
 }
@@ -394,24 +400,29 @@ bool WpaConnectionManager::connectToBestAP()
 
 bool WpaConnectionManager::isConnecting()
 {
-    return (internal_state_ == WpaConnection::STATE_CONNECTING);
+    return (state() == WpaConnection::STATE_CONNECTING);
 }
 
 void WpaConnectionManager::setConnecting(bool c)
 {
     if (c)
     {
-        internal_state_ = WpaConnection::STATE_CONNECTING;
+        setState(WpaConnection::STATE_CONNECTING);
     }
     else
     {
-        internal_state_ = WpaConnection::STATE_UNKNOWN;
+        setState(WpaConnection::STATE_UNKNOWN);
     }
 }
 
 void WpaConnectionManager::stopAllTimers()
 {
     scan_timer_.stop();
+}
+
+void WpaConnectionManager::setState(WpaConnection::ConnectionState s)
+{
+    internal_state_ = s;
 }
 
 WifiProfiles & WpaConnectionManager::records(sys::SystemConfig& conf)
