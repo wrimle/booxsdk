@@ -435,7 +435,7 @@ void WpaConnectionManager::stopAllTimers()
     scan_timer_.stop();
 }
 
-void WpaConnectionManager::setState(WifiProfile & profile, WpaConnection::ConnectionState s)
+void WpaConnectionManager::setState(WifiProfile profile, WpaConnection::ConnectionState s)
 {
     internal_state_ = s;
     emit connectionChanged(profile, s);

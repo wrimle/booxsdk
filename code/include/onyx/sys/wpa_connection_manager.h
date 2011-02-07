@@ -91,7 +91,7 @@ private:
     bool isConnecting();
     void setConnecting(bool c);
     void stopAllTimers();
-    void setState(WifiProfile & profile, WpaConnection::ConnectionState s);
+    void setState(WifiProfile profile, WpaConnection::ConnectionState s);
 
     WifiProfiles & records(sys::SystemConfig& conf);
     WpaConnection & proxy();
