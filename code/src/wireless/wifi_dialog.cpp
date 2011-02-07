@@ -490,6 +490,11 @@ void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::Connect
     {
         onScanReturned();
     }
+    else if (state == WpaConnection::STATE_CONNECTING)
+    {
+        // Mark the item selected.
+        qDebug("connecting to %s", qPrintable(profile.ssid()));
+    }
     //emit connectionChanged(profile, state);
 }
 

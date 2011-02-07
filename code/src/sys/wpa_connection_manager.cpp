@@ -408,9 +408,8 @@ bool WpaConnectionManager::connectToBestAP()
     }
 
     sortByCount(scan_results_);
-    setState(scan_results_.front(), WpaConnection::STATE_CONNECTING);
-    setConnecting(true);
     proxy().connectTo(scan_results_.front());
+    setConnecting(true);
     return true;
 }
 
