@@ -1,8 +1,8 @@
 
+#include <QtNetwork/QtNetwork>
+
 #include "onyx/sys/service.h"
 #include "onyx/sys/wpa_connection_manager.h"
-
-
 
 static WifiProfile dummy;
 
@@ -80,9 +80,7 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
         return;
     }
 
-    setState(WpaConnection::STATE_SCANNED);
-    emit connectionChanged(dummy, WpaConnection::STATE_SCANNED);
-
+    setState(dummy, WpaConnection::STATE_SCANNED);
     scan_results_ = list;
     scan_timer_.stop();
     connectToBestAP();
@@ -91,6 +89,13 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
 void WpaConnectionManager::scanResults(WifiProfiles &ret)
 {
     ret = scan_results_;
+}
+
+bool WpaConnectionManager::connectTo(WifiProfile profile)
+{
+    setState(profile, WpaConnection::STATE_CONNECTING);
+    setConnecting(true);
+    return proxy().connectTo(profile);
 }
 
 WifiProfile WpaConnectionManager::connectingAP()
@@ -163,7 +168,7 @@ void WpaConnectionManager::onConnectionTimeout()
 
 void WpaConnectionManager::onComplete()
 {
-    setState(WpaConnection::STATE_COMPLETE);
+    setState(proxy().connectingAP(), WpaConnection::STATE_SCANNED);
 }
 
 bool WpaConnectionManager::checkWifiDevice()
@@ -175,7 +180,7 @@ bool WpaConnectionManager::checkWifiDevice()
     wifi_enabled_ = sdioState();
     if (!wifi_enabled_)
     {
-        setState(WpaConnection::STATE_DISABLED);
+        setState(dummy, WpaConnection::STATE_DISABLED);
         return false;
     }
     return true;
@@ -189,6 +194,7 @@ bool WpaConnectionManager::checkWpaSupplicant()
         if (!startWpaSupplicant(""))
         {
             qWarning("Seems we can not start wpa supplicant.");
+            setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
             emit wpaStateChanged(false);
             return false;
         }
@@ -199,6 +205,8 @@ bool WpaConnectionManager::checkWpaSupplicant()
         emit wpaStateChanged(true);
         return true;
     }
+
+    setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
     emit wpaStateChanged(false);
     return false;
 }
@@ -242,7 +250,7 @@ void WpaConnectionManager::scan()
     bool wpa_ok = checkWpaSupplicant();
     if (wpa_ok && canScanRetry())
     {
-        setState(WpaConnection::STATE_SCANNING);
+        setState(dummy, WpaConnection::STATE_SCANNING);
         proxy().scan();
     }
     else
@@ -258,7 +266,7 @@ void WpaConnectionManager::scan()
             // Wifi device is detected, but wpa_supplicant can not be launched
             // Hardware issue, but user can try to turn off and turn on the
             // wifi switcher again.
-            setState(WpaConnection::STATE_HARDWARE_ERROR);
+            setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
         }
     }
 }
@@ -392,8 +400,8 @@ bool WpaConnectionManager::connectToBestAP()
 
     sortByCount(scan_results_);
 
+    setState(scan_results_.front(), WpaConnection::STATE_CONNECTING);
     setConnecting(true);
-    emit connectionChanged(scan_results_.front(), WpaConnection::STATE_CONNECTING);
     proxy().connectTo(scan_results_.front());
     return true;
 }
@@ -407,11 +415,11 @@ void WpaConnectionManager::setConnecting(bool c)
 {
     if (c)
     {
-        setState(WpaConnection::STATE_CONNECTING);
+        setState(proxy().connectingAP(), WpaConnection::STATE_CONNECTING);
     }
     else
     {
-        setState(WpaConnection::STATE_UNKNOWN);
+        setState(dummy, WpaConnection::STATE_UNKNOWN);
     }
 }
 
@@ -420,9 +428,10 @@ void WpaConnectionManager::stopAllTimers()
     scan_timer_.stop();
 }
 
-void WpaConnectionManager::setState(WpaConnection::ConnectionState s)
+void WpaConnectionManager::setState(WifiProfile & profile, WpaConnection::ConnectionState s)
 {
     internal_state_ = s;
+    emit connectionChanged(profile, s);
 }
 
 WifiProfiles & WpaConnectionManager::records(sys::SystemConfig& conf)
@@ -439,7 +448,7 @@ WpaConnection & WpaConnectionManager::proxy()
 {
     if (!proxy_)
     {
-        proxy_.reset(new WpaConnection(DEFAULT_INTERFACE));
+        proxy_.reset(new WpaConnection(networkInterface()));
     }
     return *proxy_;
 }
@@ -589,5 +598,49 @@ bool WpaConnectionManager::stopWpaSupplicant()
         qWarning("%s", qPrintable(reply.errorMessage()));
     }
     return false;
+}
+
+QString WpaConnectionManager::networkInterface()
+{
+#ifndef _WINDOWS
+    return DEFAULT_INTERFACE;
+#else
+    return "";
+#endif
+}
+
+QString WpaConnectionManager::address()
+{
+    QString result;
+    QList<QNetworkInterface> all = QNetworkInterface::allInterfaces();
+    foreach(QNetworkInterface ni, all)
+    {
+        qDebug("interface name %s", qPrintable(ni.name()));
+        QList<QNetworkAddressEntry> addrs = ni.addressEntries();
+        foreach(QNetworkAddressEntry entry, addrs)
+        {
+            if (ni.name().compare(networkInterface(), Qt::CaseInsensitive) == 0)
+            {
+                result = entry.ip().toString();
+            }
+            qDebug("ip address %s", qPrintable(entry.ip().toString()));
+        }
+    }
+    return result;
+}
+
+QString WpaConnectionManager::hardwareAddress()
+{
+    QString result;
+    QList<QNetworkInterface> all = QNetworkInterface::allInterfaces();
+    foreach(QNetworkInterface ni, all)
+    {
+        qDebug("interface name %s", qPrintable(ni.name()));
+        if (ni.name().compare(networkInterface(), Qt::CaseInsensitive) == 0)
+        {
+            return ni.hardwareAddress();
+        }
+    }
+    return result;
 }
 
