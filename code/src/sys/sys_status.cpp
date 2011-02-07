@@ -8,19 +8,20 @@
 #include <QtNetwork/QtNetwork>
 #include "onyx/sys/sys_status.h"
 #include "onyx/sys/sys_conf.h"
+#include "onyx/sys/platform.h"
+#include "onyx/sys/service.h"
+
 
 namespace sys
 {
 
-static const QString service = "com.onyx.service.system_manager";
-static const QString object  = "/com/onyx/object/system_manager";
-static const QString iface   = "com.onyx.interface.system_manager";
 
 static const QString MOBILE_DEVICE = "mobile";
 static const QString TETHERED_DEVICE = "tethered";
 static const QString DEVICE_NAME = "OnyxBoox";
 static const QString ROOT_FOLDER = "/";
 static const QString DRM_CONTENT_DIR = "media/flash/DRM Contents";
+static const QString ADOBE_RESOURCE_FOLDER = "adobe/resources/";
 static const QString DEVICE_FILE     = "media/flash/.adobe-digital-editions/device.xml";
 static const QString ACTIVATION_FILE = "media/flash/.adobe-digital-editions/activation.xml";
 
@@ -55,6 +56,20 @@ static void putDocumentFolder()
     QDir dir(path);
     qputenv("ADOBE_DE_DOC_FOLDER", dir.absoluteFilePath(DRM_CONTENT_DIR).toAscii());
     qDebug("ADOBE_DE_DOC_FOLDER : %s", qgetenv("ADOBE_DE_DOC_FOLDER").constData());
+}
+
+static void putResourceFolder()
+{
+    // set the folder of Digital Edition
+    QString path;
+#ifdef Q_WS_QWS
+    path = SHARE_ROOT;
+#else
+    path = QDir::home().path();
+#endif
+    QDir dir(path);
+    qputenv("ADOBE_RESOURCE_FOLDER", dir.absoluteFilePath(ADOBE_RESOURCE_FOLDER).toAscii());
+    qDebug("ADOBE_RESOURCE_FOLDER : %s", qgetenv("ADOBE_RESOURCE_FOLDER").constData());
 }
 
 static void putDeviceName()
@@ -230,6 +245,22 @@ void SysStatus::installSlots()
     }
 
     if (!connection_.connect(service, object, iface,
+                             "volumeUpPressed",
+                             this,
+                             SLOT(onVolumeUpPressed())))
+    {
+        qDebug("\nCan not connect the volumeUpPressed\n");
+    }
+
+    if (!connection_.connect(service, object, iface,
+                             "volumeDownPressed",
+                             this,
+                             SLOT(onVolumeDownPressed())))
+    {
+        qDebug("\nCan not connect the volumeDownPressed\n");
+    }
+
+    if (!connection_.connect(service, object, iface,
                              "stylusChanged",
                              this,
                              SLOT(onStylusChanged(bool))))
@@ -293,19 +324,30 @@ void SysStatus::installSlots()
         qDebug("\nCan not connect the signalStrengthChanged signal\n");
     }
 
-    
-}
-
-namespace {
-bool checkAndReturnBool(const QList<QVariant> & args)
-{
-    if (args.size() > 0)
+    if (!connection_.connect(service, object, iface,
+                             "volumeUpPressed",
+                             this,
+                             SLOT(onVolumeUpPressed())))
     {
-        return args.at(0).toBool();
+        qDebug("\nCan not connect the volumeUpPressed signal\n");
     }
-    return false;
+
+    if (!connection_.connect(service, object, iface,
+                             "volumeDownPressed",
+                             this,
+                             SLOT(onVolumeDownPressed())))
+    {
+        qDebug("\nCan not connect the volumeDownPressed signal\n");
+    }
+   
+    if (!connection_.connect(service, object, iface,
+                             "hardwareTimerTimeout",
+                             this,
+                             SLOT(onHardwareTimerTimeout())))
+    {
+        qDebug("\nCan not connect the hardwareTimerTimeout signal\n");
+    }
 }
-}  // namespace
 
 bool SysStatus::batteryStatus(int& current,
                               int& status)
@@ -325,6 +367,29 @@ bool SysStatus::batteryStatus(int& current,
         QList<QVariant> args = reply.arguments();
         current = args[1].toInt();
         status = args[2].toInt();
+        return true;
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return false;
+}
+
+/// Ask system manager to broadcast battery signals to all listeners.
+bool SysStatus::updateBatteryStatus()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "updateBatteryStatus"      // method.
+    );
+
+    // Call.
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
         return true;
     }
     else if (reply.type() == QDBusMessage::ErrorMessage)
@@ -367,6 +432,32 @@ bool SysStatus::isFlashMounted()
     return file.readAll().contains(LIBRARY_ROOT);
 }
 
+bool SysStatus::isMusicPlayerRunning()
+{
+    return isProcessRunning("music_player");
+}
+
+bool SysStatus::isProcessRunning(const QString & proc_name)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "isProcessRunning"      // method.
+    );
+    message << proc_name;
+    QDBusMessage reply = connection_.call(message);
+
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
+        return checkAndReturnBool(reply.arguments());
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return false;
+}
 
 bool SysStatus::umountUSB()
 {
@@ -522,18 +613,43 @@ bool SysStatus::enableSdio(bool enable)
 
 void SysStatus::rotateScreen()
 {
+    // check default rotation at first.
+    int default_rotation = sys::defaultRotation();
     int degree = screenTransformation();
-    if (degree == 0)
+    if (default_rotation == 0)
     {
-        setScreenTransformation(90);
+        if (degree == 0)
+        {
+            setScreenTransformation(90);
+        }
+        else if (degree == 90)
+        {
+            setScreenTransformation(270);
+        }
+        else if (degree == 270)
+        {
+            setScreenTransformation(0);
+        }
     }
-    else if (degree == 90)
+    else if (default_rotation == 270)
     {
-        setScreenTransformation(270);
+        if (degree == 0)
+        {
+            setScreenTransformation(180);
+        }
+        else if (degree == 180)
+        {
+            setScreenTransformation(270);
+        }
+        else if (degree == 270)
+        {
+            setScreenTransformation(0);
+        }
     }
-    else if (degree == 270)
+    else if (default_rotation == 90)
     {
-        setScreenTransformation(0);
+        degree = (degree + 90) % 360;
+        setScreenTransformation(degree);
     }
 }
 
@@ -551,7 +667,7 @@ bool SysStatus::setScreenTransformation(int degree)
     }
     else
     {
-        QString data("export QWS_DISPLAY=Transformed:Rot%1:NabooScreen:/dev/mem");
+        QString data("export QWS_DISPLAY=Transformed:Rot%1:OnyxScreen:/dev/mem");
         data = data.arg(degree);
         file.write(data.toAscii());
         file.flush();
@@ -1107,6 +1223,15 @@ WpaConnection & SysStatus::wpa_proxy(const QString & name)
     return *wpa_proxy_;
 }
 
+WpaConnectionManager & SysStatus::connectionManager()
+{
+    if (!connection_manager_)
+    {
+        connection_manager_.reset(new WpaConnectionManager);
+    }
+    return *connection_manager_;
+}
+
 void SysStatus::setSystemBusy(bool busy,
                               bool show_indicator)
 {
@@ -1302,6 +1427,12 @@ void SysStatus::addDRMEnvironment()
     putDocumentFolder();
     putDeviceName();
     putDeviceFile();
+
+    QByteArray res_folder = getenv( "ADOBE_RESOURCE_FOLDER" );
+    if (res_folder.isEmpty())
+    {
+        putResourceFolder();
+    }
 }
 
 // TODO, implement in system manager later.
@@ -1361,6 +1492,22 @@ bool SysStatus::hasTouchScreen()
     return true;
 }
 
+bool SysStatus::isTTSEnabled()
+{
+#ifdef _WINDOWS
+    return true;
+#endif
+    return (qgetenv("ENABLE_TTS").toInt() > 0);
+}
+
+bool SysStatus::isDictionaryEnabled()
+{
+#ifdef _WINDOWS
+    return true;
+#endif
+    return (qgetenv("ENABLE_DICT").toInt() > 0);
+}
+
 void SysStatus::dbgUpdateBattery(int left, int status)
 {
     QDBusMessage message = QDBusMessage::createMethodCall(
@@ -1371,6 +1518,37 @@ void SysStatus::dbgUpdateBattery(int left, int status)
     );
     message << left;
     message << status;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+void SysStatus::startSingleShotHardwareTimer(const int seconds)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "startSingleShotHardwareTimer"      // method.
+    );
+    message << seconds;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+void SysStatus::setDefaultHardwareTimerInterval()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "setDefaultHardwareTimerInterval"      // method.
+    );
     QDBusMessage reply = connection_.call(message);
     if (reply.type() == QDBusMessage::ErrorMessage)
     {
@@ -1493,6 +1671,16 @@ void SysStatus::onVolumeChanged(int new_volume, bool is_mute)
     emit volumeChanged(new_volume, is_mute);
 }
 
+void SysStatus::onVolumeUpPressed()
+{
+    emit volumeUpPressed();
+}
+
+void SysStatus::onVolumeDownPressed()
+{
+    emit volumeDownPressed();
+}
+
 void SysStatus::onRequestDRMUserInfo(const QString &string, const QString & param)
 {
     emit requestDRMUserInfo(string, param);
@@ -1517,4 +1705,10 @@ void SysStatus::onReport3GNetwork(const int signal, const int total, const int n
 {
     emit report3GNetwork(signal, total, network);
 }
+
+void SysStatus::onHardwareTimerTimeout()
+{
+    emit hardwareTimerTimeout();
+}
+
 }   // namespace sys

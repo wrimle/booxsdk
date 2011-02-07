@@ -38,8 +38,9 @@ QPushButton:disabled                    \
     background-color: white;            \
 }";
 
-OnyxDialog::OnyxDialog(QWidget *parent)
+OnyxDialog::OnyxDialog(QWidget *parent, bool show_shadow)
     : QDialog(parent, Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint)
+    , show_shadows_(show_shadow)
     , shadows_(parent)
     , vbox_(this)
     , title_widget_(this)
@@ -130,7 +131,10 @@ void OnyxDialog::showCloseButton(bool show)
 QRect OnyxDialog::outbounding(QWidget *parent)
 {
     QRect rc(rect());
-    rc.adjust(0, 0, Shadows::PIXELS << 1, Shadows::PIXELS << 1);
+    if (show_shadows_)
+    {
+        rc.adjust(0, 0, Shadows::PIXELS, Shadows::PIXELS);
+    }
     rc.moveTo(mapToGlobal(rc.topLeft()));
     return rc;
 }
@@ -143,7 +147,10 @@ void OnyxDialog::onCloseClicked()
 
 void OnyxDialog::moveEvent(QMoveEvent *e)
 {
-    shadows_.onWidgetMoved(this);
+    if (show_shadows_)
+    {
+        shadows_.onWidgetMoved(this);
+    }
 }
 
 void OnyxDialog::resizeEvent(QResizeEvent *e)
@@ -155,7 +162,10 @@ void OnyxDialog::resizeEvent(QResizeEvent *e)
     setMask(maskedRegion);
     */
 
-    shadows_.onWidgetResized(this);
+    if (show_shadows_)
+    {
+        shadows_.onWidgetResized(this);
+    }
 }
 
 void OnyxDialog::hideEvent(QHideEvent * event)

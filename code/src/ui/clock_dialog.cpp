@@ -46,11 +46,8 @@ void ClockDialog::createLayout()
     reading_layout_.setContentsMargins(0, 0, 0, 0);
 
     // time
-    QDateTime current(QDateTime::currentDateTime());
     time_layout_.addWidget(&time_number_);
-    QString string = current.toString(DATE_FORMAT);
     time_number_.setStyleSheet(LABEL_STYLE);
-    time_number_.setText(string);
 
     // spacing.
     time_layout_.addSpacing(100);
@@ -58,9 +55,6 @@ void ClockDialog::createLayout()
     // year
     year_label_.setWordWrap(true);
     year_label_.setTextFormat(Qt::RichText);
-    QString y("%1<br>%2-%3");
-    y = y.arg(current.date().year()).arg(current.date().month()).arg(current.date().day());
-    year_label_.setText(y);
     time_layout_.addWidget(&year_label_, 100);
     layout_.addLayout(&time_layout_);
 
@@ -75,6 +69,36 @@ void ClockDialog::createLayout()
     // label
     reading_label_.setWordWrap(true);
     reading_layout_.addWidget(&reading_label_);
+    layout_.addLayout(&reading_layout_);
+}
+
+int ClockDialog::exec()
+{
+    shadows_.show(true);
+    updateText();
+    show();
+    onyx::screen::instance().flush();
+    onyx::screen::instance().updateWidgetRegion(
+        0,
+        outbounding(parentWidget()),
+        onyx::screen::ScreenProxy::GC,
+        false,
+        onyx::screen::ScreenCommand::WAIT_ALL);
+    int ret = QDialog::exec();
+    onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GU);
+    return ret;
+}
+
+void ClockDialog::updateText()
+{
+    QDateTime current(QDateTime::currentDateTime());
+    QString string = current.toString(DATE_FORMAT);
+    time_number_.setText(string);
+
+    QString y("%1<br>%2-%3");
+    y = y.arg(current.date().year()).arg(current.date().month()).arg(current.date().day());
+    year_label_.setText(y);
+
     int seconds = start_.secsTo(QDateTime::currentDateTime());
 
     if (seconds < 60)
@@ -94,22 +118,138 @@ void ClockDialog::createLayout()
         str = str.arg(seconds / 3600).arg((seconds % 3600) / 60);
         reading_label_.setText(str);
     }
-
-    layout_.addLayout(&reading_layout_);
 }
 
-int ClockDialog::exec()
+///Full screen clock
+FullScreenClock::FullScreenClock(QWidget *parent)
+: QDialog(parent)
+, need_GC_(false)
+{  
+    setFocusPolicy(Qt::StrongFocus);
+    setFocus();
+    setModal(true);
+    connect(&sys::SysStatus::instance(), SIGNAL(hardwareTimerTimeout()), this, SLOT(updateFSClock()));
+    sys::SysStatus::instance().startSingleShotHardwareTimer(60 - QTime::currentTime().second());
+}
+
+FullScreenClock::~FullScreenClock(void)
 {
-    shadows_.show(true);
-    show();
-    onyx::screen::instance().flush();
-    onyx::screen::instance().updateWidgetRegion(
-        0,
-        outbounding(parentWidget()),
-        onyx::screen::ScreenProxy::GC,
-        false,
-        onyx::screen::ScreenCommand::WAIT_ALL);
+    sys::SysStatus::instance().setDefaultHardwareTimerInterval();
+}
+
+void FullScreenClock::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
+    drawTime(&painter);
+    drawDate(&painter);
+}
+
+void FullScreenClock::drawTime(QPainter* painter)
+{
+    int total_width = this->rect().width();
+    int total_height = this->rect().height();
+    QFont time_font;
+    time_font.setBold(true);
+    time_font.setPixelSize(qMin(total_width, total_height)/4);
+    painter->setFont(time_font);
+    painter->drawText(0, 0, total_width, total_height*4/5, Qt::AlignCenter, QTime::currentTime().toString("hh:mm"));
+    if(QTime::currentTime().minute() % 10 == 0)
+    {
+        need_GC_ = true;
+    }
+}
+
+void FullScreenClock::updateFSClock()
+{
+    sys::SysStatus::instance().startSingleShotHardwareTimer(60);
+    repaint();
+}
+
+void FullScreenClock::drawDate(QPainter* painter)
+{
+    int total_width = this->rect().width();
+    int total_height = this->rect().height();
+    QFont time_font;
+    time_font.setBold(true);
+    time_font.setPixelSize(qMin(total_width, total_height)/20);
+    painter->setFont(time_font);
+    painter->drawText(0, total_height*4/5, total_width, total_height/5, Qt::AlignCenter, QDate::currentDate().toString(Qt::TextDate));
+}
+
+int FullScreenClock::exec()
+{
+    onyx::screen::instance().enableUpdate(false);
+    showFullScreen();
+    QApplication::processEvents();
+    onyx::screen::instance().enableUpdate(true);
+    onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC, true, onyx::screen::ScreenCommand::WAIT_ALL);
     return QDialog::exec();
+}
+
+void FullScreenClock::keyPressEvent(QKeyEvent *ke)
+{
+    ke->accept();
+}
+
+
+void FullScreenClock::keyReleaseEvent(QKeyEvent *ke)
+{
+    // Check the current selected type.
+    ke->accept();
+    switch (ke->key())
+    {
+        case Qt::Key_Left:
+        case Qt::Key_PageUp:
+        case Qt::Key_Right:
+        case Qt::Key_PageDown:
+        case Qt::Key_Down:
+        case Qt::Key_Up:
+            break;
+        case Qt::Key_Return:
+            onReturn();
+            break;
+        case Qt::Key_Escape:
+            onCloseClicked();
+            break;
+    }
+}
+
+bool FullScreenClock::event(QEvent *e)
+{
+    int ret = QDialog::event(e);
+    if (e->type() == QEvent::UpdateRequest)
+    {
+        if (need_GC_)
+        {
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC, true, onyx::screen::ScreenCommand::WAIT_ALL);
+            need_GC_ = false;
+        }
+        else
+        {
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU, true, onyx::screen::ScreenCommand::WAIT_ALL);
+        }
+        e->accept();
+        return true;
+    }
+    return ret;
+}
+
+
+
+void FullScreenClock::onReturn()
+{
+    onOkClicked(true);
+}
+
+void FullScreenClock::onOkClicked(bool)
+{
+    accept();
+}
+
+void FullScreenClock::onCloseClicked()
+{
+    reject();
 }
 
 }

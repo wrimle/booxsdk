@@ -8,7 +8,6 @@
 #include "onyx/sys/wpa_connection.h"
 #include "onyx/sys/wifi_conf.h"
 #include "onyx/sys/sys_conf.h"
-#include "onyx/sys/sys_status.h"
 
 using namespace sys;
 
@@ -30,13 +29,23 @@ public Q_SLOTS:
     void enableAutoConnect(bool e) { auto_connect_ = e; }
     bool allowAutoConnect() { return auto_connect_; }
 
+    void enableAutoReconnect(bool e) { auto_reconnect_ = e; }
+    bool allowAutoReconnect() { return auto_reconnect_; }
+
     bool start();
     bool stop();
 
+    WpaConnection::ConnectionState state() { return internal_state_; }
     void scanResults(WifiProfiles &);
+    WifiProfile connectingAP();
 
 private Q_SLOTS:
-    // slots for WpaConnection
+    bool enableSdio(bool enable = true) const;
+    bool sdioState() const ;
+    bool enableSdio(bool enable = true);
+    bool isWpaSupplicantRunning();
+    bool startWpaSupplicant(const QString & conf_file_path);
+    bool stopWpaSupplicant();
     void onSdioChanged(bool on);
 
     void triggerScan();
@@ -45,7 +54,7 @@ private Q_SLOTS:
     void onScanReturned(WifiProfiles & list);
 
     void onNeedPassword(WifiProfile profile);
-    void onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState state);
+    void onConnectionChanged(WifiProfile, WpaConnection::ConnectionState state);
     void onConnectionTimeout();
 
     void onComplete();
@@ -53,7 +62,7 @@ private Q_SLOTS:
 Q_SIGNALS:
     // signals for caller
     void wpaStateChanged(bool running);
-    void connectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state);
+    void connectionChanged(WifiProfile profile, WpaConnection::ConnectionState state);
     void passwordRequired(WifiProfile profile);
 
 private:
@@ -75,18 +84,21 @@ private:
     bool isConnecting();
     void setConnecting(bool c);
     void stopAllTimers();
+    void setState(WpaConnection::ConnectionState s);
 
     WifiProfiles & records(sys::SystemConfig& conf);
+    WpaConnection & proxy();
 
 private:
-    sys::SysStatus & sys_;
-    WpaConnection& proxy_;
+    QDBusConnection connection_;    ///< Connection to system manager.
+    scoped_ptr<WpaConnection> proxy_;
 
     QTimer scan_timer_;
     int scan_count_;     ///< Scan retry.
 
     WpaConnection::ConnectionState internal_state_;
     bool auto_connect_;
+    bool auto_reconnect_;
     bool wifi_enabled_;
 
     WifiProfiles scan_results_;     ///< Also serves as connect list.

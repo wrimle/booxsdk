@@ -10,7 +10,9 @@
 #include "onyx/sys/page_turning_conf.h"
 #include "onyx/sys/pm_conf.h"
 #include "onyx/sys/volume_conf.h"
-
+#include "onyx/sys/sys_utils.h"
+#include "onyx/sys/font_conf.h"
+#include "onyx/sys/misc_conf.h"
 #include "device_conf.h"
 
 namespace sys
@@ -29,6 +31,8 @@ SystemConfig::SystemConfig()
     DialupConfig::makeSureTableExist(*database_);
     DeviceConfig::makeSureTableExist(*database_);
     PageTurningConfig::makeSureTableExist(*database_);
+    FontConfig::makeSureTableExist(*database_);
+    MiscConfig::makeSureTableExist(*database_);
 }
 
 SystemConfig::~SystemConfig()
@@ -92,6 +96,36 @@ bool SystemConfig::dictionaryService(Service &service)
     return ServiceConfig::dictionaryService(*database_, service);
 }
 
+bool SystemConfig::rssService(Service &service)
+{
+    return ServiceConfig::rssService(*database_, service);
+}
+
+bool SystemConfig::sudokuService(Service &service)
+{
+    return ServiceConfig::sudokuService(*database_, service);
+}
+
+bool SystemConfig::officeViewerService(Service & service)
+{
+    return ServiceConfig::officeViewerService(*database_, service);
+}
+
+bool SystemConfig::hasOfficeViewer()
+{
+    return ServiceConfig::hasOfficeViewer();
+}
+
+bool SystemConfig::onyxReaderService(Service & service)
+{
+    return ServiceConfig::onyxReaderService(*database_, service);
+}
+
+bool SystemConfig::nabooReaderService(Service & service)
+{
+    return ServiceConfig::nabooReaderService(*database_, service);
+}
+
 bool SystemConfig::registerService(const Service &service,
                                    const QString &path)
 {
@@ -137,6 +171,16 @@ bool SystemConfig::setLocale(const QLocale & locale)
     return LocaleConfig::setLocale(*database_, locale);
 }
 
+void SystemConfig::setDefaultFontFamily(const QString & name)
+{
+    return FontConfig::setDefaultFontFamily(*database_, name);
+}
+
+QString SystemConfig::defaultFontFamily()
+{
+    return FontConfig::defaultFontFamily(*database_);
+}
+
 bool SystemConfig::dictionaryRoots(QStringList & dirs)
 {
     return DictConfig::dictionaryRoots(*database_, dirs);
@@ -174,15 +218,19 @@ bool SystemConfig::setTimezone(const QString & name)
 
 QString SystemConfig::currentTimezone()
 {
-    QString path = qgetenv("TZ");
-    if (path.isEmpty())
-    {
-        path = "/etc/localtime";
-    }
-    QFileInfo info(path);
+    // Check default link at first.
+    const QString defaultLink = "/etc/localtime";
+    QFileInfo info(defaultLink);
     if (info.exists() && info.isSymLink())
     {
         QString path = info.symLinkTarget();
+        return path.remove(ZONE_PREFIX);
+    }
+
+    // Check TZ now.
+    QString path = qgetenv("TZ");
+    if (QFile::exists(path))
+    {
         return path.remove(ZONE_PREFIX);
     }
     return QString();
@@ -469,6 +517,16 @@ bool SystemConfig::saveDialupProfiles(DialupProfiles & all)
     return DialupConfig::save(*database_, all);
 }
 
+QString SystemConfig::defaultPincode()
+{
+    return DialupConfig::defaultPincode();
+}
+
+void SystemConfig::setDefaultPincode(const QString &pincode)
+{
+    return DialupConfig::setDefaultPincode(pincode);
+}
+
 /// This function returns 1 for next page. It returns -1 for previous page.
 /// If the distance is too small, it returns 0.
 /// Caller can the direction by using setDirection.
@@ -542,5 +600,110 @@ QString SystemConfig::version()
     return DeviceConfig::version();
 }
 
+QString SystemConfig::cpuInfo()
+{
+
+    QString cpu,tmp;
+    QString key1("Hardware");
+    QString key2("BogoMIPS");
+
+    QFile file("/proc/cpuinfo");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return cpu;
+    QTextStream in(&file);
+    QString line = in.readLine();
+    while (!line.isNull()) 
+    {
+        if(line.contains(key1))
+        {
+            cpu.append( line.right( line.length() - line.indexOf(':') - 1 ).trimmed() );
+
+        }
+
+        if(line.contains(key2))
+        {
+            int i;
+            tmp.append( line.right( line.length() - line.indexOf(':') - 1 ).trimmed() ); 
+            if ( (i=tmp.indexOf(QChar('.'))) != -1)
+            {
+                tmp= tmp.left(i);
+            }
+        }
+
+        line = in.readLine();
+    }
+
+    file.close();
+    cpu.append(" ").append(tmp).append(" MHz");
+
+    return cpu;
 }
 
+QString SystemConfig::memInfo()
+{
+    QString mem("%1/%2 MB");
+    mem=mem.arg(systemFreeMemory()/1024/1024).arg(systemTotalMemory()/1024/1024);
+
+    return mem;
+}
+
+QString SystemConfig::flashInfo()
+{
+    QString mount_point("/media/flash");
+    QString flash("%1/%2 MB");
+    flash=flash.arg(freeSpace(mount_point)/1024/1024).arg(diskSpace(mount_point)/1024/1024);
+    return flash; 
+}
+
+bool SystemConfig::showBrowsingHistory()
+{
+    return qgetenv("SHOW_BROWSING_HISTORY").toInt()?true:false;
+}
+
+QString SystemConfig::defaultAccessPoint()
+{
+    return qgetenv("DEFAULT_ACCESS_POINT");
+}
+
+bool SystemConfig::setMiscValue(const QString &key, const QString &value)
+{
+    return MiscConfig::setValue(*database_, key, value);
+}
+
+QString SystemConfig::miscValue(const QString &key)
+{
+    return MiscConfig::getValue(*database_, key);
+}
+
+int SystemConfig::screenUpdateGCInterval()
+{
+    const int DEFAULT_GC_INTERVAL = 1;
+    QString value = MiscConfig::getValue(*database_, "screen_update_setting");
+    bool ok;
+    int interval = value.toInt(&ok, 10);
+    if (!ok)
+    {
+        interval = DEFAULT_GC_INTERVAL;
+    }
+    return interval;
+}
+
+int SystemConfig::screenUpdateGrayScaleSetting()
+{
+    const int DEFAULT_GRAY_SCALE_SETTING = 8;
+    QString value = MiscConfig::getValue(*database_, "gray_scale_setting");
+    bool ok;
+    int gray_scale_setting = value.toInt(&ok, 10);
+    if (!ok)
+    {
+        gray_scale_setting = DEFAULT_GRAY_SCALE_SETTING;
+    }
+    if (gray_scale_setting != DEFAULT_GRAY_SCALE_SETTING
+            && gray_scale_setting != 16)
+    {
+        gray_scale_setting = DEFAULT_GRAY_SCALE_SETTING;
+    }
+    return gray_scale_setting;
+}
+
+}

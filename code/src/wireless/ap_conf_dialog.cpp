@@ -327,12 +327,20 @@ void ApConfigDialog::onWpa2ButtonClicked()
 
 void ApConfigDialog::onSsidGetFocus(OnyxLineEdit *edit)
 {
-    keyboard_.attachReceiver(edit);
+//    keyboard_.attachReceiver(edit);
+    /*
+     * Jim: do not use keyboard_.attachReceiver(), since we need the event
+     * posted from keyboard directly received by this class.
+     * And the keyPressEvent() method of this class has specific code for
+     * screen update.
+     */
+    setReceiver(edit);
 }
 
 void ApConfigDialog::onPskGetFocus(OnyxLineEdit *edit)
 {
-    keyboard_.attachReceiver(edit);
+//    keyboard_.attachReceiver(edit);
+    setReceiver(edit);
 }
 
 /// This function is called by parent widget to display

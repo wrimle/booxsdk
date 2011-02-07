@@ -156,7 +156,7 @@ bool NumberDialog::event(QEvent * event)
             this,
             onyx::screen::ScreenProxy::DW,
             false,
-            onyx::screen::ScreenCommand::WAIT_ALL);
+            onyx::screen::ScreenCommand::WAIT_NONE);
     }
     return ret;
 }

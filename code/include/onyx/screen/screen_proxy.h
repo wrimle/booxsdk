@@ -67,7 +67,21 @@ public:
         INVALID = 0,    ///< For initial value.
         DW,             ///< Direct waveform.
         GU,             ///< Gray update waveform.
-        GC,             ///< Gray clear update waveform.
+        GC,             ///< Gray clear update waveform depends on system configuration.
+        GC4,            ///< 4 Gray scale update waveform.
+        GC8,            ///< 8 Gray scale update waveform.
+        GC16,           ///< 16 Gray scale update wvaeform.
+    };
+
+    /// Define waveform selection policy.
+    /// Waveform selection order
+    /// - Check policy at first, if policy is specified, use the specified policy.
+    /// - If policy is not specified, use default waveform
+    enum WaveformPolicy
+    {
+        INVALID_POLICY = 0,
+        PERFORMANCE_FIRST,
+        QUALITY_FIRST,
     };
 
     static ScreenProxy & instance()
@@ -88,6 +102,10 @@ public:
     Waveform saveWaveform();
     Waveform restoreWaveform();
 
+    void setWaveformPolicy(WaveformPolicy policy = QUALITY_FIRST);
+    WaveformPolicy waveformPolicy();
+
+    Waveform waveform();
     int & userData() { return user_data_; }
 
     void flush(const QWidget *widget,
@@ -113,6 +131,14 @@ public:
     void drawLines(QPoint * points, const int size, unsigned char color, int width);
     void fillScreen(unsigned char color);
 
+    void setGCInterval(const int interval);
+    void resetGUCount();
+    void updateWidgetWithGCInterval(const QWidget *widget,
+                                   const QRect * rect = 0,
+                                   Waveform w = INVALID,
+                                   bool whole = true,
+                                   ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
+
 private:
     ScreenProxy();
     ScreenProxy(ScreenProxy & ref){}
@@ -120,10 +146,17 @@ private:
     QRect & screenRegion(const QWidget *widget, const QRect * region = 0);
 
     bool enable_update_;    ///< Enable update or not.
+    WaveformPolicy policy_; ///< Waveform selection policy
     Waveform waveform_;     ///< Default update waveform for normal use.
     Waveform previous_waveform_;     ///< Stored waveform.
     QRect rect_;            ///< The update region.
     int user_data_;         ///< User data.
+    int gc_interval_;     ///< The interval for screen update with GC waveform
+    int gu_count_;              ///< Count the screen update with GU waveform
+
+private:
+    void increaseGUCount();
+
 };
 
 /// Is screen update enabled.

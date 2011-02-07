@@ -56,7 +56,9 @@ public Q_SLOTS:
     bool saveConf();
 
     bool stop();
-    bool connectTo(WifiProfile & network);
+    bool connectTo(WifiProfile network);
+    WifiProfile connectingAP();
+
     bool disconnectNetwork();
     bool ping();
     bool acquireAddress(bool acquire = true);
@@ -72,7 +74,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void scanResultsReady(WifiProfiles & aps);
     void messageReceived(QByteArray & data);
-    void stateChanged(WifiProfile&, WpaConnection::ConnectionState state);
+    void stateChanged(WifiProfile, WpaConnection::ConnectionState state);
     void needPassword(WifiProfile ap);
 
 private Q_SLOTS:
@@ -106,7 +108,7 @@ private:
     void updateCachedNetworks();
 
 private:
-    QDBusConnection connection_;    ///< Connection to wpa_supplicant.
+    QDBusConnection connection_;    ///< Connection to system manager.
     bool wpa_supplicant_connected_;
     QString ctrl_iface_;                  ///< Control interface.
     struct wpa_ctrl *ctrl_conn_;         ///< Control connection to send command.

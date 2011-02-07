@@ -163,7 +163,7 @@ int WpaConnection::openCtrlConnection(const QString & name)
         ctrl_iface_ = name;
     }
 
-    // If no ctrl interface 
+    // If no ctrl interface
     if (ctrl_iface_.isEmpty())
     {
         ctrl_iface_ = defaultInterface();
@@ -365,7 +365,7 @@ bool WpaConnection::stop()
 }
 
 /// Connect to specified access point.
-bool WpaConnection::connectTo(WifiProfile & ap)
+bool WpaConnection::connectTo(WifiProfile ap)
 {
     if (ap.bssid().contains(INVALID_BSSID) && ap.ssid().isEmpty())
     {
@@ -479,6 +479,11 @@ bool WpaConnection::connectTo(WifiProfile & ap)
     // Just to update status immediately. The status is changed
     // slow on embedded device.
     return update();
+}
+
+WifiProfile WpaConnection::connectingAP()
+{
+    return connecting_ap_;
 }
 
 /// Disconnect from network.
@@ -705,7 +710,7 @@ void WpaConnection::receiveMessages()
     {
         if (wpa_ctrl_recv(monitor_conn_, result.data(), &length) == 0)
         {
-            result[length] = 0;
+          result[static_cast<uint>(length)] = 0;
             parseMessage(result);
         }
     }
@@ -1001,7 +1006,7 @@ int WpaConnection::sendCtrlRequest(wpa_ctrl * ctrl,
     {
         qWarning("Command %s failed.", qPrintable(command));
     }
-    result[length] = 0;
+    result[static_cast<uint>(length)] = 0;
     return ret;
 }
 

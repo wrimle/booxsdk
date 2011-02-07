@@ -124,6 +124,12 @@ void PopupMenu::keyReleaseEvent(QKeyEvent *ke)
 {
     // Check the current selected type.
     ke->accept();
+
+    if (popup_time.elapsed() < MIN_ELAPSED)
+    {
+        return;
+    }
+
     switch (ke->key())
     {
     case Qt::Key_Left:
@@ -148,20 +154,14 @@ void PopupMenu::keyReleaseEvent(QKeyEvent *ke)
 /// Navigate according to the key.
 void PopupMenu::navigate(int key)
 {
-    int ret = -1;
     QWidget * wnd = ui::moveFocus(this, key);
     if (wnd)
     {
-        wnd->setFocus();
-        ret = 1;
-    }
-
-    if (ret > 0)
-    {
         onyx::screen::instance().enableUpdate(false);
+        wnd->setFocus();
         repaint();
         onyx::screen::instance().enableUpdate(true);
-        onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::DW, false);
+        onyx::screen::instance().flush(this, onyx::screen::ScreenProxy::DW, false);
     }
 }
 

@@ -70,7 +70,8 @@ WifiDialog::WifiDialog(QWidget *parent,
     , proxy_(sys.wpa_proxy(name))
     , count_(0)
     , internal_state_(WpaConnection::STATE_UNKNOWN)
-    , auto_connect_(false)
+    , auto_connect_to_best_ap_(false)
+    , auto_connect_to_default_ap_(true)
     , ap_dialog_visible_(false)
     , wifi_enabled_(false)
 {
@@ -333,8 +334,8 @@ void WifiDialog::setupConnections()
 
     QObject::connect(&proxy_, SIGNAL(scanResultsReady(WifiProfiles &)),
             this, SLOT(onScanReturned(WifiProfiles &)));
-    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile &,WpaConnection::ConnectionState)),
-        this, SLOT(onConnectionChanged(WifiProfile &, WpaConnection::ConnectionState)));
+    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile,WpaConnection::ConnectionState)),
+        this, SLOT(onConnectionChanged(WifiProfile, WpaConnection::ConnectionState)));
     QObject::connect(&proxy_, SIGNAL(needPassword(WifiProfile )),
             this, SLOT(onNeedPassword(WifiProfile )));
     QObject::connect(&sys_, SIGNAL(sdioChangedSignal(bool)), this, SLOT(onSdioChanged(bool)));
@@ -395,14 +396,14 @@ void WifiDialog::connect(const QString & ssid, const QString &password)
     }
 }
 
-// So far, disable the auto connecting to default ap.
-bool WifiDialog::connectToDefaultAP()
+// So far, disable the auto connecting to best ap.
+bool WifiDialog::connectToBestAP()
 {
-    if (!auto_connect_)
+    if (!auto_connect_to_best_ap_)
     {
         return false;
     }
-    auto_connect_ = false;
+    auto_connect_to_best_ap_ = false;
 
     sys::SystemConfig conf;
     WifiProfiles & all = records(conf);
@@ -417,6 +418,30 @@ bool WifiDialog::connectToDefaultAP()
     }
     onAPItemClicked(all.front());
     return true;
+}
+
+bool WifiDialog::connectToDefaultAP()
+{
+    if (!auto_connect_to_default_ap_)
+    {
+        return false;
+    }
+    auto_connect_to_default_ap_ = false;
+
+    QString ap = sys::SystemConfig::defaultAccessPoint();
+    if (!ap.isEmpty())
+    {
+        for(int i = 0; i < scan_results_.size(); ++i)
+        {
+            if (scan_results_[i].ssid().contains(ap, Qt::CaseInsensitive))
+            {
+                onAPItemClicked(scan_results_[i]);
+                return true;
+            }
+        }
+    } 
+
+    return false;
 }
 
 void WifiDialog::onScanTimeout()
@@ -575,11 +600,14 @@ void WifiDialog::onScanReturned(WifiProfiles & list)
     onyx::screen::instance().flush();
     onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC);
 
-    // Disable auto connect.
-    connectToDefaultAP();
+    if (!connectToDefaultAP())
+    {
+        // Disable auto connect.
+        connectToBestAP();
+    }
 }
 
-void WifiDialog::onConnectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state)
+void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::ConnectionState state)
 {
     updateStateLable(state);
     if (state == WpaConnection::STATE_CONNECTED)

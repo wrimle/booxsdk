@@ -19,6 +19,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history)
     category()->setText(QCoreApplication::tr("Navigation"));
 
     actions_.clear();
+
     shared_ptr<QAction> backward(new QAction(exclusiveGroup()));
     backward->setText(QCoreApplication::tr("Backward"));
     backward->setIcon(QIcon(QPixmap(":/images/backward.png")));
@@ -40,9 +41,9 @@ void BrowserNavigationActions::generateActions(QWebHistory *history)
 
 
     shared_ptr<QAction> home(new QAction(exclusiveGroup()));
-    home->setText(QCoreApplication::tr("Home"));
+    home->setText(QCoreApplication::tr("History"));
     home->setIcon(QIcon(QPixmap(":/images/home.png")));
-    home->setData(NAVIGATE_HOME);
+    home->setData(NAVIGATE_SHOW_HISTORY);
     home->setEnabled(true);
     home->setCheckable(true);
     home->setChecked(false);
