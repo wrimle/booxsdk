@@ -278,12 +278,13 @@ int  WifiDialog::itemsPerPage()
 
 void WifiDialog::setupConnections()
 {
-    QObject::connect(&proxy_, SIGNAL(scanResultsReady(WifiProfiles &)),
-            this, SLOT(onScanReturned(WifiProfiles &)));
-    QObject::connect(&proxy_, SIGNAL(stateChanged(WifiProfile,WpaConnection::ConnectionState)),
+    QObject::connect(&proxy_, SIGNAL(connectionChanged(WifiProfile,WpaConnection::ConnectionState)),
         this, SLOT(onConnectionChanged(WifiProfile, WpaConnection::ConnectionState)));
-    QObject::connect(&proxy_, SIGNAL(needPassword(WifiProfile )),
+    QObject::connect(&proxy_, SIGNAL(passwordRequired(WifiProfile )),
             this, SLOT(onNeedPassword(WifiProfile )));
+    QObject::connect(&proxy_, SIGNAL(noRecord()),
+            this, SLOT(onNoRecord()));
+
     QObject::connect(&sys_, SIGNAL(sdioChangedSignal(bool)), this, SLOT(onSdioChanged(bool)));
 }
 
@@ -447,10 +448,11 @@ void WifiDialog::enableChildren(bool enable)
     }
 }
 
-void WifiDialog::onScanReturned(WifiProfiles & list)
+void WifiDialog::onScanReturned()
 {
-    paginator_.reset(0, itemsPerPage(), list.size());
-    scan_results_ = list;
+    proxy_.scanResults(scan_results_);
+    paginator_.reset(0, itemsPerPage(), scan_results_.size());
+
     arrangeAPItems(scan_results_);
     onyx::screen::instance().flush();
     onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC);
@@ -483,6 +485,10 @@ void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::Connect
         {
             onNeedPassword(profile);
         }
+    }
+    else if (state == WpaConnection::STATE_SCANNED)
+    {
+        onScanReturned();
     }
     //emit connectionChanged(profile, state);
 }
@@ -578,6 +584,11 @@ void WifiDialog::onNeedPassword(WifiProfile profile)
         proxy_.stop();
         updateStateLable(WpaConnection::STATE_ABORTED);
     }
+}
+
+void WifiDialog::onNoRecord()
+{
+
 }
 
 void WifiDialog::onComplete()

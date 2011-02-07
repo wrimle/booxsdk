@@ -70,6 +70,7 @@ Q_SIGNALS:
     void wpaStateChanged(bool running);
     void connectionChanged(WifiProfile profile, WpaConnection::ConnectionState state);
     void passwordRequired(WifiProfile profile);
+    void noRecord();
 
 private:
     bool checkWifiDevice();

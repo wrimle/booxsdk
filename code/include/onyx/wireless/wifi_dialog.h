@@ -51,9 +51,10 @@ private Q_SLOTS:
     void onSdioChanged(bool on);
     void enableChildren(bool enable);
 
-    void onScanReturned(WifiProfiles & list);
+    void onScanReturned();
     void onConnectionChanged(WifiProfile , WpaConnection::ConnectionState state);
     void onNeedPassword(WifiProfile profile);
+    void onNoRecord();
 
     void onComplete();
     void onAPConfig(WifiProfile &);

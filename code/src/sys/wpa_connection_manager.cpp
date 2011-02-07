@@ -80,9 +80,9 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
         return;
     }
 
-    setState(dummy, WpaConnection::STATE_SCANNED);
     scan_results_ = list;
     scan_timer_.stop();
+    setState(dummy, WpaConnection::STATE_SCANNED);
     connectToBestAP();
 }
 
@@ -386,20 +386,28 @@ bool WpaConnectionManager::connectToBestAP()
     conf.close();
     sortByCount(all);
 
+    bool found = false;
     foreach(WifiProfile record, all)
     {
         for(int i = 0; i < scan_results_.size(); ++i)
         {
             if (scan_results_[i].bssid() == record.bssid())
             {
+                found = true;
                 syncAuthentication(record, scan_results_[i]);
                 scan_results_[i].setCount(record.count());
             }
         }
     }
 
-    sortByCount(scan_results_);
+    if (!found)
+    {
+        qDebug("No record available, should ask user to choose one.");
+        emit noRecord();
+        return false;
+    }
 
+    sortByCount(scan_results_);
     setState(scan_results_.front(), WpaConnection::STATE_CONNECTING);
     setConnecting(true);
     proxy().connectTo(scan_results_.front());
