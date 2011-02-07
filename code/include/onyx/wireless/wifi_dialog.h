@@ -17,7 +17,7 @@ class WifiDialog : public QDialog
     Q_OBJECT
 
 public:
-    WifiDialog(QWidget *parent, SysStatus & sys, const QString& name = QString());
+    WifiDialog(QWidget *parent, SysStatus & sys);
     ~WifiDialog();
 
 public:
@@ -74,16 +74,7 @@ private:
     bool syncAuthentication(WifiProfile & source, WifiProfile & target);
     void storeAp(WifiProfile & profile);
 
-    bool checkWpaSupplicant();
-    bool checkWifiDevice(bool show_error_dialog = true);
-    void increaseRetry() { ++count_; }
-    void resetRetry() { count_ = 0; }
-    bool canRetry() { return count_ <= 5; }
     void updateStateLable(WpaConnection::ConnectionState state);
-
-    bool isConnecting();
-    void setConnecting(bool c);
-    void stopAllTimers();
 
     void enableAutoConnect(bool e) { auto_connect_to_best_ap_ = e; }
     bool allowAutoConnect() { return auto_connect_to_best_ap_; }
@@ -113,14 +104,10 @@ private:
     OnyxLabel hardware_address_;
 
     const SysStatus & sys_;
-    WpaConnection& proxy_;
-    QTimer scan_timer_;
-    int count_;     ///< Scan retry.
-    WpaConnection::ConnectionState internal_state_;
+    WpaConnectionManager& proxy_;
     bool auto_connect_to_best_ap_;      ///< Access points used successfully before.
     bool auto_connect_to_default_ap_;    ///< If we have pre-installed access point.
     bool ap_dialog_visible_;
-    bool wifi_enabled_;
 
     WifiProfiles scan_results_;
     scoped_ptr<WifiProfiles> records_;  ///< All profiles that stored in database.

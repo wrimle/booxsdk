@@ -37,7 +37,13 @@ public Q_SLOTS:
 
     WpaConnection::ConnectionState state() { return internal_state_; }
     void scanResults(WifiProfiles &);
+
+    bool connectTo(WifiProfile profile);
     WifiProfile connectingAP();
+
+    QString networkInterface();
+    QString address();
+    QString hardwareAddress();
 
 private Q_SLOTS:
     bool enableSdio(bool enable = true) const;
@@ -84,7 +90,7 @@ private:
     bool isConnecting();
     void setConnecting(bool c);
     void stopAllTimers();
-    void setState(WpaConnection::ConnectionState s);
+    void setState(WifiProfile & profile, WpaConnection::ConnectionState s);
 
     WifiProfiles & records(sys::SystemConfig& conf);
     WpaConnection & proxy();
