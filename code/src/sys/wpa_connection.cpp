@@ -266,7 +266,7 @@ bool WpaConnection::status(QVariantMap & info)
     {
         if (parseItem(tag, value, item))
         {
-            qDebug() << tag << value;
+            // qDebug() << tag << value;
             info[tag] = value;
         }
     }

@@ -54,7 +54,7 @@ private Q_SLOTS:
     void onScanReturned();
     void onConnectionChanged(WifiProfile , WpaConnection::ConnectionState state);
     void onNeedPassword(WifiProfile profile);
-    void onNoRecord();
+    void onNoMatchedAP();
 
     void onComplete();
     void onAPConfig(WifiProfile &);

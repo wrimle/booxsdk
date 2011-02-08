@@ -282,8 +282,8 @@ void WifiDialog::setupConnections()
         this, SLOT(onConnectionChanged(WifiProfile, WpaConnection::ConnectionState)));
     QObject::connect(&proxy_, SIGNAL(passwordRequired(WifiProfile )),
             this, SLOT(onNeedPassword(WifiProfile )));
-    QObject::connect(&proxy_, SIGNAL(noRecord()),
-            this, SLOT(onNoRecord()));
+    QObject::connect(&proxy_, SIGNAL(noMatchedAP()),
+            this, SLOT(onNoMatchedAP()));
 
     QObject::connect(&sys_, SIGNAL(sdioChangedSignal(bool)), this, SLOT(onSdioChanged(bool)));
 }
@@ -565,14 +565,7 @@ void WifiDialog::onNeedPassword(WifiProfile profile)
     {
         return;
     }
-    qDebug("need password now");
-
-    // If password is remembered and correct, we use it directly.
-    if (checkAuthentication(profile))
-    {
-        proxy_.connectTo(profile);
-        return;
-    }
+    qDebug("Need password now, password incorrect or not available.");
 
     // No password remembered or incorrect.
     bool ok = showConfigurationDialog(profile);
@@ -591,7 +584,7 @@ void WifiDialog::onNeedPassword(WifiProfile profile)
     }
 }
 
-void WifiDialog::onNoRecord()
+void WifiDialog::onNoMatchedAP()
 {
 
 }
