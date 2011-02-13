@@ -1,5 +1,6 @@
 #include "onyx/dictionary/dict_widget.h"
 #include "onyx/screen/screen_proxy.h"
+#include "onyx/ui/ui_utils.h"
 
 namespace ui
 {
@@ -470,7 +471,7 @@ bool DictWidget::event(QEvent *e)
         }
         else
         {
-            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU, false, onyx::screen::ScreenCommand::WAIT_NONE);
         }
         launchTimer(false);
         e->accept();
