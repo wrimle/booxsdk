@@ -499,7 +499,7 @@ bool SearchWidget::event(QEvent * event)
         }
         else
         {
-            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::DW, false, onyx::screen::ScreenCommand::WAIT_NONE);
         }
         event->accept();
     }
