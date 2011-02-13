@@ -387,9 +387,7 @@ bool SearchWidget::eventFilter(QObject *obj, QEvent *event)
         else if (obj == &keyboard_)
         {
             if (key_event->key() == Qt::Key_Down ||
-                key_event->key() == Qt::Key_Up ||
-                key_event->key() == Qt::Key_Left ||
-                key_event->key() == Qt::Key_Right)
+                key_event->key() == Qt::Key_Up)
             {
                 wnd = moveFocus(this, key_event->key());
                 if (wnd)
@@ -398,8 +396,17 @@ bool SearchWidget::eventFilter(QObject *obj, QEvent *event)
                 }
                 return true;
             }
+            else if (key_event->key() == Qt::Key_Left ||
+                     key_event->key() == Qt::Key_Right)
+            {
+                wnd = moveFocus(&keyboard_, key_event->key());
+                if (wnd)
+                {
+                    wnd->setFocus();
+                }
+                return true;
+            }
         }
-
         if (key_event->key() == Qt::Key_Escape)
         {
             onCloseClicked();
