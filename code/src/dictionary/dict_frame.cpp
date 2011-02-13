@@ -457,7 +457,7 @@ bool DictFrame::event(QEvent *e)
         else
         {
             onyx::screen::instance().updateWidget(this,
-                    onyx::screen::ScreenProxy::GU);
+                onyx::screen::ScreenProxy::GU, false, onyx::screen::ScreenCommand::WAIT_NONE);
         }
         ++onyx::screen::instance().userData();
         e->accept();

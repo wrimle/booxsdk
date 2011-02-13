@@ -3,6 +3,7 @@
 #include "onyx/ui/keyboard_navigator.h"
 #include "onyx/ui/search_widget.h"
 #include "onyx/ui/keyboard_key.h"
+#include "onyx/ui/ui_utils.h"
 
 BaseSearchContext::BaseSearchContext(void)
     : pattern_()
@@ -51,7 +52,7 @@ namespace ui
 {
 
 SearchWidget::SearchWidget(QWidget *parent, BaseSearchContext & ctx)
-    : OnyxDialog(parent)
+    : OnyxDialog(parent, false)
     , hbox_(&content_widget_)
     , text_edit_("", this)
     , search_button_(tr("Search"), this)
@@ -222,7 +223,7 @@ void SearchWidget::onTextChanged(const QString& text)
 /// This function is called by parent widget to display the search widget.
 void SearchWidget::ensureVisible()
 {
-    shadows_.show(true);
+    // shadows_.show(true);
     if (isHidden())
     {
         show();
@@ -233,7 +234,7 @@ void SearchWidget::ensureVisible()
     if (full_mode_)
     {
         QRect parent_rect = parentWidget()->rect();
-        int border = Shadows::PIXELS;
+        int border = 0;
         int width = parent_rect.width() - border * 2;
         if (size().width() != width)
         {
@@ -476,12 +477,12 @@ void SearchWidget::updateTitle(const QString &message)
 
 void SearchWidget::adjustPosition()
 {
-    int x = Shadows::PIXELS;
+    int x = 0;
     if (!keyboard_.isVisible())
     {
-        x = parentWidget()->width() - width() - Shadows::PIXELS;
+        x = parentWidget()->width() - width();
     }
-    int y = parentWidget()->height() - height() - Shadows::PIXELS;
+    int y = parentWidget()->height() - height() - ui::statusBarHeight();
     move(x, y);
 }
 
@@ -490,8 +491,8 @@ bool SearchWidget::event(QEvent * event)
     bool ret = OnyxDialog::event(event);
     if (event->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled())
     {
-        onyx::screen::instance().sync(&shadows_.hor_shadow());
-        onyx::screen::instance().sync(&shadows_.ver_shadow());
+        // onyx::screen::instance().sync(&shadows_.hor_shadow());
+        // onyx::screen::instance().sync(&shadows_.ver_shadow());
         if (update_parent_)
         {
             onyx::screen::instance().updateWidget(parentWidget(), onyx::screen::ScreenProxy::GC);
