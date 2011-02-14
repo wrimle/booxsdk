@@ -462,7 +462,7 @@ void DictWidget::changeInternalState(int state)
 bool DictWidget::event(QEvent *e)
 {
     int ret = QDialog::event(e);
-    if (e->type() == QEvent::UpdateRequest)
+    if (e->type() == QEvent::UpdateRequest || e->type() == QEvent::Hide)
     {
         if (update_parent_)
         {
