@@ -121,7 +121,11 @@ bool DictWidget::lookup(const QString &word)
     // Title
     QString result;
     bool ret = dict_.translate(word_, result);
-//    OnyxDialog::updateTitle(dict_.selected());
+
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
 
     // Result
     doc_.setHtml(result);
