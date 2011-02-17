@@ -11,6 +11,8 @@ QRect screenGeometry();
 
 bool dockWidget(QWidget *target, QWidget * container, Qt::Alignment align);
 
+int statusBarHeight();
+
 };
 
 #endif  // ONYX_UI_UTILS_H_

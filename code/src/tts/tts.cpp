@@ -267,6 +267,7 @@ Sound & TTS::sound()
             sound_->setBitsPerSample(BPS);
             sound_->setChannels(CHANNELS);
             sound_->setSamplingRate(SAMPLE_RATE);
+            sound_->setVolume(sys::SysStatus::instance().volume());
         }
     }
     return *sound_;

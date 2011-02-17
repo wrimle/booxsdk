@@ -70,6 +70,7 @@ Q_SIGNALS:
     void wpaStateChanged(bool running);
     void connectionChanged(WifiProfile profile, WpaConnection::ConnectionState state);
     void passwordRequired(WifiProfile profile);
+    void noMatchedAP();
 
 private:
     bool checkWifiDevice();
@@ -86,11 +87,15 @@ private:
     void resetScanRetry() { scan_count_ = 0; }
     bool canScanRetry() { return scan_count_ <= 5; }
 
+    int increaseConnectRetry() { return ++connect_retry_; }
+    void resetConnectRetry() { connect_retry_ = 0; }
+    bool canRetryConnect();
+
     bool connectToBestAP();
     bool isConnecting();
     void setConnecting(bool c);
     void stopAllTimers();
-    void setState(WifiProfile & profile, WpaConnection::ConnectionState s);
+    void setState(WifiProfile profile, WpaConnection::ConnectionState s);
 
     WifiProfiles & records(sys::SystemConfig& conf);
     WpaConnection & proxy();
@@ -101,6 +106,7 @@ private:
 
     QTimer scan_timer_;
     int scan_count_;     ///< Scan retry.
+    int connect_retry_;
 
     WpaConnection::ConnectionState internal_state_;
     bool auto_connect_;

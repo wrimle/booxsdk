@@ -13,6 +13,7 @@ WpaConnectionManager::WpaConnectionManager()
 : connection_(QDBusConnection::sessionBus())
 #endif
 , scan_count_(0)
+, connect_retry_(0)
 , internal_state_(WpaConnection::STATE_UNKNOWN)
 , auto_connect_(true)
 , auto_reconnect_(true)
@@ -80,9 +81,9 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
         return;
     }
 
-    setState(dummy, WpaConnection::STATE_SCANNED);
     scan_results_ = list;
     scan_timer_.stop();
+    setState(dummy, WpaConnection::STATE_SCANNED);
     connectToBestAP();
 }
 
@@ -93,6 +94,7 @@ void WpaConnectionManager::scanResults(WifiProfiles &ret)
 
 bool WpaConnectionManager::connectTo(WifiProfile profile)
 {
+    resetConnectRetry();
     setState(profile, WpaConnection::STATE_CONNECTING);
     setConnecting(true);
     return proxy().connectTo(profile);
@@ -149,16 +151,19 @@ void WpaConnectionManager::onConnectionChanged(WifiProfile profile,
 
     case WpaConnection::STATE_AUTHENTICATION_FAILED:
         {
-            // Could be ignored now.
-            if (!checkAuthentication(profile))
-            {
-                onNeedPassword(profile);
-            }
+
+            onNeedPassword(profile);
         }
         break;
     default:
         break;
     }
+}
+
+bool WpaConnectionManager::canRetryConnect()
+{
+    qDebug("connect retry %d", connect_retry_);
+    return (connect_retry_ < 1);
 }
 
 void WpaConnectionManager::onConnectionTimeout()
@@ -235,6 +240,7 @@ void WpaConnectionManager::triggerScan()
 {
     setConnecting(false);
     resetScanRetry();
+    resetConnectRetry();
     scan();
 }
 
@@ -303,13 +309,13 @@ bool WpaConnectionManager::checkAuthentication(WifiProfile & profile)
         // Use bssid instead of ssid.
         if (profile.bssid() == record.bssid())
         {
-            if (profile.retry() <= 2)
+            if (canRetryConnect())
             {
+                increaseConnectRetry();
                 if (syncAuthentication(record, profile))
                 {
                     profile.setCount(record.count());
-                    profile.setRetry(profile.retry() + 1);
-                    return (profile.retry() <= 2);
+                    return true;
                 }
             }
         }
@@ -386,23 +392,30 @@ bool WpaConnectionManager::connectToBestAP()
     conf.close();
     sortByCount(all);
 
+    bool found = false;
     foreach(WifiProfile record, all)
     {
         for(int i = 0; i < scan_results_.size(); ++i)
         {
             if (scan_results_[i].bssid() == record.bssid())
             {
+                found = true;
                 syncAuthentication(record, scan_results_[i]);
                 scan_results_[i].setCount(record.count());
             }
         }
     }
 
-    sortByCount(scan_results_);
+    if (!found)
+    {
+        qDebug("No matched access point found, should ask user to choose one.");
+        emit noMatchedAP();
+        return false;
+    }
 
-    setState(scan_results_.front(), WpaConnection::STATE_CONNECTING);
-    setConnecting(true);
+    sortByCount(scan_results_);
     proxy().connectTo(scan_results_.front());
+    setConnecting(true);
     return true;
 }
 
@@ -428,7 +441,7 @@ void WpaConnectionManager::stopAllTimers()
     scan_timer_.stop();
 }
 
-void WpaConnectionManager::setState(WifiProfile & profile, WpaConnection::ConnectionState s)
+void WpaConnectionManager::setState(WifiProfile profile, WpaConnection::ConnectionState s)
 {
     internal_state_ = s;
     emit connectionChanged(profile, s);

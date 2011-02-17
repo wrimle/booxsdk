@@ -1,5 +1,6 @@
 #include "onyx/dictionary/dict_widget.h"
 #include "onyx/screen/screen_proxy.h"
+#include "onyx/ui/ui_utils.h"
 
 namespace ui
 {
@@ -120,7 +121,11 @@ bool DictWidget::lookup(const QString &word)
     // Title
     QString result;
     bool ret = dict_.translate(word_, result);
-//    OnyxDialog::updateTitle(dict_.selected());
+
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
 
     // Result
     doc_.setHtml(result);
@@ -461,7 +466,7 @@ void DictWidget::changeInternalState(int state)
 bool DictWidget::event(QEvent *e)
 {
     int ret = QDialog::event(e);
-    if (e->type() == QEvent::UpdateRequest)
+    if (e->type() == QEvent::UpdateRequest || e->type() == QEvent::Hide)
     {
         if (update_parent_)
         {
@@ -470,7 +475,7 @@ bool DictWidget::event(QEvent *e)
         }
         else
         {
-            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU, false, onyx::screen::ScreenCommand::WAIT_NONE);
         }
         launchTimer(false);
         e->accept();

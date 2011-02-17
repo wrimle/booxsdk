@@ -27,6 +27,11 @@ bool dockWidget(QWidget *target, QWidget * container, Qt::Alignment align)
     return true;
 }
 
+int statusBarHeight()
+{
+    return 35;
+}
+
 }
 
 
