@@ -19,6 +19,7 @@
 #include "onyx/ui/number_dialog.h"
 #include "onyx/ui/power_management_dialog.h"
 #include "onyx/ui/clock_dialog.h"
+#include "onyx/ui/ui_utils.h"
 
 namespace ui
 {
@@ -601,7 +602,7 @@ VolumeControlDialog *StatusBar::volumeDialog(bool create)
 
 void StatusBar::createLayout()
 {
-    setFixedHeight(35);
+    setFixedHeight(ui::statusBarHeight());
     layout()->setSpacing(4);
     layout()->setContentsMargins(1, 2, 1, 0);
     setSizeGripEnabled(false);
