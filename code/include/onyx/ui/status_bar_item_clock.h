@@ -14,6 +14,9 @@ public:
     StatusBarItemClock(QWidget *parent);
     virtual ~StatusBarItemClock(void);
 
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+
 public:
     QDateTime & startDateTime() { return start_; }
 
@@ -26,12 +29,15 @@ private:
     virtual void mouseReleaseEvent(QMouseEvent *);
 
     void createLayout();
-    QImage & image();
-    QString resourcePath();
+    bool setTimeText();
 
 private:
-    Images images_;
     QDateTime start_;
+    QString time_text_;
+    scoped_ptr<QFontMetrics> metrics_;
+
+private:
+    static const QString DATE_FORMAT;
 };
 
 };  // namespace ui
