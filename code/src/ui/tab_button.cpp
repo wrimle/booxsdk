@@ -22,7 +22,6 @@ bool TabButton::event(QEvent *e)
 {
     switch (e->type())
     {
-    case QEvent::MouseMove:
     case QEvent::HoverMove:
     case QEvent::HoverEnter:
     case QEvent::HoverLeave:
@@ -70,7 +69,7 @@ void TabButton::setChecked(bool checked)
 void TabButton::paintEvent(QPaintEvent *e)
 {
     QPainter p(this);
-    QRect border = rect().adjusted(1, 1, -1, -1);
+    QRect border = rect().adjusted(0, 1, 0, -1);
     if (isChecked())
     {
         p.fillRect(rect(), Qt::white);
