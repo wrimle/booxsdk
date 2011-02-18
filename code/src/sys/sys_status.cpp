@@ -347,6 +347,14 @@ void SysStatus::installSlots()
     {
         qDebug("\nCan not connect the hardwareTimerTimeout signal\n");
     }
+
+    if (!connection_.connect(service, object, iface,
+                             "lowBatterySignal",
+                             this,
+                             SLOT(onLowBatterySignal())))
+    {
+        qDebug("\nCan not connect the lowBatterySignal signal\n");
+    }
 }
 
 bool SysStatus::batteryStatus(int& current,
@@ -1709,6 +1717,11 @@ void SysStatus::onReport3GNetwork(const int signal, const int total, const int n
 void SysStatus::onHardwareTimerTimeout()
 {
     emit hardwareTimerTimeout();
+}
+
+void SysStatus::onLowBatterySignal()
+{
+    emit lowBatterySignal();
 }
 
 }   // namespace sys

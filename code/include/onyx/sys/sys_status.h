@@ -182,6 +182,7 @@ class SysStatus : public QObject
     void report3GNetwork(const int signal, const int total, const int network);
 
     void hardwareTimerTimeout();
+    void lowBatterySignal();
 
   private slots:
     void onBatteryChanged(int, int);
