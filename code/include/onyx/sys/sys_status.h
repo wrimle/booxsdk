@@ -218,6 +218,7 @@ class SysStatus : public QObject
     void onReport3GNetwork(const int signal, const int total, const int network);
 
     void onHardwareTimerTimeout();
+    void onLowBatterySignal();
 
   private:
     SysStatus();
