@@ -5,6 +5,9 @@ Paginator::Paginator()
 : first_visible_(0)
 , items_per_page_(1)
 , size_(0)
+, rows_(0)
+, cols_(0)
+, user_data_(0)
 {
 }
 
