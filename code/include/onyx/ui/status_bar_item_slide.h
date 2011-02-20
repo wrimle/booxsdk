@@ -39,6 +39,8 @@ private:
     void updatefgPath(int value);
     void updatePath(QPainterPath & path, const QRect & rect);
 
+    void drawPageText(QPainter &painter);
+
 private:
     int current_;
     int total_;

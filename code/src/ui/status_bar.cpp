@@ -632,10 +632,6 @@ StatusBarItem *StatusBar::item(const StatusBarItemType type, bool create)
         item = new StatusBarItemMenu(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onMenuClicked()));
         break;
-    case MESSAGE:
-        item = new StatusBarItemMessage(this);
-        connect(item, SIGNAL(clicked()), this, SLOT(onMessageAreaClicked()));
-        break;
     case BATTERY:
         item = new StatusBarItemBattery(this);
         connect(item, SIGNAL(clicked()), this, SLOT(onBatteryClicked()));
