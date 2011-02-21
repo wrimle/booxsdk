@@ -61,7 +61,7 @@ bool Paginator::next()
     }
 
     first_visible_ += items_per_page_;
-    if (first_visible_ > size_ - items_per_page_)
+    if (first_visible_ >= size_) // - items_per_page_)
     {
         first_visible_ = size_ - items_per_page_;
     }
@@ -71,7 +71,7 @@ bool Paginator::next()
 bool Paginator::jump(int new_page)
 {
     int new_pos = new_page * items_per_page_;
-    if (new_pos < 0 || new_pos > size_ - items_per_page_)
+    if (new_pos < 0 || new_pos > size_)
     {
         return false;
     }
@@ -114,7 +114,12 @@ int Paginator::pages()
 {
     if (items_per_page_ > 0)
     {
-        return size_ / items_per_page_ + 1;
+        int count = size_ / items_per_page_ + 1;
+        if (size_ % items_per_page_ == 0)
+        {
+            --count;
+        }
+        return count;
     }
     return 1;
 }
