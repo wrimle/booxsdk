@@ -221,5 +221,6 @@
     <file>images/open_dictionary_tool.png</file>
     <file>images/retrieve_words.png</file>
     <file>images/similar_words.png</file>
+    <file>images/hyperlink_navigation_mode.png</file>
   </qresource>
 </RCC>
