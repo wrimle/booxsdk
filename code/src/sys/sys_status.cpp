@@ -355,6 +355,30 @@ void SysStatus::installSlots()
     {
         qDebug("\nCan not connect the lowBatterySignal signal\n");
     }
+
+    if (!connection_.connect(service, object, iface,
+                             "mouseLongPress",
+                             this,
+                             SLOT(onMouseLongPress(int, int, int, int))))
+    {
+        qDebug("\nCan not connect the mouseLongPress signal\n");
+    }
+
+    if (!connection_.connect(service, object, iface,
+                             "multiTouchPressDetected",
+                             this,
+                             SLOT(onMultiTouchPressDetected(int, int, int, int, int, int, int, int))))
+    {
+        qDebug("\nCan not connect the multiTouchPressDetected signal\n");
+    }
+
+    if (!connection_.connect(service, object, iface,
+                             "multiTouchReleaseDetected",
+                             this,
+                             SLOT(onMultiTouchReleaseDetected(int, int, int, int, int, int, int, int))))
+    {
+        qDebug("\nCan not connect the multiTouchReleaseDetected signal\n");
+    }
 }
 
 bool SysStatus::batteryStatus(int& current,
@@ -1722,6 +1746,21 @@ void SysStatus::onHardwareTimerTimeout()
 void SysStatus::onLowBatterySignal()
 {
     emit lowBatterySignal();
+}
+
+void SysStatus::onMouseLongPress(int x, int y, int width, int height)    
+{
+    emit mouseLongPress(QPoint(x, y), QSize(width, height));
+}
+
+void SysStatus::onMultiTouchPressDetected(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2)
+{
+    emit multiTouchPressDetected(QRect(x1, y1, width1, height1), QRect(x2, y2, width2, height2));
+}
+
+void SysStatus::onMultiTouchReleaseDetected(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2)
+{
+    emit multiTouchReleaseDetected(QRect(x1, y1, width1, height1), QRect(x2, y2, width2, height2));
 }
 
 }   // namespace sys

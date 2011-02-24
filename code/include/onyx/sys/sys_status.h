@@ -184,6 +184,10 @@ class SysStatus : public QObject
     void hardwareTimerTimeout();
     void lowBatterySignal();
 
+    void mouseLongPress(QPoint, QSize);
+    void multiTouchPressDetected(QRect, QRect);
+    void multiTouchReleaseDetected(QRect, QRect);
+
   private slots:
     void onBatteryChanged(int, int);
     void onMountTreeChanged(bool mounted, const QString &mount_point);
@@ -219,6 +223,10 @@ class SysStatus : public QObject
 
     void onHardwareTimerTimeout();
     void onLowBatterySignal();
+
+    void onMouseLongPress(int, int, int, int);    
+    void onMultiTouchPressDetected(int, int, int, int, int, int, int, int);
+    void onMultiTouchReleaseDetected(int, int, int, int, int, int, int, int);
 
   private:
     SysStatus();
