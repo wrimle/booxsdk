@@ -2,6 +2,12 @@
 #include "onyx/ui/tab_button.h"
 
 static const int SPACING = 5;
+static const QString TABSTYLE = "   \
+QWidget                             \
+{                                   \
+    font-size: 22px;                \
+    margin-top: 2px;                \
+}";
 
 TabButton::TabButton(QWidget *parent, const int id)
     : QWidget(parent)
@@ -12,6 +18,7 @@ TabButton::TabButton(QWidget *parent, const int id)
 {
     setAutoFillBackground(false);
     createLayout();
+    setStyleSheet(TABSTYLE);
 }
 
 TabButton::~TabButton()
