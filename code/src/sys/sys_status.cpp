@@ -1218,16 +1218,18 @@ QString SysStatus::currentConnection()
     QList<QNetworkInterface> all = QNetworkInterface::allInterfaces();
     foreach(QNetworkInterface ni, all)
     {
-        if (ni.name().contains("eth", Qt::CaseInsensitive))
+        if (ni.flags().testFlag(QNetworkInterface::IsUp) && !ni.addressEntries().empty())
         {
-            return "wifi";
-        }
-        else if (ni.name().contains("ppp", Qt::CaseInsensitive))
-        {
-            return "3g";
+            if (ni.name().contains("eth", Qt::CaseInsensitive))
+            {
+                return "wifi";
+            }
+            else if (ni.name().contains("ppp", Qt::CaseInsensitive))
+            {
+                return "3g";
+            }
         }
     }
-    return result;
 }
 
 /// Check hardware connection type. It returns wifi or 3g.
