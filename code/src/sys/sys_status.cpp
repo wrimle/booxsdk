@@ -1230,6 +1230,8 @@ QString SysStatus::currentConnection()
             }
         }
     }
+
+    return result;
 }
 
 /// Check hardware connection type. It returns wifi or 3g.
