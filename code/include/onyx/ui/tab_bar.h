@@ -15,17 +15,17 @@ public:
     ~TabBar(void);
 
 public:
-    bool AddButton(const int id, const QString & title, const QIcon & icon);
-    bool RemoveButton(const int id);
-    bool ClickButton(const int id);
-    int  GetSelectedButton();
-    bool SetButtonText(const int id, const QString & title);
+    bool addButton(const int id, const QString & title, const QPixmap & pixmap);
+    bool removeButton(const int id);
+    bool clickButton(const int id);
+    int  selectedButton();
+    bool setButtonText(const int id, const QString & title);
 
-    bool SetOrientation(const Qt::Orientation orientation);
-    Qt::Orientation Orientation() const { return orientation_; }
+    bool setOrientation(const Qt::Orientation orientation);
+    Qt::Orientation orientation() const { return orientation_; }
 
 Q_SIGNALS:
-    void ButtonClicked(const int id);
+    void buttonClicked(TabButton *button);
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *);
@@ -33,13 +33,13 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent *);
 
 private Q_SLOTS:
-    void OnClicked(const int id, bool check);
+    void onClicked(TabButton *button);
 
 private:
-    void InitLayout();
-    void Clear();
-    void SetFocusNextPrevChild(bool next);
-    void ClickSelectedChild();
+    void createLayout();
+    void clear();
+    void setFocusNextPrevChild(bool next);
+    void clickSelectedChild();
 
 private:
     QBoxLayout layout_;

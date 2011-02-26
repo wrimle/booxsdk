@@ -1,13 +1,23 @@
 #include "onyx/base/device.h"
 #include "onyx/ui/status_bar_item_clock.h"
+#include "onyx/screen/screen_proxy.h"
 
 namespace ui
 {
+
+const QString StatusBarItemClock::DATE_FORMAT = "hh:mm";
 
 StatusBarItemClock::StatusBarItemClock(QWidget *parent)
     : StatusBarItem(CLOCK, parent)
     , start_(QDateTime::currentDateTime())
 {
+    QFont font;
+    font.setPointSize(20);
+    font.setBold(true);
+    setFont(font);
+    metrics_.reset(new QFontMetrics(font));
+    setTimeText();
+
     createLayout();
 }
 
@@ -15,21 +25,52 @@ StatusBarItemClock::~StatusBarItemClock(void)
 {
 }
 
+QSize StatusBarItemClock::sizeHint() const
+{
+    int w = metrics_->width(time_text_);
+    int h = static_cast<int> (metrics_->height());
+    return QSize(w, h);
+}
+
+QSize StatusBarItemClock::minimumSizeHint() const
+{
+    return sizeHint();
+}
+
 void StatusBarItemClock::createLayout()
 {
-    QImage & img = image();
-    setFixedWidth(img.width());
+    int min_width = metrics_->width("09:99");
+    int height = metrics_->height();
+    setMinimumSize(min_width, height);
+}
+
+// return true if new time text is set, return false otherwise.
+bool StatusBarItemClock::setTimeText()
+{
+    QDateTime current(QDateTime::currentDateTime());
+    QString new_time_text = current.toString(DATE_FORMAT);
+
+    if (new_time_text == time_text_)
+    {
+        return false;
+    }
+
+    bool update_layout = (metrics_->width(time_text_) != metrics_->width(new_time_text));
+    time_text_ = new_time_text;
+    if (update_layout)
+    {
+        updateGeometry();
+    }
+    return true;
 }
 
 void StatusBarItemClock::paintEvent(QPaintEvent *pe)
 {
     QPainter painter(this);
 
-    QImage & img = image();
-    QPoint point;
-    point.rx() = ((rect().width() - img.width()) >> 1);
-    point.ry() = ((rect().height() - img.height()) >> 1);
-    painter.drawImage(point, img);
+    painter.setPen(Qt::white);
+    setTimeText();
+    painter.drawText(rect(), Qt::AlignCenter, time_text_);
 }
 
 void StatusBarItemClock::mousePressEvent(QMouseEvent *me)
@@ -40,23 +81,16 @@ void StatusBarItemClock::mousePressEvent(QMouseEvent *me)
 void StatusBarItemClock::mouseReleaseEvent(QMouseEvent *me)
 {
     me->accept();
-    emit clicked();
-}
-
-/// Retrieve image item according to battery value and status.
-QImage & StatusBarItemClock::image()
-{
-    if (images_.isEmpty())
+    bool update = setTimeText();
+    if (update)
     {
-        images_.insert(0, QImage(resourcePath()));
+        onyx::screen::instance().enableUpdate(false);
+        repaint();
+        onyx::screen::instance().updateWidget(this,
+                onyx::screen::ScreenProxy::GU);
+        onyx::screen::instance().enableUpdate(true);
     }
-    return images_[0];
-}
-
-QString StatusBarItemClock::resourcePath()
-{
-    QString str(":/images/clock.png");
-    return str;
+    emit clicked();
 }
 
 }

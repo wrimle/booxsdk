@@ -9,42 +9,41 @@ TabBar::TabBar(QWidget *parent)
 , orientation_(Qt::Horizontal)
 , buttons_()
 {
-    InitLayout();
+    createLayout();
 }
 
 TabBar::~TabBar(void)
 {
-    Clear();
+    clear();
 }
 
-void TabBar::InitLayout()
+void TabBar::createLayout()
 {
     layout_.setSpacing(0);
     layout_.setContentsMargins(0,0,0,0);
 }
 
-bool TabBar::AddButton(const int id,
+bool TabBar::addButton(const int id,
                        const QString & title,
-                       const QIcon & icon)
+                       const QPixmap & pixmap)
 {
     TabButton * button = new TabButton(this, id);
     button->setText(title);
-    button->setIcon(icon);
+    button->setPixmap(pixmap);
     layout_.addWidget(button);
     buttons_.push_back(button);
 
-    connect(button, SIGNAL(clicked(const int, bool)),
-            this, SLOT(OnClicked(const int, bool)));
-
+    connect(button, SIGNAL(clicked(TabButton *)),
+            this, SLOT(onClicked(TabButton *)));
     return true;
 }
 
-bool TabBar::RemoveButton(const int id)
+bool TabBar::removeButton(const int id)
 {
     return false;
 }
 
-bool TabBar::ClickButton(const int id)
+bool TabBar::clickButton(const int id)
 {
     for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
     {
@@ -57,7 +56,7 @@ bool TabBar::ClickButton(const int id)
     return false;
 }
 
-int TabBar::GetSelectedButton()
+int TabBar::selectedButton()
 {
     for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
     {
@@ -69,7 +68,7 @@ int TabBar::GetSelectedButton()
     return -1;
 }
 
-bool TabBar::SetButtonText(const int id, const QString & title)
+bool TabBar::setButtonText(const int id, const QString & title)
 {
     for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
     {
@@ -83,7 +82,7 @@ bool TabBar::SetButtonText(const int id, const QString & title)
 
 }
 
-bool TabBar::SetOrientation(const Qt::Orientation orientation)
+bool TabBar::setOrientation(const Qt::Orientation orientation)
 {
     if (orientation == orientation_)
     {
@@ -107,11 +106,11 @@ void TabBar::mouseDoubleClickEvent(QMouseEvent *)
 {
     if (orientation_ == Qt::Horizontal)
     {
-        SetOrientation(Qt::Vertical);
+        setOrientation(Qt::Vertical);
     }
     else
     {
-        SetOrientation(Qt::Horizontal);
+        setOrientation(Qt::Horizontal);
     }
 }
 
@@ -125,24 +124,24 @@ void TabBar::keyReleaseEvent(QKeyEvent *e)
     {
     // May depends on the layout orientation.
     case Qt::Key_Left:
-        SetFocusNextPrevChild(false);
+        setFocusNextPrevChild(false);
         break;
     case Qt::Key_Right:
-        SetFocusNextPrevChild(true);
+        setFocusNextPrevChild(true);
         break;
     case Qt::Key_Return:
-        ClickSelectedChild();
+        clickSelectedChild();
         break;
     default:
         break;
     }
 }
 
-void TabBar::OnClicked(const int id, bool check)
+void TabBar::onClicked(TabButton *button)
 {
     for(ButtonIter iter = buttons_.begin(); iter != buttons_.end(); ++iter)
     {
-        if (id != (*iter)->id())
+        if (button != *iter)
         {
             (*iter)->setChecked(false);
         }
@@ -151,10 +150,10 @@ void TabBar::OnClicked(const int id, bool check)
             (*iter)->setChecked(true);
         }
     }
-    emit ButtonClicked(id);
+    emit buttonClicked(button);
 }
 
-void TabBar::Clear()
+void TabBar::clear()
 {
     for(ButtonIter iter = buttons_.begin(); iter != buttons_.end(); ++iter)
     {
@@ -165,7 +164,7 @@ void TabBar::Clear()
 }
 
 /// Set focus to next or prev child according to the \next.
-void TabBar::SetFocusNextPrevChild(bool next)
+void TabBar::setFocusNextPrevChild(bool next)
 {
     // Query which one has the focus.
     int pos = 0;
@@ -190,7 +189,7 @@ void TabBar::SetFocusNextPrevChild(bool next)
     }
 }
 
-void TabBar::ClickSelectedChild()
+void TabBar::clickSelectedChild()
 {
     ButtonIter iter = buttons_.begin();
     for(; iter != buttons_.end(); ++iter)

@@ -50,6 +50,28 @@ void StatusBarItemProgress::paintEvent(QPaintEvent *pe)
     p.setRenderHint(QPainter::Antialiasing);
     p.fillPath(bk_path_, Qt::white);
     p.fillPath(fg_path_, Qt::black);
+
+    drawPageText(p);
+}
+
+void StatusBarItemProgress::drawPageText(QPainter &painter)
+{
+    QString page_text("%1/%2");
+    page_text = page_text.arg(current_).arg(total_);
+
+    QFont font;
+    font.setPointSize(17);
+    font.setBold(true);
+    setFont(font);
+    QFontMetrics metrics(font);
+
+    int text_width = metrics.width(page_text);
+    int x = rect().width() / 2 - text_width / 2;
+    int y = 0;
+    int text_height = rect().height() / 2 + 5;
+    painter.setPen(Qt::white);
+    painter.drawText(QRect(x, y, text_width, text_height),
+            Qt::AlignCenter, page_text);
 }
 
 void StatusBarItemProgress::resizeEvent(QResizeEvent * event)

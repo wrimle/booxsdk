@@ -1,6 +1,6 @@
 
-#ifndef PAGINATOR_H_
-#define PAGINATOR_H_
+#ifndef ONYX_PAGINATOR_H_
+#define ONYX_PAGINATOR_H_
 
 class Paginator
 {
@@ -31,11 +31,20 @@ public:
     int size() { return size_; }
     int items_per_page() { return items_per_page_; }
 
+    int rows() { return rows_; }
+    int cols() { return cols_; }
+    void setGrid(const int r, const int c) { rows_ = r; cols_ = c; }
+
+    int user_data() { return user_data_; }
+    void setUserData(int d) { user_data_ = d; }
+
 private:
     int first_visible_;
     int items_per_page_;
     int size_;
-
+    int rows_;
+    int cols_;
+    int user_data_;
 };
 
-#endif
+#endif      // ONYX_PAGINATOR_H_

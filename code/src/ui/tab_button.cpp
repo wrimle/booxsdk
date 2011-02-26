@@ -2,41 +2,33 @@
 #include "onyx/ui/tab_button.h"
 
 static const int SPACING = 5;
+static const QString TABSTYLE = "   \
+QWidget                             \
+{                                   \
+    font-size: 22px;                \
+    margin-top: 2px;                \
+}";
 
 TabButton::TabButton(QWidget *parent, const int id)
     : QWidget(parent)
     , button_id_(id)
     , checked_(false)
-    , is_dirty_(true)
+    , pressed_(false)
+    , layout_(this)
 {
     setAutoFillBackground(false);
+    createLayout();
+    setStyleSheet(TABSTYLE);
 }
 
 TabButton::~TabButton()
 {
 }
 
-QSize TabButton::sizeHint() const
-{
-    updateLayout();
-
-    int w = std::max(iconActualSize().width(),
-                     layout_width_) + 2 * SPACING;
-    int h = iconActualSize().height() + layout_height_ + SPACING * 3;
-
-    return QSize(w, h);
-}
-
-QSize TabButton::minimumSizeHint() const
-{
-    return sizeHint();
-}
-
 bool TabButton::event(QEvent *e)
 {
     switch (e->type())
     {
-    case QEvent::MouseMove:
     case QEvent::HoverMove:
     case QEvent::HoverEnter:
     case QEvent::HoverLeave:
@@ -49,19 +41,26 @@ bool TabButton::event(QEvent *e)
     return QWidget::event(e);
 }
 
-void TabButton::setText(const QString &title)
+void TabButton::createLayout()
 {
-    if (title_layout_.text() != title)
-    {
-        is_dirty_ = true;
-        title_layout_.setText(title);
-    }
+    layout_.setContentsMargins(0, 0, 0, 0);
+    layout_.setSpacing(5);
+
+    text_label_.setAlignment(Qt::AlignCenter);
+    pixmap_label_.setAlignment(Qt::AlignCenter);
+
+    layout_.addWidget(&text_label_);
+    layout_.addWidget(&pixmap_label_);
 }
 
-void TabButton::setIcon(const QIcon & icon)
+void TabButton::setText(const QString &title)
 {
-    icon_ = icon;
-    is_dirty_ = true;
+    text_label_.setText(title);
+}
+
+void TabButton::setPixmap(const QPixmap & pixmap)
+{
+    pixmap_label_.setPixmap(pixmap);
 }
 
 void TabButton::setChecked(bool checked)
@@ -76,96 +75,73 @@ void TabButton::setChecked(bool checked)
 /// TODO, change it to better rendering.
 void TabButton::paintEvent(QPaintEvent *e)
 {
-    updateLayout();
     QPainter p(this);
-
-    static const int OFFSET = 1;
-    static const int ROUNDED = 8;
-    QPainterPath path;
-    QRect rc = rect();
-    rc.adjust(OFFSET, OFFSET, -OFFSET, -OFFSET);
-    path.addRoundedRect(rc, ROUNDED, ROUNDED, Qt::AbsoluteSize);
-
-    QPen pen(Qt::SolidLine);
+    QRect border = rect().adjusted(0, 1, 0, -1);
     if (isChecked())
     {
-        p.fillPath(path, QBrush(QColor(0, 0, 0, 255)));
-        pen.setColor(QColor(255, 255, 255, 255));
+        p.fillRect(rect(), Qt::white);
     }
     else
     {
-        p.fillPath(path, QBrush(QColor(128, 128, 128, 128)));
-        pen.setColor(QColor(0, 0, 0, 255));
+        p.fillRect(rect(), QBrush(QColor(174, 174, 174)));
+        QPen pen(QColor(97, 99, 98));
+        pen.setWidth(2);
+        p.setPen(pen);
+        p.drawRect(border);
     }
-    p.setPen(pen);
 
-    // Draw text.
-    title_layout_.draw(&p, QPoint());
-
-    // Draw icon.
-    icon().paint(&p,
-                 QRect(icon_pos_, iconActualSize()),
-                 Qt::AlignTop|Qt::AlignHCenter);
-
-    if (hasFocus())
+    if (isPressed())
     {
-        pen.setColor(QColor(255, 255, 255, 255));
+        p.fillRect(rect(), Qt::darkGray);
     }
-    else
-    {
-        pen.setColor(QColor(0, 0, 0, 255));
-    }
-
-    // Draw border.
-    p.setPen(pen);
-    p.drawPath(path);
 }
 
-void TabButton::mousePressEvent(QMouseEvent *e)
+bool TabButton::isPressed()
 {
+    return pressed_;
 }
 
-void TabButton::mouseReleaseEvent(QMouseEvent *e)
+void TabButton::setPressed(bool p)
 {
-    setChecked(true);
-    setFocus();
-    emit clicked(id(), true);
+    pressed_ = p;
+}
+
+void TabButton::activate()
+{
+    emit clicked(this);
+}
+
+void TabButton::mousePressEvent(QMouseEvent *event)
+{
+    setPressed(true);
+    QWidget::mousePressEvent(event);
+    repaint();
+}
+
+void TabButton::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (isPressed())
+    {
+        activate();
+    }
+    setPressed(false);
+    QWidget::mouseReleaseEvent(event);
+    repaint();
+}
+
+void TabButton::mouseMoveEvent(QMouseEvent * e)
+{
+    if (isPressed() && !rect().contains(e->pos()))
+    {
+        setPressed(false);
+        repaint();
+    }
 }
 
 void TabButton::click()
 {
     setChecked(true);
     setFocus();
-    emit clicked(id(), true);
+    activate();
 }
 
-void TabButton::updateLayout() const
-{
-    if (is_dirty_)
-    {
-        title_layout_.setCacheEnabled(true);
-        title_layout_.beginLayout();
-        QTextLine line = title_layout_.createLine();
-        if (line.isValid())
-        {
-            line.setLineWidth(rect().width());
-        }
-        title_layout_.endLayout();
-        layout_width_ = static_cast<int>(line.naturalTextRect().width());
-        layout_height_ = static_cast<int>(line.height());
-    }
-
-    int x = ((rect().width() - layout_width_) >> 1);
-    title_layout_.setPosition(QPoint(x, iconActualSize().height() + 2 * SPACING));
-
-    // icon.
-    icon_pos_.rx() = ((rect().width() - iconActualSize().width()) >> 1);
-    icon_pos_.ry() = SPACING;
-
-    is_dirty_ = false;
-}
-
-QSize TabButton::iconActualSize() const
-{
-    return icon().actualSize(QSize(1024, 1024));
-}

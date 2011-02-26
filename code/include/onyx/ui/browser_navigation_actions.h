@@ -18,6 +18,7 @@ enum NavigationType
     NAVIGATE_SHOW_HISTORY,
     NAVIGATE_HOME,
     NAVIGATE_CLEAR_HISTORY,
+    NAVIGATE_HYPER_LINK_VIA_KEYBOARD,
 };
 
 class BrowserNavigationActions : public BaseActions
@@ -28,7 +29,8 @@ public:
 
 public:
     /// Generate or re-generate the view type actions group.
-    void generateActions(QWebHistory *history);
+    void generateActions(QWebHistory *history,
+            bool hyperlink_navigation_mode = false);
 
     /// Retrieve the selected action.
     NavigationType selected();

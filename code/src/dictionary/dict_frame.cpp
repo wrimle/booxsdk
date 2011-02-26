@@ -265,6 +265,11 @@ bool DictFrame::lookup(const QString &word)
     QString result;
     bool ret = dict_mgr_.translate(word_, result);
 
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
+
     // Result
     doc_.setHtml(result);
 

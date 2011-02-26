@@ -59,6 +59,12 @@
     <file>images/zoom_to_height.png</file>
     <file>images/zoom_to_page.png</file>
     <file>images/zoom_to_width.png</file>
+    <file>images/zoom_10%.png</file>
+    <file>images/zoom_20%.png</file>
+    <file>images/zoom_30%.png</file>
+    <file>images/zoom_40%.png</file>
+    <file>images/zoom_50%.png</file>
+    <file>images/zoom_60%.png</file>
     <file>images/zoom_75%.png</file>
     <file>images/zoom_100%.png</file>
     <file>images/zoom_125%.png</file>
@@ -221,5 +227,6 @@
     <file>images/open_dictionary_tool.png</file>
     <file>images/retrieve_words.png</file>
     <file>images/similar_words.png</file>
+    <file>images/hyperlink_navigation_mode.png</file>
   </qresource>
 </RCC>
