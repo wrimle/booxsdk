@@ -2,6 +2,7 @@
 
 #include "onyx/data/sketch_io.h"
 #include "onyx/data/sketch_proxy.h"
+#include "onyx/sys/platform.h"
 
 namespace sketch
 {
@@ -977,7 +978,10 @@ void SketchProxy::driverDrawLines(StrokeLines &lines,
     }
 
     gc_.fastDrawLines(points, ctx);
-    onyx::screen::instance().updateScreen(onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
+    if (!sys::is166E())
+    {
+        onyx::screen::instance().updateScreen(onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
+    }
     lines.clear();
 }
 

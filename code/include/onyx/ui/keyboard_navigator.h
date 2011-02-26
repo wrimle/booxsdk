@@ -9,6 +9,8 @@ namespace ui
 
 QWidget * moveFocus(QWidget *parent, int key);
 
+QWidget * moveFocusCircularly(QWidget *parent, int key);
+
 }
 
 #endif //  ONYX_KEYBOARD_NAVIGATOR_H_

@@ -259,6 +259,13 @@ QWidget * moveFocus(QWidget *parent, int key)
     return 0;
 }
 
+
+QWidget * moveFocusCircularly(QWidget *parent, int key)
+{
+
+    return 0;
+}
+
 }
 
 
