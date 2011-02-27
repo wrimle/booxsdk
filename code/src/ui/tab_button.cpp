@@ -6,7 +6,7 @@ static const int SPACING = 5;
 static const QString TABSTYLE = "   \
 QWidget                             \
 {                                   \
-    font-size: 22px;                \
+    font-size: 20px;                \
     margin-top: 2px;                \
 }";
 
