@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "onyx/ui/tab_button.h"
+#include "onyx/screen/screen_proxy.h"
 
 static const int SPACING = 5;
 static const QString TABSTYLE = "   \
@@ -111,11 +112,20 @@ void TabButton::activate()
     emit clicked(this);
 }
 
+void TabButton::repaintAndRefreshScreen()
+{
+    repaint();
+    onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::DW, false, onyx::screen::ScreenCommand::WAIT_NONE);
+}
+
+
 void TabButton::mousePressEvent(QMouseEvent *event)
 {
     setPressed(true);
+    onyx::screen::instance().enableUpdate(false);
     QWidget::mousePressEvent(event);
-    repaint();
+    repaintAndRefreshScreen();
+    onyx::screen::instance().enableUpdate(true);
 }
 
 void TabButton::mouseReleaseEvent(QMouseEvent *event)
@@ -125,8 +135,10 @@ void TabButton::mouseReleaseEvent(QMouseEvent *event)
         activate();
     }
     setPressed(false);
+    onyx::screen::instance().enableUpdate(false);
     QWidget::mouseReleaseEvent(event);
-    repaint();
+    repaintAndRefreshScreen();
+    onyx::screen::instance().enableUpdate(true);
 }
 
 void TabButton::mouseMoveEvent(QMouseEvent * e)
@@ -134,7 +146,7 @@ void TabButton::mouseMoveEvent(QMouseEvent * e)
     if (isPressed() && !rect().contains(e->pos()))
     {
         setPressed(false);
-        repaint();
+        repaintAndRefreshScreen();
     }
 }
 

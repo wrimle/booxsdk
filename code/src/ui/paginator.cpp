@@ -115,7 +115,7 @@ int Paginator::pages()
     if (items_per_page_ > 0)
     {
         int count = size_ / items_per_page_ + 1;
-        if (size_ % items_per_page_ == 0)
+        if ((size_ % items_per_page_ == 0) && size_ > 0)
         {
             --count;
         }

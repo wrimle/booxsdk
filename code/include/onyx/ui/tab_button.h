@@ -38,6 +38,7 @@ private:
     bool isPressed();
     void setPressed(bool p = true);
     void activate();
+    void repaintAndRefreshScreen();
 
 private:
     int button_id_;
