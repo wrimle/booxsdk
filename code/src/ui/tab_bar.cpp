@@ -104,6 +104,7 @@ bool TabBar::setOrientation(const Qt::Orientation orientation)
 
 void TabBar::mouseDoubleClickEvent(QMouseEvent *)
 {
+    /*
     if (orientation_ == Qt::Horizontal)
     {
         setOrientation(Qt::Vertical);
@@ -112,6 +113,7 @@ void TabBar::mouseDoubleClickEvent(QMouseEvent *)
     {
         setOrientation(Qt::Horizontal);
     }
+    */
 }
 
 void TabBar::keyPressEvent(QKeyEvent *)
