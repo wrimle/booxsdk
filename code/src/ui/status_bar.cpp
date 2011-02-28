@@ -157,7 +157,8 @@ void StatusBar::showItem(StatusBarItemType id, bool show)
 
 bool StatusBar::setProgress(const int value,
                             const int total,
-                            bool show_message)
+                            bool show_message,
+                            const QString &message)
 {
     if (total <= 0)
     {
@@ -168,7 +169,7 @@ bool StatusBar::setProgress(const int value,
     if (ptr)
     {
         StatusBarItemProgress *wnd = static_cast<StatusBarItemProgress*>(ptr);
-        wnd->setProgress(value, total);
+        wnd->setProgress(value, total, show_message, message);
     }
 
     if (show_message && (ptr = item(MESSAGE, false)))

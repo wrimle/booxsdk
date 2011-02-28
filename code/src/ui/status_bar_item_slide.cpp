@@ -13,6 +13,8 @@ StatusBarItemProgress::StatusBarItemProgress(QWidget *parent)
     , current_(0)
     , total_(1)
     , pressing_value_(-1)
+    , show_message_(true)
+    , message_("")
 {
     createLayout();
 
@@ -24,8 +26,11 @@ StatusBarItemProgress::~StatusBarItemProgress(void)
 {
 }
 
-void StatusBarItemProgress::setProgress(const int current, const int total)
+void StatusBarItemProgress::setProgress(const int current, const int total,
+        const bool show_message, const QString &message)
 {
+    show_message_ = show_message;
+    message_ = message;
     if (current == current_ && total == total_)
     {
         return;
@@ -51,13 +56,20 @@ void StatusBarItemProgress::paintEvent(QPaintEvent *pe)
     p.fillPath(bk_path_, Qt::white);
     p.fillPath(fg_path_, Qt::black);
 
-    drawPageText(p);
+    if (show_message_)
+    {
+        drawMessage(p);
+    }
 }
 
-void StatusBarItemProgress::drawPageText(QPainter &painter)
+void StatusBarItemProgress::drawMessage(QPainter &painter)
 {
-    QString page_text("%1/%2");
-    page_text = page_text.arg(current_).arg(total_);
+    QString message("%1/%2");
+    message = message.arg(current_).arg(total_);
+    if (!message_.isEmpty())
+    {
+        message = message_;
+    }
 
     QFont font;
     font.setPointSize(17);
@@ -65,13 +77,13 @@ void StatusBarItemProgress::drawPageText(QPainter &painter)
     setFont(font);
     QFontMetrics metrics(font);
 
-    int text_width = metrics.width(page_text);
+    int text_width = metrics.width(message);
     int x = rect().width() / 2 - text_width / 2;
     int y = 0;
     int text_height = rect().height() / 2 + 5;
     painter.setPen(Qt::white);
     painter.drawText(QRect(x, y, text_width, text_height),
-            Qt::AlignCenter, page_text);
+            Qt::AlignCenter, message);
 }
 
 void StatusBarItemProgress::resizeEvent(QResizeEvent * event)

@@ -15,7 +15,9 @@ public:
     virtual ~StatusBarItemProgress(void);
 
 public Q_SLOTS:
-    void setProgress(const int current, const int total);
+    void setProgress(const int current, const int total,
+            const bool show_message = true,
+            const QString &message = "");
     void progress(int & current, int & total);
 
 Q_SIGNALS:
@@ -39,12 +41,14 @@ private:
     void updatefgPath(int value);
     void updatePath(QPainterPath & path, const QRect & rect);
 
-    void drawPageText(QPainter &painter);
+    void drawMessage(QPainter &painter);
 
 private:
     int current_;
     int total_;
     int pressing_value_;
+    bool show_message_;
+    QString message_;
     QTimer timer_;
 
     QPainterPath bk_path_;
