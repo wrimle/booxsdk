@@ -106,6 +106,18 @@ bool DictWidget::ensureVisible(const QRectF & rect,
     return changed;
 }
 
+void DictWidget::formatResult(QString &result)
+{
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
+    if (!result.contains("<html>", Qt::CaseInsensitive))
+    {
+        result.replace("\n", "<br>");
+    }
+}
+
 bool DictWidget::lookup(const QString &word)
 {
     if (word.isEmpty())
@@ -122,10 +134,7 @@ bool DictWidget::lookup(const QString &word)
     QString result;
     bool ret = dict_.translate(word_, result);
 
-    if (result.isEmpty())
-    {
-        result = "Not Found In Dictionary.";
-    }
+    formatResult(result);
 
     // Result
     doc_.setHtml(result);

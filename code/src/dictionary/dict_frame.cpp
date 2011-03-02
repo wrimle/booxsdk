@@ -249,6 +249,18 @@ void DictFrame::onDetailsClicked(bool)
     list_widget_.hide();
 }
 
+void DictFrame::formatResult(QString &result)
+{
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
+    if (!result.contains("<html>", Qt::CaseInsensitive))
+    {
+        result.replace("\n", "<br>");
+    }
+}
+
 bool DictFrame::lookup(const QString &word)
 {
     if (word.isEmpty())
@@ -265,10 +277,7 @@ bool DictFrame::lookup(const QString &word)
     QString result;
     bool ret = dict_mgr_.translate(word_, result);
 
-    if (result.isEmpty())
-    {
-        result = "Not Found In Dictionary.";
-    }
+    formatResult(result);
 
     // Result
     doc_.setHtml(result);
