@@ -18,70 +18,80 @@ enum DownloadState
     FAILED,
 };
 
-struct DownloadItem
+class DownloadItemInfo : public  QVariantMap
 {
 public:
-    DownloadItem();
-    DownloadItem(const QString &url);
-    ~DownloadItem();
+    explicit DownloadItemInfo(const QVariantMap & vm = QVariantMap());
+    ~DownloadItemInfo();
 
-    bool operator == (const DownloadItem &right);
+    bool operator == (const DownloadItemInfo &right);
 
-public:
-    QString url;        ///< Download url.
-    QString path;       ///< Local file path.
-    DownloadState state;    ///< Download state.
-    QString time_stamp;
+    QString url() const;
+    void setUrl(const QString & url);
+
+    QString path() const;
+    void setPath(const QString & path);
+
+    int size() const;
+    void setSize(int size);
+
+    DownloadState state() const;
+    void setState(DownloadState state);
+
+    QString timeStamp() const;
+    void setTimeStamp(const QString & timeStamp);
 };
-typedef QVector<DownloadItem> DownloadList;
+
+typedef QVector<DownloadItemInfo> DownloadInfoList;
 
 struct LessByUrl
 {
-    bool operator()( const DownloadItem & a, const DownloadItem & b ) const
+    bool operator()( const DownloadItemInfo & a, const DownloadItemInfo & b ) const
     {
-        return (a.url.compare(b.url, Qt::CaseInsensitive) < 0);
+        return (a.url().compare(b.url(), Qt::CaseInsensitive) < 0);
     }
 };
 
 struct GreaterByUrl
 {
-    bool operator()( const DownloadItem & a, const DownloadItem & b ) const
+    bool operator()( const DownloadItemInfo & a, const DownloadItemInfo & b ) const
     {
-        return (a.url.compare(b.url, Qt::CaseInsensitive) > 0);
+        return (a.url().compare(b.url(), Qt::CaseInsensitive) > 0);
     }
 };
 
 struct LessByTimestamp
 {
-    bool operator()( const DownloadItem & a, const DownloadItem & b ) const
+    bool operator()( const DownloadItemInfo & a, const DownloadItemInfo & b ) const
     {
-        return (a.time_stamp.compare(b.time_stamp, Qt::CaseInsensitive) < 0);
+        return (a.timeStamp().compare(b.timeStamp(), Qt::CaseInsensitive) < 0);
     }
 };
 
 struct GreaterByTimestamp
 {
-    bool operator()( const DownloadItem & a, const DownloadItem & b ) const
+    bool operator()( const DownloadItemInfo & a, const DownloadItemInfo & b ) const
     {
-        return (a.time_stamp.compare(b.time_stamp, Qt::CaseInsensitive) > 0);
+        return (a.timeStamp().compare(b.timeStamp(), Qt::CaseInsensitive) > 0);
     }
 };
 
 class DownloadDB
 {
 public:
-    DownloadDB();
+    DownloadDB(const QString & db_name = "download.db");
     ~DownloadDB();
 
 public:
     bool open();
     bool close();
 
-    DownloadList pendingList(const QStringList & input = QStringList(),
+    DownloadInfoList list();
+    DownloadInfoList pendingList(const DownloadInfoList & input = DownloadInfoList(),
                              bool force_all = false,
                              bool sort = true);
 
-    bool updateState(const DownloadItem & item);
+    bool update(const DownloadItemInfo & item);
     bool updateState(const QString & url, DownloadState state = FINISHED);
 
 private:
@@ -90,6 +100,8 @@ private:
 
 private:
     scoped_ptr<QSqlDatabase> database_;
+
+    const QString database_name_;
 
 };
 

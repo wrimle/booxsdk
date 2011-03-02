@@ -352,11 +352,12 @@ TEST(ContentManagerTest, DownloadDB)
     EXPECT_TRUE(db.open());
 
     const QString url = "http://test.com/test.html";
-    DownloadList list = db.pendingList();
+    DownloadInfoList list = db.pendingList();
     EXPECT_TRUE(db.updateState(url, cms::DOWNLOADING));
 
     list = db.pendingList();
-    DownloadItem item(url);
+    DownloadItemInfo item;
+    item.setUrl(url);
     EXPECT_TRUE(list.contains(item));
 
 }
