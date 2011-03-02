@@ -61,6 +61,9 @@ private:
 
     void returnToLibrary();
 
+    // for the result of dictionary look up
+    void formatResult(QString &result);
+
 private Q_SLOTS:
     void onItemClicked(const QModelIndex & index);
     void onDetailsClicked(bool);
