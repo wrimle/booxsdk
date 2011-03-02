@@ -32,6 +32,18 @@ int statusBarHeight()
     return 35;
 }
 
+/// Return the distance between first and second widget.
+int distance(QWidget * first, QWidget *second)
+{
+    QRect first_rc(first->mapToGlobal(QPoint()), first->size());
+    QRect second_rc(second->mapToGlobal(QPoint()), second->size());
+    QPoint first_pt = first_rc.center();
+    QPoint second_pt = second_rc.center();
+    int x = (second_pt.x() - first_pt.x()) * (second_pt.x() - first_pt.x());
+    int y = (second_pt.y() - first_pt.y()) * (second_pt.y() - first_pt.y());
+    return static_cast<int>(sqrt(static_cast<float>(x) + static_cast<float>(y)));
+}
+
 }
 
 

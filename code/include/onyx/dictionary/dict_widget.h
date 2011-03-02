@@ -69,6 +69,9 @@ private:
 
     void checkSelectedButton(bool clear_focus = true);
 
+    // for the result of dictionary look up
+    void formatResult(QString &result);
+
 private Q_SLOTS:
     void onTimeout();
     void onItemClicked(const QModelIndex & index);
