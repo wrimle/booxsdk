@@ -13,6 +13,8 @@ bool dockWidget(QWidget *target, QWidget * container, Qt::Alignment align);
 
 int statusBarHeight();
 
+int distance(QWidget * first, QWidget *second);
+
 };
 
 #endif  // ONYX_UI_UTILS_H_
