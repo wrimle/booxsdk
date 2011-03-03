@@ -71,6 +71,11 @@ void ScreenUpdateWatcher::updateScreen()
     }
 }
 
+bool ScreenUpdateWatcher::isQueueEmpty()
+{
+    return queue_.isEmpty();
+}
+
 };
 
 };
