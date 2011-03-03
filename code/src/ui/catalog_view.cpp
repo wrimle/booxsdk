@@ -212,7 +212,6 @@ int CatalogView::moveUp(int current)
 
 int CatalogView::moveDown(int current)
 {
-    bool process = false;
     if (row(current) == paginator().rows() - 1)
     {
         if (searchNeighbors(DOWN) || searchNeighbors(RECYCLE_UP))
@@ -497,7 +496,6 @@ void CatalogView::onItemActivated(ContentView *item)
     {
         return;
     }
-    OData * d = item->data();
     setChecked();
 }
 
@@ -651,7 +649,6 @@ bool CatalogView::searchNeighbors(const QString &type)
     }
     QPoint offset;
     int dist = INT_MAX;
-    CatalogView * catalog = 0;
     ContentView * ret = 0;
 
     QWidget * wnd = focusItem();

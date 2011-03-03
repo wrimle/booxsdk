@@ -215,7 +215,7 @@ void CoverView::paintEvent(QPaintEvent * event)
     }
 }
 
-void CoverView::drawCover(QPainter & painter, QRect & rect)
+void CoverView::drawCover(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("cover"))
     {
@@ -225,7 +225,7 @@ void CoverView::drawCover(QPainter & painter, QRect & rect)
     }
 }
 
-void CoverView::drawTitle(QPainter & painter, QRect & rect)
+void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("title"))
     {
