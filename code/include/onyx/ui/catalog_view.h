@@ -68,6 +68,11 @@ public:
     static const QString RECYCLE_UP;
     static const QString RECYCLE_DOWN;
 
+protected Q_SLOTS:
+    virtual void onItemActivated(ContentView *item);
+    virtual void onItemKeyRelease(ContentView *item, QKeyEvent *key);
+    virtual void onMouseMoved(QPoint last, QPoint current);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -93,9 +98,7 @@ Q_SIGNALS:
     void outOfDown(CatalogView*, int, int, bool &);
 
 private slots:
-    void onItemActivated(ContentView *item);
-    void onItemKeyRelease(ContentView *item, QKeyEvent *key);
-    void onMouseMoved(QPoint last, QPoint current);
+
     QWidget * moveFocus(int index);
     ContentView *createSubItem();
 

@@ -249,6 +249,7 @@ void CatalogView::gotoPage(const int p)
 void CatalogView::setData(const ODatas &list)
 {
     datas_ = list;
+    arrangeAll();
     resetPaginator(true);
 }
 
@@ -504,7 +505,7 @@ void CatalogView::onItemActivated(ContentView *item)
 void CatalogView::onItemKeyRelease(ContentView *item, QKeyEvent *key)
 {
     QWidget * p = 0;
-    int index = sub_items_.indexOf(item);
+    int index = subItems().indexOf(item);
 
     // check index at first.
 
