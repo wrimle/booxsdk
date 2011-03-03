@@ -6,6 +6,7 @@
 #include <QtCore/QtCore>
 #include <QtSql/QtSql>
 #include "onyx/base/base.h"
+#include "onyx/data/data.h"
 
 namespace cms
 {
@@ -18,7 +19,7 @@ enum DownloadState
     FAILED,
 };
 
-class DownloadItemInfo : public  QVariantMap
+class DownloadItemInfo : public OData
 {
 public:
     explicit DownloadItemInfo(const QVariantMap & vm = QVariantMap());

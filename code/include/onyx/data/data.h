@@ -8,7 +8,7 @@
 class OData : public QVariantMap
 {
 public:
-    OData();
+    OData(const QVariantMap & vm = QVariantMap());
     virtual ~OData();
 
 public:

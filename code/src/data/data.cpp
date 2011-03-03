@@ -3,8 +3,8 @@
 #include "onyx/data/data.h"
 
 
-OData::OData()
-: QVariantMap()
+OData::OData(const QVariantMap & vm)
+: QVariantMap(vm)
 {
 }
 
