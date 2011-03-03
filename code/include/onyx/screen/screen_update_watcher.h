@@ -22,6 +22,7 @@ public:
 public:
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w);
     void updateScreen();
+    bool isQueueEmpty();
 
 private:
     ScreenUpdateWatcher();
