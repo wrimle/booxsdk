@@ -7,6 +7,9 @@
 #include "data.h"
 #include "factory.h"
 
+namespace ui
+{
+
 class CatalogView : public QWidget
 {
     Q_OBJECT
@@ -128,5 +131,8 @@ private:
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;
 };
+
+
+};  // namespace ui
 
 #endif

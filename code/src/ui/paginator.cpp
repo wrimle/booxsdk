@@ -1,5 +1,8 @@
 
-#include "paginator.h"
+#include "onyx/ui/paginator.h"
+
+namespace ui
+{
 
 Paginator::Paginator()
 : cursor_(0)
@@ -182,4 +185,6 @@ int Paginator::offsetInCurrentPage()
         return 0;
     }
     return last_visible() - first_visible() + 1;
+}
+
 }

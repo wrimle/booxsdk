@@ -4,6 +4,9 @@
 
 #include "content_view.h"
 
+namespace ui
+{
+
 class Factory
 {
 public:
@@ -14,4 +17,6 @@ public:
     ContentView * createView(QWidget *parent, const QString &type = QString());
 };
 
-#endif      // ONYX_PAGINATOR_H_
+};  // namespace ui
+
+#endif      // ONYX_CONTENT_VIEW_FACTORY_H_

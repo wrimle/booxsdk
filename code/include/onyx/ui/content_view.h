@@ -6,6 +6,9 @@
 #include <QLabel>
 #include "data.h"
 
+namespace ui
+{
+
 class ContentView : public QWidget
 {
     Q_OBJECT
@@ -71,5 +74,6 @@ protected:
 
 };
 
+};
 
 #endif

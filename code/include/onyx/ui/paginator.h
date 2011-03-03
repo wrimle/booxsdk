@@ -2,6 +2,9 @@
 #ifndef ONYX_PAGINATOR_H_
 #define ONYX_PAGINATOR_H_
 
+namespace ui
+{
+
 class Paginator
 {
 public:
@@ -49,5 +52,7 @@ private:
     int rows_;
     int cols_;
 };
+
+}
 
 #endif      // ONYX_PAGINATOR_H_

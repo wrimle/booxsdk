@@ -1,4 +1,7 @@
-#include "data.h"
+#include "onyx/ui/data.h"
+
+namespace ui
+{
 
 OData::OData()
 : QVariantMap()
@@ -23,5 +26,7 @@ void OData::debugDump()
         i++;
     }
 // #endif
+}
+
 }
 

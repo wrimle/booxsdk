@@ -5,6 +5,9 @@
 #include <QtCore/QtCore>
 #include <QPixmap>
 
+namespace ui
+{
+
 /// Onyx content. It can be an ebook or a catalog.
 class OData : public QVariantMap
 {
@@ -18,6 +21,8 @@ public:
 };
 
 typedef QVector<OData *> ODatas;
+
+};
 
 #endif
 

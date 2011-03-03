@@ -4,7 +4,10 @@
 #include "onyx/sys/sys.h"
 #include "onyx/ui/ui_utils.h"
 #include "onyx/screen/screen_update_watcher.h"
-#include "catalog_view.h"
+#include "onyx/ui/catalog_view.h"
+
+namespace ui
+{
 
 const QString CatalogView::LEFT         = "left";
 const QString CatalogView::RIGHT        = "right";
@@ -685,4 +688,6 @@ bool CatalogView::searchNeighbors(const QString &type)
         ret->setFocus();
     }
     return true;
+}
+
 }

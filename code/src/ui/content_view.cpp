@@ -4,17 +4,14 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include "onyx/screen/screen_update_watcher.h"
-#include "content_view.h"
+#include "onyx/ui/content_view.h"
+
+namespace ui
+{
 
 static QPoint s_mouse;
-static const QString LABELSTYLE = "\
-    font-size: 20px    \
-";
-static const QString SUBLABELSTYLE = "\
-    font-size: 18px    \
-";
-
 static const int MARGIN = 4;
+
 ContentView::ContentView(QWidget *parent)
         : QWidget(parent)
         , data_(0)
@@ -236,4 +233,4 @@ void CoverView::drawTitle(QPainter & painter, QRect & rect)
     }
 }
 
-
+}
