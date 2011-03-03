@@ -23,6 +23,12 @@ public:
     int currentPage();
     int pages();
 
+    int cursor() { return cursor_; }
+    bool moveLeft();
+    bool moveRight();
+    bool moveUp();
+    bool moveDown();
+
     int first_visible() { return first_visible_; }
     int last_visible();
 
@@ -35,16 +41,13 @@ public:
     int cols() { return cols_; }
     void setGrid(const int r, const int c) { rows_ = r; cols_ = c; }
 
-    int user_data() { return user_data_; }
-    void setUserData(int d) { user_data_ = d; }
-
 private:
-    int first_visible_;
+    int cursor_;            ///< Absolute position in list.
+    int first_visible_;     ///< Absolute position in list.
     int items_per_page_;
     int size_;
     int rows_;
     int cols_;
-    int user_data_;
 };
 
 #endif      // ONYX_PAGINATOR_H_
