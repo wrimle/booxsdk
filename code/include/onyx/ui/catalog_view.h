@@ -24,8 +24,11 @@ public slots:
     void setChecked(bool checked = true);
     bool isChecked() { return checked_; }
 
-    void setSelfRecycle(bool r = true);
-    bool isSelfRecycle();
+    void setHorSelfRecycle(bool r = true);
+    bool isHorSelfRecycle();
+
+    void setVerSelfRecycle(bool r = true);
+    bool isVerSelfRecycle();
 
     void goPrev();
     void goNext();
@@ -131,7 +134,8 @@ private:
     ODatas datas_;
     int margin_;
     bool checked_;
-    bool self_recycle_;
+    bool self_hor_recycle_;
+    bool self_ver_recycle_;
     bool show_border_;
     bool fixed_grid_;
     QSize size_;
