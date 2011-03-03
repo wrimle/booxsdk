@@ -248,8 +248,8 @@ void CatalogView::gotoPage(const int p)
 void CatalogView::setData(const ODatas &list)
 {
     datas_ = list;
-    arrangeAll();
     resetPaginator(true);
+    arrangeAll();
 }
 
 ODatas & CatalogView::data()
