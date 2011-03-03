@@ -2,9 +2,11 @@
 #define ONYX_CATALOG_VIEW_H_
 
 #include <QGridLayout>
+
+#include "onyx/data/data.h"
+
 #include "content_view.h"
 #include "paginator.h"
-#include "data.h"
 #include "factory.h"
 
 namespace ui
@@ -48,6 +50,12 @@ public slots:
     int rows();
     int cols();
 
+    void associateData();
+    void associateEmptyData();
+    void arrangeAll();
+    void resetPaginator(bool sync_layout = false);
+    void broadcastPositionSignal();
+
     void setNeighbor(CatalogView *neighbor, const QString& type);
 
 public:
@@ -68,6 +76,10 @@ protected:
     void changeEvent(QEvent *event);
     void resizeEvent(QResizeEvent * event);
     void paintEvent(QPaintEvent * event);
+
+protected:
+    QVector<ContentView *> & subItems() { return sub_items_; }
+    Paginator & paginator();
 
 Q_SIGNALS:
     void cursorMoved(int old, int new_pos);
@@ -95,10 +107,6 @@ private:
     void calculateLayout(int &rows, int &cols);
     void arrangeSubWidgets();
 
-    void associateData();
-    void associateEmptyData();
-    void arrangeAll();
-
     int moveLeft(int current);
     int moveRight(int current);
     int moveUp(int current);
@@ -112,10 +120,6 @@ private:
 
     int row(int index);
     int col(int index);
-
-    Paginator & paginator();
-    void resetPaginator(bool sync_layout = false);
-    void broadcastPositionSignal();
 
 private:
     QGridLayout layout_;

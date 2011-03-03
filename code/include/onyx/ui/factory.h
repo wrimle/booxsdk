@@ -14,7 +14,7 @@ public:
     ~Factory();
 
 public:
-    ContentView * createView(QWidget *parent, const QString &type = QString());
+    virtual ContentView * createView(QWidget *parent, const QString &type = QString());
 };
 
 };  // namespace ui

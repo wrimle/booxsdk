@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
-#include "data.h"
+#include "onyx/data/data.h"
 
 namespace ui
 {
