@@ -1,13 +1,16 @@
 
 #include "onyx/ui/paginator.h"
 
+namespace ui
+{
+
 Paginator::Paginator()
-: first_visible_(0)
+: cursor_(0)
+, first_visible_(0)
 , items_per_page_(1)
 , size_(0)
 , rows_(0)
 , cols_(0)
-, user_data_(0)
 {
 }
 
@@ -36,6 +39,7 @@ void Paginator::reset(int first, int items_per_page, int total)
     {
         size_ = 0;
     }
+    cursor_ = first_visible_;
 }
 
 bool Paginator::prev()
@@ -50,6 +54,7 @@ bool Paginator::prev()
     {
         first_visible_ = 0;
     }
+    cursor_ = first_visible_;
     return true;
 }
 
@@ -61,10 +66,11 @@ bool Paginator::next()
     }
 
     first_visible_ += items_per_page_;
-    if (first_visible_ >= size_) // - items_per_page_)
+    if (first_visible_ >= size_)
     {
         first_visible_ = size_ - items_per_page_;
     }
+    cursor_ = first_visible_;
     return true;
 }
 
@@ -76,6 +82,39 @@ bool Paginator::jump(int new_page)
         return false;
     }
     first_visible_ = new_pos;
+    cursor_ = first_visible_;
+    return true;
+}
+
+bool Paginator::moveLeft()
+{
+    if (cursor_ - 1 < first_visible_)
+    {
+        return prev();
+    }
+    --cursor_;
+    return true;
+}
+
+bool Paginator::moveRight()
+{
+    if (cursor_ + 1 > last_visible())
+    {
+        return next();
+    }
+    ++cursor_;
+    return true;
+}
+
+bool Paginator::moveUp()
+{
+    cursor_ -= cols();
+    return true;
+}
+
+bool Paginator::moveDown()
+{
+    cursor_ += cols();
     return true;
 }
 
@@ -146,4 +185,6 @@ int Paginator::offsetInCurrentPage()
         return 0;
     }
     return last_visible() - first_visible() + 1;
+}
+
 }
