@@ -12,7 +12,7 @@ static const QString TAG_STATE = "state";
 static const QString TAG_TIMESTAMP = "timestamp";
 
 DownloadItemInfo::DownloadItemInfo(const QVariantMap & vm)
-    : QVariantMap(vm)
+    : OData(vm)
 {
     setState(STATE_INVALID);
     setTimeStamp(QDateTime::currentDateTime().toString(dateFormat()));

@@ -25,7 +25,8 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , factory_(factory)
         , margin_(4)
         , checked_(true)
-        , self_recycle_(false)
+        , self_hor_recycle_(false)
+        , self_ver_recycle_(false)
         , show_border_(false)
         , fixed_grid_(false)
         , size_(200, 150)
@@ -37,14 +38,24 @@ CatalogView::~CatalogView()
 {
 }
 
-void CatalogView::setSelfRecycle(bool r)
+void CatalogView::setHorSelfRecycle(bool r)
 {
-    self_recycle_ = r;
+    self_hor_recycle_ = r;
 }
 
-bool CatalogView::isSelfRecycle()
+bool CatalogView::isHorSelfRecycle()
 {
-    return self_recycle_;
+    return self_hor_recycle_;
+}
+
+void CatalogView::setVerSelfRecycle(bool r)
+{
+    self_ver_recycle_ = r;
+}
+
+bool CatalogView::isVerSelfRecycle()
+{
+    return self_ver_recycle_;
 }
 
 void CatalogView::createLayout()
@@ -171,7 +182,7 @@ int CatalogView::moveLeft(int current)
 {
     if (col(current) == 0)
     {
-        if (!isSelfRecycle())
+        if (!isHorSelfRecycle())
         {
             if (searchNeighbors(LEFT) || searchNeighbors(RECYCLE_RIGHT))
             {
@@ -180,7 +191,7 @@ int CatalogView::moveLeft(int current)
         }
         else
         {
-            current = paginator().last_visible();
+            return current = paginator().last_visible();
         }
     }
     return --current;
@@ -190,9 +201,16 @@ int CatalogView::moveRight(int current)
 {
     if (col(current) == paginator().cols() - 1)
     {
-        if (searchNeighbors(RIGHT) ||searchNeighbors(RECYCLE_LEFT))
+        if (!isHorSelfRecycle())
         {
-            return -1;
+            if (searchNeighbors(RIGHT) ||searchNeighbors(RECYCLE_LEFT))
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return current = paginator().first_visible();
         }
     }
     return ++current;
@@ -202,9 +220,16 @@ int CatalogView::moveUp(int current)
 {
     if (row(current) == 0)
     {
-        if (searchNeighbors(UP) || searchNeighbors(RECYCLE_DOWN))
+        if (!isVerSelfRecycle())
         {
-            return -1;
+            if (searchNeighbors(UP) || searchNeighbors(RECYCLE_DOWN))
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return current = paginator().last_visible();
         }
     }
     return current - paginator().cols();
@@ -214,9 +239,16 @@ int CatalogView::moveDown(int current)
 {
     if (row(current) == paginator().rows() - 1)
     {
-        if (searchNeighbors(DOWN) || searchNeighbors(RECYCLE_UP))
+        if (!isVerSelfRecycle())
         {
-            return -1;
+            if (searchNeighbors(DOWN) || searchNeighbors(RECYCLE_UP))
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return current = paginator().first_visible();
         }
     }
     return current + paginator().cols();
