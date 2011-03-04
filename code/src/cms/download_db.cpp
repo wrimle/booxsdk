@@ -142,7 +142,12 @@ DownloadInfoList DownloadDB::pendingList(const DownloadInfoList & input,
 
     while (query.next())
     {
-        DownloadItemInfo item(query.value(1).toMap());
+        QVariantMap m;
+        QByteArray ba = query.value(1).toByteArray();
+        QDataStream stream(&ba, QIODevice::ReadOnly);
+        stream >> m;
+
+        DownloadItemInfo item(m);
 
         // Ignore items finished.
         if (item.state() != FINISHED || force_all)
@@ -175,7 +180,12 @@ bool DownloadDB::update(const DownloadItemInfo & item)
     QSqlQuery query(db());
     query.prepare( "INSERT OR REPLACE into download (url, value) values(?, ?)");
     query.addBindValue(item.url());
-    query.addBindValue(item);
+
+    QByteArray ba;
+    QDataStream stream(&ba, QIODevice::WriteOnly);
+    stream << item;
+
+    query.addBindValue(ba);
     return query.exec();
 }
 
@@ -194,7 +204,12 @@ bool DownloadDB::updateState(const QString & myUrl, DownloadState state)
     {
         if (query.value(0).toString() == myUrl)
         {
-            DownloadItemInfo item(query.value(1).toMap());
+            QVariantMap m;
+            QByteArray ba = query.value(1).toByteArray();
+            QDataStream stream(&ba, QIODevice::ReadOnly);
+            stream >> m;
+
+            DownloadItemInfo item(m);
             item.setUrl(myUrl);
             item.setState(state);
             return update(item);
