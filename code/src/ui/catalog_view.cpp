@@ -535,7 +535,7 @@ void CatalogView::onItemActivated(ContentView *item)
 void CatalogView::onItemKeyRelease(ContentView *item, QKeyEvent *key)
 {
     QWidget * p = 0;
-    int index = subItems().indexOf(item);
+    int index = visibleSubItems().indexOf(item);
 
     // check index at first.
 

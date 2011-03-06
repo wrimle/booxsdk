@@ -86,7 +86,7 @@ protected:
     void paintEvent(QPaintEvent * event);
 
 protected:
-    QVector<ContentView *> & subItems() { return sub_items_; }
+    QVector<ContentView *> & visibleSubItems() { return sub_items_; }
     Paginator & paginator();
 
 Q_SIGNALS:
