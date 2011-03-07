@@ -10,6 +10,8 @@ static const QString TAG_PATH = "path";
 static const QString TAG_SIZE = "size";
 static const QString TAG_STATE = "state";
 static const QString TAG_TIMESTAMP = "timestamp";
+static const QString TAG_SPEED= "speed";
+static const QString TAG_RECEIVED= "received";
 
 DownloadItemInfo::DownloadItemInfo(const QVariantMap & vm)
     : OData(vm)
@@ -74,6 +76,26 @@ QString DownloadItemInfo::timeStamp() const
 void DownloadItemInfo::setTimeStamp(const QString & timeStamp)
 {
     insert(TAG_TIMESTAMP, timeStamp);
+}
+
+QString DownloadItemInfo::speed() const
+{
+    return value(TAG_SPEED).toString();
+}
+
+void DownloadItemInfo::setSpeed(const QString & speed)
+{
+    insert(TAG_SPEED, speed);
+}
+
+int DownloadItemInfo::received() const
+{
+    return value(TAG_RECEIVED).toInt();
+}
+
+void DownloadItemInfo::setReceived(int size)
+{
+    insert(TAG_RECEIVED, size);
 }
 
 DownloadDB::DownloadDB(const QString & db_name)
@@ -217,6 +239,14 @@ bool DownloadDB::updateState(const QString & myUrl, DownloadState state)
     }
 
     return false;
+}
+
+bool DownloadDB::remove(const QString & url)
+{
+    QSqlQuery query(db());
+    query.prepare( "delete from download where url = ?");
+    query.addBindValue(url);
+    return query.exec();
 }
 
 bool DownloadDB::makeSureTableExist(QSqlDatabase &db)

@@ -39,6 +39,12 @@ public:
     DownloadState state() const;
     void setState(DownloadState state);
 
+    QString speed() const;
+    void setSpeed(const QString & speed);
+
+    int received() const;
+    void setReceived(int size);
+
     QString timeStamp() const;
     void setTimeStamp(const QString & timeStamp);
 };
@@ -94,6 +100,7 @@ public:
 
     bool update(const DownloadItemInfo & item);
     bool updateState(const QString & url, DownloadState state = FINISHED);
+    bool remove(const QString & url);
 
 private:
     bool makeSureTableExist(QSqlDatabase &db);
