@@ -440,7 +440,7 @@ ContentView* CatalogView::createSubItem()
     {
         instance = factory_->createView(this);
     }
-    connect(instance, SIGNAL(activated(ContentView*)), this, SLOT(onItemActivated(ContentView *)));
+    connect(instance, SIGNAL(activated(ContentView*,int)), this, SLOT(onItemActivated(ContentView *,int)));
     connect(instance, SIGNAL(keyRelease(ContentView*, QKeyEvent*)), this, SLOT(onItemKeyRelease(ContentView *, QKeyEvent*)));
     connect(instance, SIGNAL(mouse(QPoint, QPoint)), this, SLOT(onMouseMoved(QPoint, QPoint)));
     sub_items_.push_back(instance);
@@ -523,7 +523,7 @@ void CatalogView::resetPaginator(bool sync_layout)
     }
 }
 
-void CatalogView::onItemActivated(ContentView *item)
+void CatalogView::onItemActivated(ContentView *item, int user_data)
 {
     if (item == 0 || item->data() == 0)
     {

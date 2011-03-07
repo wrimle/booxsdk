@@ -39,14 +39,14 @@ protected:
     void focusOutEvent(QFocusEvent * event);
 
 Q_SIGNALS:
-    void activated(ContentView *item);
+    void activated(ContentView *item, int user_data);
     void keyRelease(ContentView *item, QKeyEvent *key);
     void mouse(QPoint last, QPoint current);
 
 protected:
     bool isPressed();
     void setPressed(bool p = true);
-    void activate();
+    void activate(int user_data = 0);
 
 private:
     OData* data_;

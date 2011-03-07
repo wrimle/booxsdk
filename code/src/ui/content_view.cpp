@@ -53,11 +53,11 @@ void ContentView::setPressed(bool p)
     pressed_ = p;
 }
 
-void ContentView::activate()
+void ContentView::activate(int user_data)
 {
     if (data())
     {
-        emit activated(this);
+        emit activated(this, user_data);
     }
 }
 
