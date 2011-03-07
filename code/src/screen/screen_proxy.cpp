@@ -360,9 +360,12 @@ void ScreenProxy::updateWidgetWithGCInterval(const QWidget *widget,
         bool update_whole,
         ScreenCommand::WaitMode wait)
 {
-    if (INVALID == waveform || GU == waveform)
+    if (INVALID == waveform || GU == waveform || GC4 == waveform)
     {
-        waveform = GU;
+        if (waveform == INVALID)
+        {
+            waveform = GU;
+        }
         increaseGUCount();
         if (0 != gc_interval_ && gu_count_ >= gc_interval_)
         {
