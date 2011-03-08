@@ -16,7 +16,6 @@ static const QString TAG_RECEIVED= "received";
 DownloadItemInfo::DownloadItemInfo(const QVariantMap & vm)
     : OData(vm)
 {
-    setState(STATE_INVALID);
     setTimeStamp(QDateTime::currentDateTime().toString(dateFormat()));
 }
 
