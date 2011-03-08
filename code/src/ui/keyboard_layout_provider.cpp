@@ -1,6 +1,8 @@
 #include "onyx/ui/keyboard_layout_provider.h"
 #include "onyx/ui/english_keyboard_layout.h"
 #include "onyx/ui/russian_keyboard_layout.h"
+#include "onyx/ui/polish_keyboard_layout.h"
+#include "onyx/ui/hungarian_keyboard_layout.h"
 
 namespace ui
 {
@@ -28,10 +30,12 @@ KeyboardLayout* KeyboardLayoutProvider::getLayout(const QLocale & locale)
     }
     else if (isPolish(locale_))
     {
+        return new PolishKeyboardLayout();
         // return polish layout
     }
     else if (isHungarian(locale_))
     {
+        return new HungarianKeyboardLayout();
         // return hungarian layout
     }
 
