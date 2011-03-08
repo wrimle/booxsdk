@@ -438,7 +438,7 @@ ContentView* CatalogView::createSubItem()
     }
     else
     {
-        instance = factory_->createView(this);
+        instance = factory_->createView(this, sub_item_type_);
     }
     connect(instance, SIGNAL(activated(ContentView*,int)), this, SLOT(onItemActivated(ContentView *,int)));
     connect(instance, SIGNAL(keyRelease(ContentView*, QKeyEvent*)), this, SLOT(onItemKeyRelease(ContentView *, QKeyEvent*)));
@@ -499,6 +499,11 @@ int CatalogView::rows()
 int CatalogView::cols()
 {
     return paginator().cols();
+}
+
+void CatalogView::setSubItemType(const QString &type)
+{
+    sub_item_type_ = type;
 }
 
 void CatalogView::broadcastPositionSignal()

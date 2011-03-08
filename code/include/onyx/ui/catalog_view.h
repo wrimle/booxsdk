@@ -53,6 +53,8 @@ public slots:
     int rows();
     int cols();
 
+    void setSubItemType(const QString &type);
+
     void associateData();
     void associateEmptyData();
     void arrangeAll();
@@ -141,6 +143,7 @@ private:
     QSize size_;
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;
+    QString sub_item_type_;
 };
 
 
