@@ -94,7 +94,7 @@ protected:
 Q_SIGNALS:
     void cursorMoved(int old, int new_pos);
     void positionChanged(const int, const int);
-    void itemActivated(ContentView *item);
+    void itemActivated(CatalogView *catalog, ContentView *item, int user_data);
     void keyRelease(CatalogView *view, QKeyEvent *key);
 
     void outOfLeft(CatalogView*, int, int, bool &);

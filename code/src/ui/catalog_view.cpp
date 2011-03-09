@@ -535,6 +535,7 @@ void CatalogView::onItemActivated(ContentView *item, int user_data)
         return;
     }
     setChecked();
+    emit itemActivated(this, item, user_data);
 }
 
 void CatalogView::onItemKeyRelease(ContentView *item, QKeyEvent *key)
