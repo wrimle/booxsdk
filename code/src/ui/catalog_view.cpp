@@ -514,7 +514,7 @@ void CatalogView::broadcastPositionSignal()
 
 void CatalogView::resetPaginator(bool sync_layout)
 {
-    if (sync_layout)
+    if (sync_layout && !isFixedGrid())
     {
         int rows = 0;
         int cols = 0;
