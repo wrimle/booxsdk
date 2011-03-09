@@ -476,7 +476,7 @@ QSize CatalogView::preferItemSize()
 {
     if (isFixedGrid())
     {
-        return QSize(width() / paginator().rows(), height() / paginator().cols());
+        return QSize(width() / paginator().cols(), height() / paginator().rows());
     }
     return size_;
 }
