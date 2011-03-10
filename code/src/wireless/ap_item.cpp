@@ -123,6 +123,7 @@ bool WifiTitleItem::event(QEvent *e)
 
 scoped_ptr<QPixmap> WifiAPItem::selected_pixmap_;
 WifiAPItem *WifiAPItem::selected_item_ = 0;
+static WifiAPItem *previous_selected_item_ = 0;
 
 WifiAPItem::WifiAPItem(QWidget *parent)
     : ui::ContentView(parent)
@@ -153,8 +154,7 @@ void WifiAPItem::updateView()
     }
     updateByProfile(profile_);
     selected_item_ = 0;
-    //profile_.clear();
-    //profile_ = *data();
+    previous_selected_item_ = 0;
 }
 
 void WifiAPItem::setProfile(WifiProfile & profile)
@@ -165,6 +165,7 @@ void WifiAPItem::setProfile(WifiProfile & profile)
         updateByProfile(profile_);
     }
     selected_item_ = 0;
+    previous_selected_item_ = 0;
 }
 
 WifiProfile & WifiAPItem::profile()
@@ -234,10 +235,6 @@ void WifiAPItem::paintEvent(QPaintEvent *e)
 
 void WifiAPItem::mousePressEvent(QMouseEvent *e)
 {
-    if (!profile_.bssid().isEmpty())
-    {
-        selected_item_ = this;
-    }
     ContentView::mousePressEvent(e);
 }
 
@@ -245,24 +242,27 @@ void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
 {
     if (!profile_.bssid().isEmpty())
     {
+        previous_selected_item_ = selected_item_;
         selected_item_ = this;
+        if (previous_selected_item_)
+        {
+            previous_selected_item_->repaint();
+            onyx::screen::watcher().enqueue(previous_selected_item_, onyx::screen::ScreenProxy::GU);
+        }
         repaint();
         onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
         emit clicked(profile_);
     }
 }
 
-
 void WifiAPItem::focusInEvent(QFocusEvent * e)
 {
     ContentView::focusInEvent(e);
-    repaint();
 }
 
 void WifiAPItem::focusOutEvent(QFocusEvent * e)
 {
     ContentView::focusOutEvent(e);
-    repaint();
 }
 
 void WifiAPItem::createLayout()

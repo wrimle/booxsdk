@@ -1,6 +1,6 @@
 
 #include "onyx/wireless/wifi_dialog.h"
-#include "onyx/screen/screen_proxy.h"
+#include "onyx/screen/screen_update_watcher.h"
 #include "onyx/data/data.h"
 #include "onyx/wireless/ap_conf_dialog.h"
 
@@ -128,8 +128,7 @@ bool WifiDialog::event(QEvent * e)
     bool ret = QDialog::event(e);
     if (e->type() == QEvent::UpdateRequest)
     {
-        onyx::screen::instance().updateWidget(this, current_wavform);
-        current_wavform = onyx::screen::ScreenProxy::GU;
+        onyx::screen::watcher().updateScreen();
         e->accept();
         return true;
     }
@@ -585,7 +584,12 @@ void WifiDialog::onComplete()
 
 void WifiDialog::onItemActivated(CatalogView *catalog, ContentView *item, int user_data)
 {
-
+    if (!item || !item->data())
+    {
+        return;
+    }
+    WifiProfile * d = static_cast<WifiProfile *>(item->data());
+    onAPItemClicked(*d);
 }
 
 void WifiDialog::onAPConfig(WifiProfile &profile)
