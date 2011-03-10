@@ -84,6 +84,12 @@ void WpaConnectionManager::onScanReturned(WifiProfiles & list)
     scan_results_ = list;
     scan_timer_.stop();
     setState(dummy, WpaConnection::STATE_SCANNED);
+
+    if (proxy().isComplete())
+    {
+        qDebug("Complete, don't connect again.");
+        return;
+    }
     connectToBestAP();
 }
 
@@ -256,11 +262,6 @@ void WpaConnectionManager::scan()
     bool wpa_ok = checkWpaSupplicant();
     if (wpa_ok)
     {
-        if (proxy().isComplete())
-        {
-            return;
-        }
-
         if (canScanRetry())
         {
             setState(dummy, WpaConnection::STATE_SCANNING);
