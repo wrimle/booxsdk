@@ -254,10 +254,18 @@ void WpaConnectionManager::scan()
 
     increaseScanRetry();
     bool wpa_ok = checkWpaSupplicant();
-    if (wpa_ok && canScanRetry())
+    if (wpa_ok)
     {
-        setState(dummy, WpaConnection::STATE_SCANNING);
-        proxy().scan();
+        if (proxy().isComplete())
+        {
+            return;
+        }
+
+        if (canScanRetry())
+        {
+            setState(dummy, WpaConnection::STATE_SCANNING);
+            proxy().scan();
+        }
     }
     else
     {

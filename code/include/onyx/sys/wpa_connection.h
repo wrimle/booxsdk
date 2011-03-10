@@ -48,7 +48,8 @@ public Q_SLOTS:
     bool isWpaSupplicantConnected() { return wpa_supplicant_connected_; }
 
     bool update();
-    bool status(QVariantMap &info);
+    bool status(QVariantMap &info, bool broadcast = true);
+    bool isComplete();
     bool listNetworks(WifiProfiles &networks);
     bool scan();
     bool scanResults(WifiProfiles & aps);

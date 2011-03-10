@@ -251,7 +251,7 @@ bool WpaConnection::update()
 }
 
 /// Retrieve current status.
-bool WpaConnection::status(QVariantMap & info)
+bool WpaConnection::status(QVariantMap & info, bool broadcast)
 {
     QByteArray reply;
     if (ctrlRequest("STATUS", reply) < 0)
@@ -274,10 +274,27 @@ bool WpaConnection::status(QVariantMap & info)
     // Check wpa_state.
     if (info.value("wpa_state").toByteArray().contains("COMPLETE"))
     {
-        broadcastState(WpaConnection::STATE_CONNECTED);
+        if (broadcast)
+        {
+            broadcastState(WpaConnection::STATE_CONNECTED);
+        }
     }
 
     return true;
+}
+
+bool WpaConnection::isComplete()
+{
+    QVariantMap info;
+    if (!status(info, true))
+    {
+        return false;
+    }
+    if (info.value("wpa_state").toByteArray().contains("COMPLETE"))
+    {
+        return true;
+    }
+    return false;
 }
 
 /// List all available networks.
