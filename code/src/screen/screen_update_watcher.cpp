@@ -66,7 +66,7 @@ void ScreenUpdateWatcher::updateScreen()
             continue;
         }
 
-        QPoint pt = i.rc.topLeft();
+        QPoint pt = p->mapToGlobal(i.rc.topLeft());
         QSize s;
         if (!i.rc.size().isEmpty())
         {
