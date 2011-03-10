@@ -152,6 +152,7 @@ void WifiAPItem::updateView()
         profile_.clear();
     }
     updateByProfile(profile_);
+    selected_item_ = 0;
     //profile_.clear();
     //profile_ = *data();
 }
@@ -199,14 +200,6 @@ void WifiAPItem::paintEvent(QPaintEvent *e)
     QPainterPath path;
     path.addRoundedRect(rect().adjusted(2, 2, -2, -2), 8, 8, Qt::AbsoluteSize);
 
-    if (hasFocus())
-    {
-        QPen pen;
-        pen.setWidth(penWidth());
-        painter.setPen(pen);
-        painter.drawPath(path);
-    }
-
     if (isSelected())
     {
         painter.fillPath(path, QBrush(SELECTED_BK_COLOR));
@@ -225,12 +218,26 @@ void WifiAPItem::paintEvent(QPaintEvent *e)
         painter.drawPixmap(SPACING, (height() - selected_pixmap_->height()) / 2, *selected_pixmap_);
     }
 
-    painter.setPen(QColor(Qt::black));
-    painter.drawPath(path);
+    if (hasFocus())
+    {
+        QPen pen;
+        pen.setWidth(penWidth());
+        painter.setPen(pen);
+        painter.drawPath(path);
+    }
+    else
+    {
+        painter.setPen(QColor(Qt::black));
+        painter.drawPath(path);
+    }
 }
 
 void WifiAPItem::mousePressEvent(QMouseEvent *e)
 {
+    if (!profile_.bssid().isEmpty())
+    {
+        selected_item_ = this;
+    }
     ContentView::mousePressEvent(e);
 }
 
@@ -243,6 +250,19 @@ void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
         onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
         emit clicked(profile_);
     }
+}
+
+
+void WifiAPItem::focusInEvent(QFocusEvent * e)
+{
+    ContentView::focusInEvent(e);
+    repaint();
+}
+
+void WifiAPItem::focusOutEvent(QFocusEvent * e)
+{
+    ContentView::focusOutEvent(e);
+    repaint();
 }
 
 void WifiAPItem::createLayout()

@@ -70,6 +70,8 @@ protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
+    void focusInEvent(QFocusEvent * event);
+    void focusOutEvent(QFocusEvent * event);
 
 private:
     void createLayout();

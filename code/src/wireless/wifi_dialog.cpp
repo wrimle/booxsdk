@@ -8,7 +8,7 @@ namespace ui
 {
 const int SPACING = 2;
 const int WIDGET_HEIGHT = 36;
-static const int AP_ITEM_HEIGHT = 64;
+static const int AP_ITEM_HEIGHT = 80;
 static const int MARGINS = 10;
 
 static const QString BUTTON_STYLE =    "\
@@ -206,7 +206,8 @@ void WifiDialog::createLayout()
     ap_layout_.addWidget(&ap_view_);
     QObject::connect(&ap_view_, SIGNAL(itemActivated(CatalogView*, ContentView*, int)), this, SLOT(onItemActivated(CatalogView*, ContentView*, int)));
     ap_view_.setPreferItemSize(QSize(-1, AP_ITEM_HEIGHT));
-    content_layout_.addStretch(0);
+    ap_view_.setNeighbor(&state_widget_.dashBoard(), CatalogView::UP);
+    content_layout_.addSpacing(50);
 
     // Buttons.
     content_layout_.addLayout(&buttons_layout_);
@@ -230,7 +231,7 @@ void WifiDialog::scanResults(WifiProfiles &aps)
 
 #ifdef _WINDOWS
     aps.clear();
-    for(int i = 0; i < 30; ++i)
+    for(int i = 0; i < 10; ++i)
     {
         WifiProfile a;
         a.setSsid(QString::number(i));
