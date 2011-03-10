@@ -1,6 +1,7 @@
 
 #include "onyx/wireless/wifi_dialog.h"
 #include "onyx/screen/screen_proxy.h"
+#include "onyx/data/data.h"
 #include "onyx/wireless/ap_conf_dialog.h"
 
 namespace ui
@@ -45,6 +46,21 @@ QPushButton:disabled                    \
     background-color: white;            \
 }";
 
+class WifiViewFactory : public ui::Factory
+{
+public:
+    WifiViewFactory(){}
+    ~WifiViewFactory(){}
+
+public:
+    virtual ContentView * createView(QWidget *parent, const QString &type = QString())
+    {
+        return new WifiAPItem(parent);
+    }
+};
+
+static WifiViewFactory my_factory;
+
 static onyx::screen::ScreenProxy::Waveform current_wavform = onyx::screen::ScreenProxy::GU;
 
 WifiDialog::WifiDialog(QWidget *parent,
@@ -65,6 +81,7 @@ WifiDialog::WifiDialog(QWidget *parent,
     , state_widget_(0)
     , prev_button_(QPixmap(":/images/prev_page.png"), "", 0)
     , next_button_(QPixmap(":/images/next_page.png"), "", 0)
+    , ap_view_(&my_factory)
     , sys_(sys)
     , proxy_(sys.connectionManager())
     , ap_dialog_visible_(false)
@@ -134,8 +151,6 @@ void WifiDialog::paintEvent(QPaintEvent *e)
 void WifiDialog::resizeEvent(QResizeEvent *re)
 {
     QDialog::resizeEvent(re);
-    paginator_.resize(itemsPerPage());
-    arrangeAPItems(scan_results_);
 }
 
 void WifiDialog::mousePressEvent(QMouseEvent *)
@@ -188,6 +203,9 @@ void WifiDialog::createLayout()
     ap_layout_.setContentsMargins(MARGINS, MARGINS, MARGINS, MARGINS);
     ap_layout_.setSpacing(5);
     content_layout_.addLayout(&ap_layout_);
+    ap_layout_.addWidget(&ap_view_);
+    QObject::connect(&ap_view_, SIGNAL(itemActivated(CatalogView*, ContentView*, int)), this, SLOT(onItemActivated(CatalogView*, ContentView*, int)));
+    ap_view_.setPreferItemSize(QSize(-1, AP_ITEM_HEIGHT));
     content_layout_.addStretch(0);
 
     // Buttons.
@@ -209,7 +227,7 @@ void WifiDialog::createLayout()
 void WifiDialog::scanResults(WifiProfiles &aps)
 {
     proxy_.scanResults(aps);
-/*
+
 #ifdef _WINDOWS
     aps.clear();
     for(int i = 0; i < 30; ++i)
@@ -220,46 +238,20 @@ void WifiDialog::scanResults(WifiProfiles &aps)
         a.setBssid(d);
         aps.push_back(a);
     }
-    paginator_.reset(0, itemsPerPage(), aps.size());
 #endif
-    */
+
 }
 
 void WifiDialog::arrangeAPItems(WifiProfiles & profiles)
 {
-    int count = itemsPerPage();
-    for(int i = ap_items_.size(); i < count; ++i)
+    clearDatas(datas_);
+    foreach(WifiProfile profile, profiles)
     {
-        WifiAPItem * item = new WifiAPItem(this);
-        item->setFixedHeight(AP_ITEM_HEIGHT);
-        ap_layout_.addWidget(item);
-        ap_items_.push_back(item);
-        QObject::connect(item, SIGNAL(clicked(WifiProfile &)), this, SLOT(onAPItemClicked(WifiProfile &)));
-        QObject::connect(item, SIGNAL(config(WifiProfile &)), this, SLOT(onAPConfig(WifiProfile &)));
+        OData * d = new OData(profile);
+        datas_.push_back(d);
     }
-
-    int bound = qMin(ap_items_.size(), paginator_.offsetInCurrentPage());
-    for(int i = 0; i < bound; ++i)
-    {
-        ap_items_[i]->show();
-    }
-    for(int i = bound; i < ap_items_.size(); ++i)
-    {
-        ap_items_[i]->hide();
-    }
-
-    bound = qMin(ap_items_.size(), paginator_.offsetInCurrentPage());
-    for(int i = 0; i < bound; ++i)
-    {
-        ap_items_.at(i)->setProfile(profiles[i + paginator_.first_visible()]);
-    }
-    static WifiProfile dummy;
-    for(int i = bound; i < count; ++i)
-    {
-        ap_items_.at(i)->setProfile(dummy);
-    }
-
-    showPaginationButtons(paginator_.isPrevEnable(), paginator_.isNextEnable());
+    ap_view_.setData(datas_, true);
+    showPaginationButtons(false, false);
 }
 
 int  WifiDialog::itemsPerPage()
@@ -394,20 +386,23 @@ void WifiDialog::onRefreshClicked()
 
 void WifiDialog::onPrevClicked()
 {
-    if (paginator_.prev())
+/*    if (paginator_.prev())
     {
         current_wavform = onyx::screen::ScreenProxy::GC;
         arrangeAPItems(scan_results_);
     }
+    */
 }
 
 void WifiDialog::onNextClicked()
 {
+    /*
     if (paginator_.next())
     {
         current_wavform = onyx::screen::ScreenProxy::GC;
         arrangeAPItems(scan_results_);
     }
+    */
 }
 
 void WifiDialog::onCustomizedClicked()
@@ -442,26 +437,19 @@ void WifiDialog::onSdioChanged(bool on)
 void WifiDialog::enableChildren(bool enable)
 {
     state_widget_.setEnabled(enable);
+    /*
     foreach(WifiAPItem * p, ap_items_)
     {
         p->setEnabled(enable);
     }
+    */
 }
 
 void WifiDialog::onScanReturned()
 {
     proxy_.scanResults(scan_results_);
-    paginator_.reset(0, itemsPerPage(), scan_results_.size());
 
-    arrangeAPItems(scan_results_);
-    onyx::screen::instance().flush();
-    onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC);
 
-    //if (!connectToDefaultAP())
-    //{
-    //    // Disable auto connect.
-    //    connectToBestAP();
-    //}
 }
 
 void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::ConnectionState state)
@@ -592,6 +580,11 @@ void WifiDialog::onNoMatchedAP()
 void WifiDialog::onComplete()
 {
     accept();
+}
+
+void WifiDialog::onItemActivated(CatalogView *catalog, ContentView *item, int user_data)
+{
+
 }
 
 void WifiDialog::onAPConfig(WifiProfile &profile)

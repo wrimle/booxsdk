@@ -39,12 +39,12 @@ static const QString DHCP_TAG = "dhcp";
 static const QString USER_TAG = "user";
 
 WifiNetworkProperties::WifiNetworkProperties()
-    : QMap<QString, QVariant>()
+    : OData()
 {
 }
 
 WifiNetworkProperties::WifiNetworkProperties( const WifiNetworkProperties& list )
-    : QMap<QString, QVariant> ( list )
+    : OData ( list )
 {
 }
 
@@ -403,22 +403,6 @@ bool WifiNetworkProperties::isDefinedByUser()
 void WifiNetworkProperties::defineByUser(bool def)
 {
     insert(USER_TAG, def);
-}
-
-void WifiNetworkProperties::debugDump() const
-{
-// #ifdef QT_DEBUG
-    QString key;
-    QString value;
-
-    WifiNetworkProperties::const_iterator i = constBegin();
-    qDebug() << "Dumping wifi properties";
-    while ( i != constEnd() )
-    {
-        qDebug() << i.key() << ": " << i.value().toString();
-        i++;
-    }
-// #endif
 }
 
 

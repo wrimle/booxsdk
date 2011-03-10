@@ -12,11 +12,13 @@ public:
     virtual ~OData();
 
 public:
-    void debugDump();
+    void debugDump() const;
 
 };
 
 typedef QVector<OData *> ODatas;
+
+void clearDatas(ODatas & datas);
 
 
 #endif

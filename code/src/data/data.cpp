@@ -12,9 +12,8 @@ OData::~OData()
 {
 }
 
-void OData::debugDump()
+void OData::debugDump() const
 {
-// #ifdef QT_DEBUG
     QString key;
     QString value;
 
@@ -25,8 +24,14 @@ void OData::debugDump()
         qDebug() << i.key() << ": " << i.value().toString();
         i++;
     }
-// #endif
 }
 
-
+void clearDatas(ODatas & datas)
+{
+    foreach(OData *d, datas)
+    {
+        delete d;
+    }
+    datas.clear();
+}
 

@@ -59,6 +59,7 @@ private Q_SLOTS:
     void onComplete();
     void onAPConfig(WifiProfile &);
 
+    void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
 Q_SIGNALS:
     void connectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state);
 
@@ -101,7 +102,7 @@ private:
     WifiTitleItem state_widget_;
     OnyxPushButton prev_button_;
     OnyxPushButton next_button_;
-    WifiAPItems ap_items_;
+    ui::CatalogView ap_view_;
     OnyxLabel hardware_address_;
 
     const SysStatus & sys_;
@@ -111,8 +112,8 @@ private:
     bool ap_dialog_visible_;
 
     WifiProfiles scan_results_;
+    ODatas datas_;
     scoped_ptr<WifiProfiles> records_;  ///< All profiles that stored in database.
-    Paginator paginator_;
 };
 
 }

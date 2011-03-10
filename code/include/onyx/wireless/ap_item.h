@@ -5,6 +5,7 @@
 #include <QtGui/QtGui>
 #include "onyx/ui/ui.h"
 #include "onyx/sys/sys.h"
+#include "onyx/ui/catalog_view.h"
 
 using namespace sys;
 
@@ -21,7 +22,8 @@ public:
 
 public Q_SLOTS:
     void setState(const QString &);
-    void onCustomizedClicked(bool);
+    void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
+    CatalogView& dashBoard() { return dash_board_; }
 
 Q_SIGNALS:
     void refreshClicked();
@@ -29,25 +31,31 @@ Q_SIGNALS:
 
 protected:
     virtual bool event(QEvent *e);
+
+private:
     void createLayout();
+    void createDashBoard();
 
 private:
     QHBoxLayout layout_;
     OnyxLabel title_label_;
-    OnyxPushButton customize_button_;
-    OnyxPushButton refresh_button_;
+    ui::CatalogView dash_board_;
+    ODatas datas_;
 };
 
 
 /// Represents a wifi access point. It displays the access point
 /// state to end user.
-class WifiAPItem : public QWidget
+class WifiAPItem : public ui::ContentView
 {
     Q_OBJECT
 
 public:
     WifiAPItem(QWidget *parent);
     ~WifiAPItem(void);
+
+public:
+    virtual void updateView();
 
 public:
     void setProfile(WifiProfile & profile);

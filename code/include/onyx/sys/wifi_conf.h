@@ -4,10 +4,10 @@
 
 #ifndef SYS_WIFI_CONF_H__
 #define SYS_WIFI_CONF_H__
-
-#include "onyx/base/base.h"
-#include "onyx/ui/ui_global.h"
 #include <QtSql/QtSql>
+#include "onyx/base/base.h"
+#include "onyx/data/data.h"
+
 
 namespace sys
 {
@@ -15,7 +15,7 @@ namespace sys
 /// The wifi configurations. It maintains all information that needed
 /// to configure wifi interface. It also serves as the parameter that
 /// used by wifi manager and caller.
-class WifiNetworkProperties : public QMap<QString, QVariant>
+class WifiNetworkProperties : public OData
 {
 public:
     WifiNetworkProperties();
@@ -124,7 +124,6 @@ public:
     bool isDefinedByUser();
     void defineByUser(bool def);
 
-    void debugDump() const;
 };
 typedef WifiNetworkProperties WifiProfile;
 typedef QVector<WifiProfile> WifiProfiles;
