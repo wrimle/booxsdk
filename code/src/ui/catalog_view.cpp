@@ -142,14 +142,14 @@ void CatalogView::arrangeSubWidgets()
 }
 
 /// Associate data with sub widget to display content.
-void CatalogView::associateData()
+void CatalogView::associateData(bool force)
 {
     // find the last item in the currentInvisibleParent() that will be shown in the last grid
     int count = data().size() - paginator().first_visible();
     count = std::min(count, sub_items_.size());
     for (int i = 0; i < count; ++i)
     {
-        sub_items_.at(i)->updateData(data().at(paginator().first_visible() + i));
+        sub_items_.at(i)->updateData(data().at(paginator().first_visible() + i), force);
     }
     for (int i = count; i < sub_items_.size(); ++i)
     {
@@ -167,9 +167,9 @@ void CatalogView::associateEmptyData()
 
 /// Arrange everything, including sub widgets, associate data, focus and position.
 /// It does not reset paginator.
-void CatalogView::arrangeAll()
+void CatalogView::arrangeAll(bool force)
 {
-    associateData();
+    associateData(force);
     if (sub_items_.size() > 0 && sub_items_.front()->data())
     {
         sub_items_.front()->setFocus();
@@ -277,11 +277,11 @@ void CatalogView::gotoPage(const int p)
     }
 }
 
-void CatalogView::setData(const ODatas &list)
+void CatalogView::setData(const ODatas &list, bool force)
 {
     datas_ = list;
     resetPaginator(true);
-    arrangeAll();
+    arrangeAll(force);
 }
 
 ODatas & CatalogView::data()

@@ -40,7 +40,7 @@ public slots:
     void showBorder(bool show = true) { show_border_ = show; }
     bool hasBorder() { return show_border_; }
 
-    void setData(const ODatas &list);
+    void setData(const ODatas &list, bool force = false);
     ODatas & data();
 
     void setFocusTo(const int row, const int col);
@@ -55,9 +55,9 @@ public slots:
 
     void setSubItemType(const QString &type);
 
-    void associateData();
+    void associateData(bool force = false);
     void associateEmptyData();
-    void arrangeAll();
+    void arrangeAll(bool force = false);
     void resetPaginator(bool sync_layout = false);
     void broadcastPositionSignal();
 
