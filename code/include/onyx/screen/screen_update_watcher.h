@@ -21,6 +21,7 @@ public:
 
 public:
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w);
+    void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w);
     void updateScreen();
     bool isQueueEmpty();
 
@@ -33,10 +34,12 @@ private:
     {
         QWidget *widget;
         onyx::screen::ScreenProxy::Waveform waveform;
+        QRect rc;
 
-        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w)
+        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w, QRect rect= QRect())
             : widget(wnd)
             , waveform(w)
+            , rc(rect)
         {}
     };
     QQueue<UpdateItem> queue_;

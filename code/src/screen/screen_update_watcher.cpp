@@ -38,6 +38,15 @@ void ScreenUpdateWatcher::enqueue(QWidget *widget, onyx::screen::ScreenProxy::Wa
     queue_.enqueue(UpdateItem(widget, w));
 }
 
+/// Add screen update request to queue.
+/// \widget The widget to update.
+/// \rc The rectangle of widget needs to update. If it's empty, whole widget will be updated.
+/// \w Which kind of waveform to use to update screen.
+void ScreenUpdateWatcher::enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w)
+{
+    queue_.enqueue(UpdateItem(widget, w, rc));
+}
+
 /// Get item from queue and decide which waveform to use.
 void ScreenUpdateWatcher::updateScreen()
 {
@@ -57,7 +66,17 @@ void ScreenUpdateWatcher::updateScreen()
             continue;
         }
 
-        QRect t (p->mapToGlobal(QPoint()), p->size());
+        QPoint pt = i.rc.topLeft();
+        QSize s;
+        if (!i.rc.size().isEmpty())
+        {
+            s = i.rc.size();
+        }
+        else
+        {
+            s = p->size();
+        }
+        QRect t(pt, s);
         rc = rc.united(t);
         if (i.waveform > w)
         {
