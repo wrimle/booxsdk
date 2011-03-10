@@ -200,7 +200,7 @@ void CoverView::paintEvent(QPaintEvent * event)
     {
         if (isPressed())
         {
-            painter.fillRect(rect(), Qt::darkGray);
+            painter.fillRect(rect(), Qt::black);
         }
         if (hasFocus())
         {
@@ -211,6 +211,10 @@ void CoverView::paintEvent(QPaintEvent * event)
         }
 
         drawCover(painter, rect());
+        if (isPressed())
+        {
+            painter.setPen(Qt::white);
+        }
         drawTitle(painter, rect());
     }
 }
