@@ -219,16 +219,19 @@ void WifiAPItem::paintEvent(QPaintEvent *e)
         painter.drawPixmap(SPACING, (height() - selected_pixmap_->height()) / 2, *selected_pixmap_);
     }
 
+    QPen pen;
+    pen.setWidth(penWidth());
+
     if (hasFocus())
     {
-        QPen pen;
-        pen.setWidth(penWidth());
+        pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.drawPath(path);
     }
     else
     {
-        painter.setPen(QColor(Qt::black));
+        pen.setColor(Qt::white);
+        painter.setPen(pen);
         painter.drawPath(path);
     }
 }
