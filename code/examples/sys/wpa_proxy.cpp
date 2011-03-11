@@ -1,4 +1,5 @@
 #include "onyx/sys/wpa_connection.h"
+#include <QApplication>
 
 int main(int argc, char* argv[])
 {

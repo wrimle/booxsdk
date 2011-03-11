@@ -61,7 +61,7 @@ public:
 
 static WifiViewFactory my_factory;
 
-static onyx::screen::ScreenProxy::Waveform current_wavform = onyx::screen::ScreenProxy::GU;
+//static onyx::screen::ScreenProxy::Waveform current_wavform = onyx::screen::ScreenProxy::GU;
 
 WifiDialog::WifiDialog(QWidget *parent,
                        SysStatus & sys)
