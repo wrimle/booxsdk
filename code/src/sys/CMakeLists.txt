@@ -15,7 +15,7 @@ SET(SRCS ${HDRS} ${SRCS} ${MOC_SRCS})
 
 ADD_LIBRARY(onyx_sys ${SRCS})
 strict_warning(onyx_sys)
-TARGET_LINK_LIBRARIES(onyx_sys onyx_wpa)
+TARGET_LINK_LIBRARIES(onyx_sys onyx_wpa onyx_data)
 
 
 INSTALL(TARGETS onyx_sys DESTINATION lib)
