@@ -484,6 +484,7 @@ void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::Connect
         qDebug("connecting to %s", qPrintable(profile.ssid()));
     }
     //emit connectionChanged(profile, state);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
 }
 
 void WifiDialog::updateStateLable(WpaConnection::ConnectionState state)
