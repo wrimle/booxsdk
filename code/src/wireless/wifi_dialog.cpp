@@ -448,8 +448,7 @@ void WifiDialog::enableChildren(bool enable)
 void WifiDialog::onScanReturned()
 {
     proxy_.scanResults(scan_results_);
-
-
+    arrangeAPItems(scan_results_);
 }
 
 void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::ConnectionState state)
