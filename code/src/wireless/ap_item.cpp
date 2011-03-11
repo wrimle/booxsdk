@@ -241,7 +241,7 @@ void WifiAPItem::mousePressEvent(QMouseEvent *e)
     ContentView::mousePressEvent(e);
 }
 
-void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
+void WifiAPItem::activateItem()
 {
     if (!profile_.bssid().isEmpty())
     {
@@ -256,6 +256,11 @@ void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
         onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
         emit clicked(profile_);
     }
+}
+
+void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
+{
+    activateItem();
 }
 
 void WifiAPItem::focusInEvent(QFocusEvent * e)

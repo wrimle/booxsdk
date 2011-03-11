@@ -56,6 +56,7 @@ public:
 
 public:
     virtual void updateView();
+    void activateItem();
 
 public:
     void setProfile(WifiProfile & profile);

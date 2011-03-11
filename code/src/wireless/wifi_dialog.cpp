@@ -589,6 +589,7 @@ void WifiDialog::onItemActivated(CatalogView *catalog, ContentView *item, int us
         return;
     }
     WifiProfile * d = static_cast<WifiProfile *>(item->data());
+    static_cast<WifiAPItem *>(item)->activateItem();
     onAPItemClicked(*d);
 }
 
