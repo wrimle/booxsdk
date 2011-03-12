@@ -4,37 +4,27 @@ namespace ui
 {
 
 TabBar::TabBar(QWidget *parent)
-: QWidget(parent)
-, layout_(QBoxLayout::LeftToRight, this)
+: CatalogView(0, parent)
 , orientation_(Qt::Horizontal)
-, buttons_()
 {
-    createLayout();
 }
 
 TabBar::~TabBar(void)
 {
-    clear();
-}
-
-void TabBar::createLayout()
-{
-    layout_.setSpacing(0);
-    layout_.setContentsMargins(0,0,0,0);
+    clearDatas(data());
 }
 
 bool TabBar::addButton(const int id,
                        const QString & title,
                        const QPixmap & pixmap)
 {
-    TabButton * button = new TabButton(this, id);
-    button->setText(title);
-    button->setPixmap(pixmap);
-    layout_.addWidget(button);
-    buttons_.push_back(button);
-
-    connect(button, SIGNAL(clicked(TabButton *)),
-            this, SLOT(onClicked(TabButton *)));
+    setFixedGrid(1, data().size() + 1);
+    OData * d = new OData;
+    d->insert("id", id);
+    d->insert("title", title);
+    d->insert("cover", pixmap);
+    data().push_back(d);
+    setData(data(), true);
     return true;
 }
 
@@ -45,41 +35,46 @@ bool TabBar::removeButton(const int id)
 
 bool TabBar::clickButton(const int id)
 {
-    for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
-    {
-        if ((*i)->id() == id)
-        {
-            (*i)->click();
-            return true;
-        }
-    }
-    return false;
+    selectButton(id);
+    activateButton(id);
+    return true;
 }
 
 int TabBar::selectedButton()
 {
-    for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
+    return -1;
+}
+
+void TabBar::selectButton(const int id)
+{
+    foreach(ContentView * d, visibleSubItems())
     {
-        if ((*i)->isChecked())
+        if (d->data() && d->data()->value("id").toInt() == id)
         {
-            return (*i)->id();
+            d->setChecked(true);
+        }
+        else
+        {
+            d->setChecked(false);
         }
     }
-    return -1;
+}
+
+void TabBar::activateButton(const int id)
+{
+    foreach(ContentView * d, visibleSubItems())
+    {
+        if (d->data() && d->data()->value("id").toInt() == id)
+        {
+            d->activate();
+            return;
+        }
+    }
 }
 
 bool TabBar::setButtonText(const int id, const QString & title)
 {
-    for(ButtonIter i = buttons_.begin(); i != buttons_.end(); ++i)
-    {
-        if ((*i)->id() == id)
-        {
-            (*i)->setText(title);
-            return true;
-        }
-    }
     return false;
-
 }
 
 bool TabBar::setOrientation(const Qt::Orientation orientation)
@@ -88,122 +83,17 @@ bool TabBar::setOrientation(const Qt::Orientation orientation)
     {
         return false;
     }
-
-    // Move widgets from one layout to the other.
-    orientation_ = orientation;
-    if (orientation_ == Qt::Horizontal)
-    {
-        layout_.setDirection(QBoxLayout::LeftToRight);
-    }
-    else
-    {
-        layout_.setDirection(QBoxLayout::TopToBottom);
-    }
     return true;
 }
 
-void TabBar::mouseDoubleClickEvent(QMouseEvent *)
+void TabBar::onItemActivated(ContentView *item, int)
 {
-    /*
-    if (orientation_ == Qt::Horizontal)
-    {
-        setOrientation(Qt::Vertical);
-    }
-    else
-    {
-        setOrientation(Qt::Horizontal);
-    }
-    */
-}
 
-void TabBar::keyPressEvent(QKeyEvent *)
-{
-}
-
-void TabBar::keyReleaseEvent(QKeyEvent *e)
-{
-    switch (e->key())
+    if (item && item->data())
     {
-    // May depends on the layout orientation.
-    case Qt::Key_Left:
-        setFocusNextPrevChild(false);
-        break;
-    case Qt::Key_Right:
-        setFocusNextPrevChild(true);
-        break;
-    case Qt::Key_Return:
-        clickSelectedChild();
-        break;
-    default:
-        break;
-    }
-}
-
-void TabBar::onClicked(TabButton *button)
-{
-    for(ButtonIter iter = buttons_.begin(); iter != buttons_.end(); ++iter)
-    {
-        if (button != *iter)
-        {
-            (*iter)->setChecked(false);
-        }
-        else
-        {
-            (*iter)->setChecked(true);
-        }
-    }
-    emit buttonClicked(button);
-}
-
-void TabBar::clear()
-{
-    for(ButtonIter iter = buttons_.begin(); iter != buttons_.end(); ++iter)
-    {
-        layout_.removeWidget(*iter);
-        delete *iter;
-    }
-    buttons_.clear();
-}
-
-/// Set focus to next or prev child according to the \next.
-void TabBar::setFocusNextPrevChild(bool next)
-{
-    // Query which one has the focus.
-    int pos = 0;
-    int size = static_cast<int>(buttons_.size());
-    for(; pos != size; ++pos)
-    {
-        if (buttons_[pos]->hasFocus())
-        {
-            break;
-        }
-    }
-
-    if (next && pos < size - 1)
-    {
-        ++pos;
-        buttons_[pos]->setFocus();
-    }
-    else if (!next && pos > 0)
-    {
-        --pos;
-        buttons_[pos]->setFocus();
-    }
-}
-
-void TabBar::clickSelectedChild()
-{
-    ButtonIter iter = buttons_.begin();
-    for(; iter != buttons_.end(); ++iter)
-    {
-        if ((*iter)->hasFocus())
-        {
-            (*iter)->setChecked(true);
-        }
-        else
-        {
-            (*iter)->setChecked(false);
-        }
+        int id = item->data()->value("id").toInt();
+        selectButton(id);
+        emit buttonClicked(id);
     }
 }
 

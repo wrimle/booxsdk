@@ -1,7 +1,10 @@
 #ifndef TAB_BUTTON_H_
 #define TAB_BUTTON_H_
 
-#include "onyx/ui/ui_global.h"
+#include "content_view.h"
+
+namespace ui
+{
 
 class TabButton : public QWidget
 {
@@ -38,7 +41,6 @@ private:
     bool isPressed();
     void setPressed(bool p = true);
     void activate();
-    void repaintAndRefreshScreen();
 
 private:
     int button_id_;
@@ -53,6 +55,8 @@ private:
 inline bool TabButton::isChecked()
 {
     return checked_;
+}
+
 }
 
 #endif
