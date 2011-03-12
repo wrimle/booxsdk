@@ -62,6 +62,7 @@ public slots:
     void broadcastPositionSignal();
 
     void setNeighbor(CatalogView *neighbor, const QString& type);
+    bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
 public:
     static const QString LEFT;

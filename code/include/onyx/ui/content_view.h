@@ -21,7 +21,12 @@ public:
     bool updateData(OData* data, bool force_update = false);
     OData * data();
     virtual void updateView() = 0;
+
+    void activate(int user_data = 0);
     void repaintAndRefreshScreen();
+
+    void setChecked(bool checked = true);
+    bool isChecked();
 
     int penWidth() { return pen_width_; }
     void setPenWidth(int w) { pen_width_ = w; }
@@ -46,11 +51,11 @@ Q_SIGNALS:
 protected:
     bool isPressed();
     void setPressed(bool p = true);
-    void activate(int user_data = 0);
 
 private:
     OData* data_;
     bool pressed_;
+    bool checked_;
     int pen_width_;
 };
 

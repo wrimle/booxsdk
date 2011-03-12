@@ -169,6 +169,7 @@ void CatalogView::associateEmptyData()
 /// It does not reset paginator.
 void CatalogView::arrangeAll(bool force)
 {
+    arrangeSubWidgets();
     associateData(force);
     if (sub_items_.size() > 0 && sub_items_.front()->data())
     {
@@ -634,6 +635,18 @@ void CatalogView::setNeighbor(CatalogView *neighbor, const QString &type)
     // caller should check.
     addNeighbor(type, neighbor);
     neighbor->addNeighbor(invert(type), this);
+}
+
+bool CatalogView::removeNeighbor(CatalogView *neighbor, const QString& type)
+{
+    CatalogViews & views = neighbors(type);
+    int index = views.indexOf(neighbor);
+    if (index < 0)
+    {
+        return false;
+    }
+    views.erase(views.begin() + index);
+    return neighbor->removeNeighbor(this, invert(type));
 }
 
 ContentView* CatalogView::findShortestItem(CatalogView *view,
