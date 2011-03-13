@@ -178,6 +178,8 @@ void CatalogView::arrangeAll(bool force)
 {
     arrangeSubWidgets();
     associateData(force);
+
+    // TODO: need a better way to manage focus.
     if (sub_items_.size() > 0 && sub_items_.front()->data())
     {
         sub_items_.front()->setFocus();
@@ -456,11 +458,11 @@ ContentView* CatalogView::createSubItem()
     QSize s = preferItemSize();
     if (s.height() <= 0)
     {
-        instance->setFixedWidth(s.width());
+        // instance->setFixedWidth(s.width());
     }
     else if (s.width() <= 0)
     {
-        instance->setFixedHeight(s.height());
+        // instance->setFixedHeight(s.height());
     }
     else
     {

@@ -211,7 +211,7 @@ void CoverView::paintEvent(QPaintEvent * event)
     {
         if (isPressed() || isChecked())
         {
-            painter.fillRect(rect(), Qt::black);
+            painter.fillRect(rect(), Qt::gray);
         }
         if (hasFocus())
         {
