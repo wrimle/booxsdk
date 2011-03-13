@@ -32,6 +32,11 @@ int statusBarHeight()
     return 35;
 }
 
+int defaultFontPointSize()
+{
+    return 20;
+}
+
 QPoint globalTopLeft(QWidget *wnd)
 {
     return wnd->mapToGlobal(QPoint());

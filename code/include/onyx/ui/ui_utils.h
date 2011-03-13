@@ -13,6 +13,8 @@ bool dockWidget(QWidget *target, QWidget * container, Qt::Alignment align);
 
 int statusBarHeight();
 
+int defaultFontPointSize();
+
 QPoint globalTopLeft(QWidget *);
 
 QPoint globalCenter(QWidget *);
