@@ -20,7 +20,7 @@ public:
     ~ScreenUpdateWatcher();
 
 public:
-    void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w);
+    void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w);
     void updateScreen();
     bool isQueueEmpty();
