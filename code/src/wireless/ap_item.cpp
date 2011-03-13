@@ -254,13 +254,13 @@ void WifiAPItem::activateItem()
         }
         repaint();
         onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
-        emit clicked(profile_);
     }
 }
 
 void WifiAPItem::mouseReleaseEvent(QMouseEvent *e)
 {
     activateItem();
+    activate(0);
 }
 
 void WifiAPItem::focusInEvent(QFocusEvent * e)

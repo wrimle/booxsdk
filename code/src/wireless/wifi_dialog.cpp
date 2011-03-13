@@ -352,8 +352,7 @@ bool WifiDialog::connectToDefaultAP()
                 return true;
             }
         }
-    } 
-
+    }
     return false;
 }
 
