@@ -2,12 +2,13 @@
 #define UI_LIB_TAB_BAR_H_
 
 #include <vector>
+#include "catalog_view.h"
 #include "tab_button.h"
 
 namespace ui
 {
 
-class TabBar : public QWidget
+class TabBar : public CatalogView
 {
     Q_OBJECT
 public:
@@ -25,28 +26,18 @@ public:
     Qt::Orientation orientation() const { return orientation_; }
 
 Q_SIGNALS:
-    void buttonClicked(TabButton *button);
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void keyPressEvent(QKeyEvent *);
-    virtual void keyReleaseEvent(QKeyEvent *);
+    void buttonClicked(int id);
 
 private Q_SLOTS:
-    void onClicked(TabButton *button);
+    virtual void onItemActivated(ContentView *item, int);
+    void selectButton(const int id);
+    void activateButton(const int id);
 
 private:
-    void createLayout();
-    void clear();
-    void setFocusNextPrevChild(bool next);
     void clickSelectedChild();
 
 private:
-    QBoxLayout layout_;
     Qt::Orientation orientation_;
-    typedef std::vector<TabButton *> Buttons;
-    typedef Buttons::iterator ButtonIter;
-    Buttons buttons_;
 };
 
 };

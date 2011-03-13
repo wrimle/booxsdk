@@ -23,7 +23,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         : QWidget(parent)
         , layout_(this)
         , factory_(factory)
-        , margin_(4)
+        , margin_(0)
         , checked_(true)
         , self_hor_recycle_(false)
         , self_ver_recycle_(false)
@@ -62,6 +62,7 @@ void CatalogView::createLayout()
 {
     layout_.setContentsMargins(margin(), margin(), margin(), margin());
     layout_.setSpacing(0);
+    layout_.setVerticalSpacing(0);
 }
 
 void CatalogView::calculateLayout(int &rows, int &cols)
@@ -84,6 +85,12 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     {
         cols = rect().width() / s.width();
     }
+}
+
+void CatalogView::setMargin(int m)
+{
+    margin_ = m;
+    layout_.setContentsMargins(m, m, m, m);
 }
 
 /// Arrange all sub widgets according to current widget size.
@@ -169,7 +176,10 @@ void CatalogView::associateEmptyData()
 /// It does not reset paginator.
 void CatalogView::arrangeAll(bool force)
 {
+    arrangeSubWidgets();
     associateData(force);
+
+    // TODO: need a better way to manage focus.
     if (sub_items_.size() > 0 && sub_items_.front()->data())
     {
         sub_items_.front()->setFocus();
@@ -338,6 +348,16 @@ void CatalogView::goNext()
     }
 }
 
+bool CatalogView::hasNext()
+{
+    return paginator().isNextEnable();
+}
+
+bool CatalogView::hasPrev()
+{
+    return paginator().isPrevEnable();
+}
+
 void CatalogView::goPrev()
 {
     if (paginator().prev())
@@ -448,11 +468,11 @@ ContentView* CatalogView::createSubItem()
     QSize s = preferItemSize();
     if (s.height() <= 0)
     {
-        instance->setFixedWidth(s.width());
+        // instance->setFixedWidth(s.width());
     }
     else if (s.width() <= 0)
     {
-        instance->setFixedHeight(s.height());
+        // instance->setFixedHeight(s.height());
     }
     else
     {
@@ -634,6 +654,18 @@ void CatalogView::setNeighbor(CatalogView *neighbor, const QString &type)
     // caller should check.
     addNeighbor(type, neighbor);
     neighbor->addNeighbor(invert(type), this);
+}
+
+bool CatalogView::removeNeighbor(CatalogView *neighbor, const QString& type)
+{
+    CatalogViews & views = neighbors(type);
+    int index = views.indexOf(neighbor);
+    if (index < 0)
+    {
+        return false;
+    }
+    views.erase(views.begin() + index);
+    return neighbor->removeNeighbor(this, invert(type));
 }
 
 ContentView* CatalogView::findShortestItem(CatalogView *view,

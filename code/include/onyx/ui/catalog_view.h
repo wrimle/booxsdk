@@ -30,11 +30,14 @@ public slots:
     void setVerSelfRecycle(bool r = true);
     bool isVerSelfRecycle();
 
+    bool hasNext();
+    bool hasPrev();
+
     void goPrev();
     void goNext();
     void gotoPage(const int);
 
-    void setMargin(int m = 4) { margin_ = m; }
+    void setMargin(int m = 4);
     int margin() { return margin_; }
 
     void showBorder(bool show = true) { show_border_ = show; }
@@ -62,6 +65,7 @@ public slots:
     void broadcastPositionSignal();
 
     void setNeighbor(CatalogView *neighbor, const QString& type);
+    bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
 public:
     static const QString LEFT;

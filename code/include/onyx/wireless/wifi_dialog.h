@@ -43,8 +43,6 @@ private Q_SLOTS:
     void scan();
     void onAPItemClicked(WifiProfile & profile);
     void onRefreshClicked();
-    void onPrevClicked();
-    void onNextClicked();
     void onCustomizedClicked();
     void onCloseClicked();
 
@@ -60,6 +58,8 @@ private Q_SLOTS:
     void onAPConfig(WifiProfile &);
 
     void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
+    void onPositionChanged(const int, const int);
+
 Q_SIGNALS:
     void connectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state);
 

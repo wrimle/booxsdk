@@ -47,7 +47,7 @@ WifiTitleItem::~WifiTitleItem()
 
 void WifiTitleItem::createLayout()
 {
-    layout_.setContentsMargins(SPACING, SPACING / 10, SPACING, SPACING / 10);
+    layout_.setContentsMargins(SPACING, SPACING / 5, SPACING, SPACING / 5);
     layout_.setSpacing(10);
 
     layout_.addWidget(&title_label_, 0, Qt::AlignVCenter);

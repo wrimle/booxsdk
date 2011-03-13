@@ -16,6 +16,7 @@ ContentView::ContentView(QWidget *parent)
         : QWidget(parent)
         , data_(0)
         , pressed_(false)
+        , checked_(false)
         , pen_width_(3)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -24,6 +25,16 @@ ContentView::ContentView(QWidget *parent)
 
 ContentView::~ContentView()
 {
+}
+
+void ContentView::setChecked(bool checked)
+{
+    checked_ = checked;
+}
+
+bool ContentView::isChecked()
+{
+    return checked_;
 }
 
 bool ContentView::updateData(OData* data, bool force)
@@ -198,9 +209,9 @@ void CoverView::paintEvent(QPaintEvent * event)
 
     if (data())
     {
-        if (isPressed())
+        if (isPressed() || isChecked())
         {
-            painter.fillRect(rect(), Qt::black);
+            painter.fillRect(rect(), Qt::gray);
         }
         if (hasFocus())
         {
@@ -211,7 +222,7 @@ void CoverView::paintEvent(QPaintEvent * event)
         }
 
         drawCover(painter, rect());
-        if (isPressed())
+        if (isPressed() || isChecked())
         {
             painter.setPen(Qt::white);
         }
