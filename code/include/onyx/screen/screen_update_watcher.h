@@ -20,8 +20,8 @@ public:
     ~ScreenUpdateWatcher();
 
 public:
-    void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC);
-    void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w);
+    void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
+    void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void updateScreen();
     bool isQueueEmpty();
 
@@ -34,11 +34,13 @@ private:
     {
         QWidget *widget;
         onyx::screen::ScreenProxy::Waveform waveform;
+        onyx::screen::ScreenCommand::WaitMode wait;
         QRect rc;
 
-        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w, QRect rect= QRect())
+        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm, QRect rect= QRect())
             : widget(wnd)
             , waveform(w)
+            , wait(wm)
             , rc(rect)
         {}
     };

@@ -76,7 +76,7 @@ void ContentView::activate(int user_data)
 void ContentView::repaintAndRefreshScreen()
 {
     update();
-    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void ContentView::mousePressEvent(QMouseEvent *event)
