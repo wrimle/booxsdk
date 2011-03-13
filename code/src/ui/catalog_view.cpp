@@ -348,6 +348,16 @@ void CatalogView::goNext()
     }
 }
 
+bool CatalogView::hasNext()
+{
+    return paginator().isNextEnable();
+}
+
+bool CatalogView::hasPrev()
+{
+    return paginator().isPrevEnable();
+}
+
 void CatalogView::goPrev()
 {
     if (paginator().prev())

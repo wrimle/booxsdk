@@ -30,6 +30,9 @@ public slots:
     void setVerSelfRecycle(bool r = true);
     bool isVerSelfRecycle();
 
+    bool hasNext();
+    bool hasPrev();
+
     void goPrev();
     void goNext();
     void gotoPage(const int);
