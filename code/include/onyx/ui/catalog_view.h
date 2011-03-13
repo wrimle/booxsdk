@@ -34,7 +34,7 @@ public slots:
     void goNext();
     void gotoPage(const int);
 
-    void setMargin(int m = 4) { margin_ = m; }
+    void setMargin(int m = 4);
     int margin() { return margin_; }
 
     void showBorder(bool show = true) { show_border_ = show; }
