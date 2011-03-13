@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include "onyx/screen/screen_update_watcher.h"
+#include "onyx/ui/ui_utils.h"
 #include "onyx/ui/content_view.h"
 
 namespace ui
@@ -211,7 +212,7 @@ void CoverView::paintEvent(QPaintEvent * event)
     {
         if (isPressed() || isChecked())
         {
-            painter.fillRect(rect(), Qt::gray);
+            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
         }
         if (hasFocus())
         {
@@ -244,6 +245,9 @@ void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("title"))
     {
+        QFont font;
+        font.setPointSize(ui::defaultFontPointSize());
+        painter.setFont(font);
         painter.drawText(rect, Qt::AlignCenter, data()->value("title").toString());
     }
 }
