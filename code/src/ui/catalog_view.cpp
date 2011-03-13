@@ -179,13 +179,15 @@ void CatalogView::arrangeAll(bool force)
     arrangeSubWidgets();
     associateData(force);
 
-    // TODO: need a better way to manage focus.
-    if (sub_items_.size() > 0 && sub_items_.front()->data())
+    if (isVisible())
     {
-        sub_items_.front()->setFocus();
+        if (sub_items_.size() > 0 && sub_items_.front()->data())
+        {
+            sub_items_.front()->setFocus();
+        }
+        broadcastPositionSignal();
+        onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
     }
-    broadcastPositionSignal();
-    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
 }
 
 int CatalogView::moveLeft(int current)
