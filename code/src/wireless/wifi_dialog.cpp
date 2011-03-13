@@ -61,8 +61,6 @@ public:
 
 static WifiViewFactory my_factory;
 
-//static onyx::screen::ScreenProxy::Waveform current_wavform = onyx::screen::ScreenProxy::GU;
-
 WifiDialog::WifiDialog(QWidget *parent,
                        SysStatus & sys)
 #ifndef Q_WS_QWS
@@ -700,8 +698,8 @@ bool WifiDialog::showConfigurationDialog(WifiProfile &profile)
     ap_dialog_visible_ = false;
 
     // Update screen.
-    onyx::screen::instance().flush(500);
-    onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC);
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
 
     // Check return value.
     if (ret == QDialog::Accepted)
