@@ -21,6 +21,8 @@ int distance(QWidget * first, QWidget *second);
 
 int distance(QPoint first, QPoint second);
 
+int keyboardKeyHeight();
+
 };
 
 #endif  // ONYX_UI_UTILS_H_

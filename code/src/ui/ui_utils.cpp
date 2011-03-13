@@ -57,6 +57,11 @@ int distance(QPoint first_pt, QPoint second_pt)
     return static_cast<int>(sqrt(static_cast<float>(x) + static_cast<float>(y)));
 }
 
+int keyboardKeyHeight()
+{
+    return 50;
+}
+
 }
 
 
