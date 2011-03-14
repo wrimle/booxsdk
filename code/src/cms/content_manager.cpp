@@ -204,6 +204,20 @@ bool ContentManager::createContentNode(ContentNode& info)
     return ContentNode::createContentNode(*database_, info);
 }
 
+/// Get content node by using url. Actually md5, as md5 is not used.
+bool ContentManager::getContentNodeByUrl(ContentNode & info,
+                                         const QString & url)
+{
+    return ContentNode::getContentNodeByUrl(*database_, url, info);
+}
+
+/// Update content node by url.
+bool ContentManager::updateContentNodeByUrl(const ContentNode& info,
+                                            const QString & url)
+{
+    return ContentNode::updateContentNodeByUrl(*database_, info, url);
+}
+
 /// Update the content node. The content node should already
 /// exist in the database.
 bool ContentManager::updateContentNode(const ContentNode & info)

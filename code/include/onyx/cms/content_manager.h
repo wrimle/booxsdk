@@ -49,7 +49,11 @@ public:
                         bool create = true);
     bool getContentNode(ContentNode & info);
     bool getContentNode(const cms_long id, ContentNode & info);
+    bool getContentNodeByUrl(ContentNode & info, const QString & url);
+
     bool updateContentNode(const ContentNode& info);
+    bool updateContentNodeByUrl(const ContentNode& info, const QString & url);
+
     bool removeContentNode(ContentNode& info);
 
     // Category session.
