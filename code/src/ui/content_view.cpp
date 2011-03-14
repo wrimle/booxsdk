@@ -187,6 +187,68 @@ void ContentView::paintEvent(QPaintEvent * event)
 }
 
 
+CoverView::CoverView(QWidget *parent)
+: ContentView(parent)
+{
+}
+
+CoverView::~CoverView()
+{
+}
+
+void CoverView::updateView()
+{
+    update();
+}
+
+void CoverView::paintEvent(QPaintEvent * event)
+{
+    QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
+
+    if (data())
+    {
+        if (isPressed() || isChecked())
+        {
+            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
+        }
+        if (hasFocus())
+        {
+            QPen pen;
+            pen.setWidth(penWidth());
+            painter.setPen(pen);
+            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+        }
+
+        drawCover(painter, rect());
+        if (isPressed() || isChecked())
+        {
+            painter.setPen(Qt::white);
+        }
+        drawTitle(painter, rect());
+    }
+}
+
+void CoverView::drawCover(QPainter & painter, QRect rect)
+{
+    if (data() && data()->contains("cover"))
+    {
+        QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
+        int x = (rect.width() - pixmap.width()) / 2;
+        painter.drawPixmap(x, MARGIN, pixmap);
+    }
+}
+
+void CoverView::drawTitle(QPainter & painter, QRect rect)
+{
+    if (data() && data()->contains("title"))
+    {
+        QFont font;
+        font.setPointSize(ui::defaultFontPointSize());
+        painter.setFont(font);
+        painter.drawText(rect, Qt::AlignCenter, data()->value("title").toString());
+    }
+}
 
 
 CheckBoxView::CheckBoxView(QWidget *parent)
@@ -252,4 +314,60 @@ void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
     }
 }
 
+
+
+
+LineEditView::LineEditView(QWidget *parent)
+: ContentView(parent)
+//, inner_edit_(this)
+{
 }
+
+LineEditView::~LineEditView()
+{
+}
+
+void LineEditView::updateView()
+{
+}
+
+void LineEditView::mousePressEvent(QMouseEvent *event)
+{
+}
+
+void LineEditView::mouseMoveEvent(QMouseEvent * event)
+{
+}
+
+void LineEditView::mouseReleaseEvent(QMouseEvent *event)
+{
+}
+
+void LineEditView::keyReleaseEvent(QKeyEvent *)
+{
+}
+
+void LineEditView::paintEvent(QPaintEvent * event)
+{
+}
+
+bool LineEditView::event(QEvent * event)
+{
+    return true;
+}
+
+
+void LineEditView::focusInEvent(QFocusEvent * event)
+{
+}
+
+void LineEditView::focusOutEvent(QFocusEvent * event)
+{
+}
+
+
+}
+
+
+
+

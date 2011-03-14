@@ -78,7 +78,7 @@ protected:
     void drawTitle(QPainter & painter, QRect rect);
 };
 
-/// Cover view provides a cover and title support.
+/// CheckBox view provides a checkbox and title support.
 class CheckBoxView : public ContentView
 {
     Q_OBJECT
@@ -94,6 +94,33 @@ protected:
     void paintEvent(QPaintEvent * event);
     void drawCover(QPainter & painter, QRect rect);
     void drawTitle(QPainter & painter, QRect rect);
+};
+
+
+/// LineEditView.
+class LineEditView : public ContentView
+{
+    Q_OBJECT
+
+public:
+    LineEditView(QWidget *parent);
+    virtual ~LineEditView();
+
+public:
+    virtual void updateView();
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void keyReleaseEvent(QKeyEvent *);
+    void paintEvent(QPaintEvent * event);
+    bool event(QEvent * event);
+    void focusInEvent(QFocusEvent * event);
+    void focusOutEvent(QFocusEvent * event);
+
+private:
+    //QLineEdit inner_edit_;
 };
 
 
