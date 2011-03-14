@@ -1,4 +1,5 @@
 #include "onyx/screen/screen_proxy.h"
+#include "onyx/screen/screen_update_watcher.h"
 #include "onyx/ui/main_window.h"
 
 using namespace ui;
@@ -21,7 +22,6 @@ MainWindow::MainWindow(QObject *parent)
                   (SysStatus::instance().hasTouchScreen() ? 
                   (MENU | PROGRESS | MESSAGE | STYLUS | BATTERY | MUSIC_PLAYER | CLOCK | VOLUME | SCREEN_REFRESH) :
                   (MENU | PROGRESS | MESSAGE | CLOCK | BATTERY)))
-    , mandatory_update_(false)
 {
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Base);
@@ -211,10 +211,6 @@ void MainWindow::handleRequestUpdate(bool update_now)
         qDebug("Update Screen Now");
         onyx::screen::instance().flush(this, onyx::screen::ScreenProxy::GU);
     }
-    else
-    {
-        mandatory_update_ = true;
-    }
 }
 
 void MainWindow::handlePopupJumpPageDialog()
@@ -246,31 +242,11 @@ bool MainWindow::event(QEvent * event)
 {
     bool ret = QWidget::event(event);
     //qDebug("main window event type %d", event->type());
-    if (event->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled() &&
-        (isActiveWindow() || mandatory_update_))
+    if (event->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled() && isActiveWindow())
     {
         static int count = 0;
-        if (onyx::screen::instance().userData() == 1)
-        {
-            onyx::screen::instance().updateWidgetWithGCInterval(this,
-                    NULL,
-                    onyx::screen::ScreenProxy::GC);
-            ++onyx::screen::instance().userData();
-        }
-        else if (mandatory_update_)
-        {
-            qDebug("Update request %d, Default", ++count);
-            onyx::screen::instance().updateWidgetWithGCInterval(this);
-        }
-        else
-        {
-            qDebug("Update request %d, GU", ++count);
-            onyx::screen::instance().updateWidgetWithGCInterval(this,
-                    NULL,
-                    onyx::screen::ScreenProxy::GU);
-        }
-
-        mandatory_update_ = false;
+        qDebug("Update request %d", ++count);
+        onyx::screen::ScreenUpdateWatcher::instance().updateScreen();
         event->accept();
         return true;
     }
