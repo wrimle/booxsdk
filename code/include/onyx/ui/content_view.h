@@ -76,8 +76,9 @@ protected:
     void paintEvent(QPaintEvent * event);
     void drawCover(QPainter & painter, QRect rect);
     void drawTitle(QPainter & painter, QRect rect);
-
 };
+
+
 
 };
 

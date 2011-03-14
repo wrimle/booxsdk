@@ -419,33 +419,74 @@ bool ContentNode::updateContentNodeByUrl(QSqlDatabase& database,
                                          const ContentNode & node,
                                          const QString & url)
 {
-    QSqlQuery query(database);
-    query.prepare ("INSERT OR REPLACE into content  "
-                   " (name, location, title, authors, "
-                   " description, last_access, publisher, md5, "
-                   " size, rating, read_time, read_count, "
-                   " progress, attributes) values "
-                   " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ");
+    // Check at first.
+    ContentNode tmp;
+    bool found = getContentNodeByUrl(database, url, tmp);
 
-    query.addBindValue(node.name());
-    query.addBindValue(node.location());
-    query.addBindValue(node.title());
-    query.addBindValue(node.authors());
-    query.addBindValue(node.description());
-    query.addBindValue(node.last_access());
-    query.addBindValue(node.publisher());
-    query.addBindValue(url);
-    query.addBindValue(node.size());
-    query.addBindValue(node.rating());
-    query.addBindValue(node.read_time());
-    query.addBindValue(node.read_count());
-    query.addBindValue(node.progress());
-    query.addBindValue(node.attributes());
-
-    if (!query.exec())
+    if (!found)
     {
-        qDebug() << query.lastError();
-        return false;
+        QSqlQuery query(database);
+        query.prepare ("INSERT into content  "
+            " (name, location, title, authors, "
+            " description, last_access, publisher, md5, "
+            " size, rating, read_time, read_count, "
+            " progress, attributes) values "
+            " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ");
+
+        query.addBindValue(node.name());
+        query.addBindValue(node.location());
+        query.addBindValue(node.title());
+        query.addBindValue(node.authors());
+        query.addBindValue(node.description());
+        query.addBindValue(node.last_access());
+        query.addBindValue(node.publisher());
+        query.addBindValue(url);
+        query.addBindValue(node.size());
+        query.addBindValue(node.rating());
+        query.addBindValue(node.read_time());
+        query.addBindValue(node.read_count());
+        query.addBindValue(node.progress());
+        query.addBindValue(node.attributes());
+
+        if (!query.exec())
+        {
+            qDebug() << query.lastError();
+            return false;
+        }
+    }
+    else
+    {
+        QSqlQuery query(database);
+        query.prepare ("update content set "
+                        " name = ?, location = ?, title = ?, authors = ?, "
+                        " description = ?, last_access = ?, publisher = ?,  "
+                        " size = ?, rating = ?, read_time = ?, read_count = ?, "
+                        " progress = ?, attributes = ? "
+                        " where md5 = ?");
+
+        query.addBindValue(node.name());
+        query.addBindValue(node.location());
+        query.addBindValue(node.title());
+        query.addBindValue(node.authors());
+        query.addBindValue(node.description());
+        query.addBindValue(node.last_access());
+        query.addBindValue(node.publisher());
+
+        query.addBindValue(node.size());
+        query.addBindValue(node.rating());
+        query.addBindValue(node.read_time());
+        query.addBindValue(node.read_count());
+
+        query.addBindValue(node.progress());
+        query.addBindValue(node.attributes());
+
+        query.addBindValue(url);
+
+        if (!query.exec())
+        {
+            qDebug() << query.lastError();
+            return false;
+        }
     }
     return true;
 }
