@@ -78,6 +78,23 @@ protected:
     void drawTitle(QPainter & painter, QRect rect);
 };
 
+/// Cover view provides a cover and title support.
+class CheckBoxView : public ContentView
+{
+    Q_OBJECT
+
+public:
+    CheckBoxView(QWidget *parent);
+    virtual ~CheckBoxView();
+
+public:
+    virtual void updateView();
+
+protected:
+    void paintEvent(QPaintEvent * event);
+    void drawCover(QPainter & painter, QRect rect);
+    void drawTitle(QPainter & painter, QRect rect);
+};
 
 
 };

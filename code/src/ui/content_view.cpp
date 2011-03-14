@@ -189,21 +189,21 @@ void ContentView::paintEvent(QPaintEvent * event)
 
 
 
-CoverView::CoverView(QWidget *parent)
+CheckBoxView::CheckBoxView(QWidget *parent)
 : ContentView(parent)
 {
 }
 
-CoverView::~CoverView()
+CheckBoxView::~CheckBoxView()
 {
 }
 
-void CoverView::updateView()
+void CheckBoxView::updateView()
 {
     update();
 }
 
-void CoverView::paintEvent(QPaintEvent * event)
+void CheckBoxView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
     painter.fillRect(rect(), Qt::white);
@@ -231,20 +231,20 @@ void CoverView::paintEvent(QPaintEvent * event)
     }
 }
 
-void CoverView::drawCover(QPainter & painter, QRect rect)
+void CheckBoxView::drawCover(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("cover"))
     {
         QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
-        int x = (rect.width() - pixmap.width()) / 2;
-        painter.drawPixmap(x, MARGIN, pixmap);
+        painter.drawPixmap(MARGIN, (rect.height() - pixmap.height()) / 2, pixmap);
     }
 }
 
-void CoverView::drawTitle(QPainter & painter, QRect rect)
+void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("title"))
     {
+        rect.adjust(30, 0, 0, 0);
         QFont font;
         font.setPointSize(ui::defaultFontPointSize());
         painter.setFont(font);
