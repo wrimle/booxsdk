@@ -42,19 +42,23 @@ private:
 private:
     struct UpdateItem
     {
-        QWidget *widget;
         onyx::screen::ScreenProxy::Waveform waveform;
         onyx::screen::ScreenCommand::WaitMode wait;
         QRect rc;
 
-        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm, QRect rect= QRect())
-            : widget(wnd)
-            , waveform(w)
+        UpdateItem(){}
+
+        UpdateItem(onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm, QRect rect= QRect())
+            : waveform(w)
             , wait(wm)
             , rc(rect)
         {}
     };
     QQueue<UpdateItem> queue_;
+
+private:
+    bool enqueue(UpdateItem &, QWidget *, onyx::screen::ScreenProxy::Waveform, onyx::screen::ScreenCommand::WaitMode, const QRect & rc = QRect());
+
 };
 
 ScreenUpdateWatcher & watcher();

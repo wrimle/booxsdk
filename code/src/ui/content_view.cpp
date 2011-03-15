@@ -92,9 +92,10 @@ void ContentView::mousePressEvent(QMouseEvent *event)
 
 void ContentView::mouseReleaseEvent(QMouseEvent *event)
 {
+    bool broadcast = false;
     if (isPressed())
     {
-        activate();
+        broadcast = true;
     }
     else
     {
@@ -106,6 +107,10 @@ void ContentView::mouseReleaseEvent(QMouseEvent *event)
         repaintAndRefreshScreen();
     }
     QWidget::mouseReleaseEvent(event);
+    if (broadcast)
+    {
+        activate();
+    }
 }
 
 void ContentView::mouseMoveEvent(QMouseEvent * e)
