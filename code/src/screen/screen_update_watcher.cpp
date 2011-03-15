@@ -45,11 +45,16 @@ bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
         qDebug("event filter update request %d.\n", count++);
         return true;
     }
-    else
+    else if (event->type() == QEvent::WindowActivate)
     {
-        return QObject::eventFilter(obj, event);
+        if (obj->isWidgetType())
+        {
+            QWidget * wnd = static_cast<QWidget *>(obj);
+            wnd->update();
+            enqueue(wnd, onyx::screen::ScreenProxy::GC);
+        }
     }
-    return false;
+    return QObject::eventFilter(obj, event);
 }
 
 /// Add screen update request to queue.
