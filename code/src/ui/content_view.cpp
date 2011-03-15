@@ -196,6 +196,11 @@ CoverView::~CoverView()
 {
 }
 
+const QString CoverView::type()
+{
+    return "CoverView";
+}
+
 void CoverView::updateView()
 {
     update();
@@ -258,6 +263,11 @@ CheckBoxView::CheckBoxView(QWidget *parent)
 
 CheckBoxView::~CheckBoxView()
 {
+}
+
+const QString CheckBoxView::type()
+{
+    return "CheckBoxView";
 }
 
 void CheckBoxView::updateView()
@@ -325,6 +335,11 @@ LineEditView::LineEditView(QWidget *parent)
 
 LineEditView::~LineEditView()
 {
+}
+
+const QString LineEditView::type()
+{
+    return "LineEditView";
 }
 
 void LineEditView::updateView()

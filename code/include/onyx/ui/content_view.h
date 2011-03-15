@@ -69,6 +69,8 @@ public:
     CoverView(QWidget *parent);
     virtual ~CoverView();
 
+    static const QString type();
+
 public:
     virtual void updateView();
 
@@ -86,6 +88,8 @@ class CheckBoxView : public ContentView
 public:
     CheckBoxView(QWidget *parent);
     virtual ~CheckBoxView();
+
+    static const QString type();
 
 public:
     virtual void updateView();
@@ -105,6 +109,8 @@ class LineEditView : public ContentView
 public:
     LineEditView(QWidget *parent);
     virtual ~LineEditView();
+
+    static const QString type();
 
 public:
     virtual void updateView();
