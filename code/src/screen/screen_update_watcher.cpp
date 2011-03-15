@@ -30,6 +30,28 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
+void ScreenUpdateWatcher::addWatcher(QWidget *widget)
+{
+    widget->installEventFilter(this);
+}
+
+bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::UpdateRequest)
+    {
+        obj->event(event);
+        static int count = 0;
+        updateScreen();
+        qDebug("event filter update request %d.\n", count++);
+        return true;
+    }
+    else
+    {
+        return QObject::eventFilter(obj, event);
+    }
+    return false;
+}
+
 /// Add screen update request to queue.
 /// \widget The widget to update.
 /// \w Which kind of waveform to use to update screen.
