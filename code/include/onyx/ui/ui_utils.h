@@ -25,6 +25,9 @@ int distance(QPoint first, QPoint second);
 
 int keyboardKeyHeight();
 
+// the width of the CheckBoxView
+int checkBoxViewWidth();
+
 };
 
 #endif  // ONYX_UI_UTILS_H_
