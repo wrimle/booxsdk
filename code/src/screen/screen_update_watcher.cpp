@@ -32,7 +32,18 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 
 void ScreenUpdateWatcher::addWatcher(QWidget *widget)
 {
-    widget->installEventFilter(this);
+    if (widget)
+    {
+        widget->installEventFilter(this);
+    }
+}
+
+void ScreenUpdateWatcher::removeWatcher(QWidget *widget)
+{
+    if (widget)
+    {
+        widget->removeEventFilter(this);
+    }
 }
 
 bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)

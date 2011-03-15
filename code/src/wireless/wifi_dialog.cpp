@@ -548,6 +548,8 @@ void WifiDialog::onNeedPassword(WifiProfile profile)
 
 void WifiDialog::onNoMatchedAP()
 {
+    proxy_.scanResults(scan_results_);
+    arrangeAPItems(scan_results_);
 }
 
 void WifiDialog::onComplete()

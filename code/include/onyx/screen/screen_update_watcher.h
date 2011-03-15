@@ -23,6 +23,8 @@ public:
 
 public Q_SLOTS:
     void addWatcher(QWidget *widget);
+    void removeWatcher(QWidget *widget);
+
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void updateScreen();
