@@ -58,6 +58,7 @@ public slots:
 
     void setSubItemType(const QString &type);
     void setSubItemBkColor(Qt::GlobalColor color);
+    QVector<ContentView *> & visibleSubItems() { return sub_items_; }
 
     void associateData(bool force = false);
     void associateEmptyData();
@@ -93,7 +94,6 @@ protected:
     void paintEvent(QPaintEvent * event);
 
 protected:
-    QVector<ContentView *> & visibleSubItems() { return sub_items_; }
     Paginator & paginator();
 
 Q_SIGNALS:

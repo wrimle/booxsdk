@@ -376,7 +376,7 @@ LineEditView::LineEditView(QWidget *parent)
     : ContentView(parent)
     , inner_edit_(this)
     , layout_(this)
-    , to_focus_in_(true)
+    , forward_focus_(true)
 {
     createLayout();
 }
@@ -394,8 +394,7 @@ void LineEditView::createLayout()
 {
     layout_.setContentsMargins(MARGIN, 0, MARGIN, 0);
     layout_.addWidget(&inner_edit_, 1);
-
-
+    connect(&inner_edit_, SIGNAL(outOfRange(QKeyEvent*)), this, SLOT(onEditOutOfRange(QKeyEvent*)));
 }
 
 void LineEditView::updateView()
@@ -410,34 +409,30 @@ void LineEditView::updateView()
     }
 }
 
-void LineEditView::keyReleaseEvent(QKeyEvent *ke)
-{
-    if (Qt::Key_Down == ke->key() || Qt::Key_Up == ke->key())
-    {
-        this->setFocus();
-        ContentView::keyReleaseEvent(ke);
-        to_focus_in_ = true;
-    }
-}
-
-void LineEditView::paintEvent(QPaintEvent * event)
-{
-
-}
-
 void LineEditView::focusInEvent(QFocusEvent * event)
 {
-    if (to_focus_in_)
+    if (forward_focus_)
     {
         inner_edit_.setFocus();
-        inner_edit_.setCursorPosition(inner_edit_.cursorPosition());
-        to_focus_in_ = false;
     }
 }
 
 void LineEditView::focusOutEvent(QFocusEvent * event)
 {
+    forward_focus_ = true;
+}
 
+void LineEditView::onEditOutOfRange(QKeyEvent *ke)
+{
+    forward_focus_ = false;
+    setFocus();
+    emit keyRelease(this, ke);
+}
+
+void LineEditView::keyPressEvent(QKeyEvent * src)
+{
+    QKeyEvent * key = new QKeyEvent(src->type(), src->key(), src->modifiers(), src->text());
+    QApplication::postEvent(&inner_edit_, key);
 }
 
 }

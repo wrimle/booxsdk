@@ -122,18 +122,20 @@ public:
     virtual void updateView();
 
 protected:
-    void keyReleaseEvent(QKeyEvent *ke);
-    void paintEvent(QPaintEvent * event);
+    void keyPressEvent(QKeyEvent * event);
     void focusInEvent(QFocusEvent * event);
     void focusOutEvent(QFocusEvent * event);
 
+private Q_SLOTS:
+    void onEditOutOfRange(QKeyEvent *ke);
+
+private:
     void createLayout();
 
 private:
     OnyxLineEdit inner_edit_;
     QHBoxLayout layout_;
-
-    bool to_focus_in_;
+    bool forward_focus_;
 };
 
 

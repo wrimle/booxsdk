@@ -732,6 +732,11 @@ bool CatalogView::searchNeighbors(const QString &type)
     ContentView * ret = 0;
 
     QWidget * wnd = focusItem();
+    if (wnd == 0)
+    {
+        return false;
+    }
+
     foreach(CatalogView *view, views)
     {
         // Adjust offset if necessary.

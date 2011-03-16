@@ -61,13 +61,16 @@ void OnyxLineEdit::focusInEvent(QFocusEvent *e)
 
 void OnyxLineEdit::keyReleaseEvent(QKeyEvent *ke)
 {
-    if (ke->key() == Qt::Key_Escape ||
-        ke->key() == Qt::Key_Up ||
-        ke->key() == Qt::Key_Down)
+    if (/*(ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
+        (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()) ||*/
+        (ke->key() == Qt::Key_Up || ke->key() == Qt::Key_Down))
     {
+        qDebug("broadcast out of range signal.");
         ke->ignore();
+        emit outOfRange(ke);
         return;
     }
+
     QLineEdit::keyReleaseEvent(ke);
     ke->accept();
 }
