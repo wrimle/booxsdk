@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
+#include "onyx/ui/line_edit.h"
 #include "onyx/data/data.h"
 
 namespace ui
@@ -117,17 +118,18 @@ public:
     virtual void updateView();
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent * event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void keyReleaseEvent(QKeyEvent *);
+    void keyReleaseEvent(QKeyEvent *ke);
     void paintEvent(QPaintEvent * event);
-    bool event(QEvent * event);
     void focusInEvent(QFocusEvent * event);
     void focusOutEvent(QFocusEvent * event);
 
+    void createLayout();
+
 private:
-    //QLineEdit inner_edit_;
+    OnyxLineEdit inner_edit_;
+    QHBoxLayout layout_;
+
+    bool to_focus_in_;
 };
 
 

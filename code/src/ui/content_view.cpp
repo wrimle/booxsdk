@@ -3,6 +3,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QFocusEvent>
 #include "onyx/screen/screen_update_watcher.h"
 #include "onyx/ui/ui_utils.h"
 #include "onyx/ui/content_view.h"
@@ -292,8 +293,6 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
         if (data()->contains(CHECKED))
         {
             setChecked(qVariantValue<bool> (data()->value(CHECKED)));
-            qDebug() << "contains checked data: " << qVariantValue<bool> (
-                    data()->value(CHECKED));
         }
         if (isPressed() || isChecked())
         {
@@ -373,9 +372,12 @@ void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 
 
 LineEditView::LineEditView(QWidget *parent)
-: ContentView(parent)
-//, inner_edit_(this)
+    : ContentView(parent)
+    , inner_edit_(this)
+    , layout_(this)
+    , to_focus_in_(true)
 {
+    createLayout();
 }
 
 LineEditView::~LineEditView()
@@ -387,47 +389,55 @@ const QString LineEditView::type()
     return "LineEditView";
 }
 
+void LineEditView::createLayout()
+{
+    layout_.setContentsMargins(MARGIN, 0, MARGIN, 0);
+    layout_.addWidget(&inner_edit_, 1);
+
+
+}
+
 void LineEditView::updateView()
 {
+    if (data())
+    {
+        if (data()->contains("title"))
+        {
+            QString text = data()->value("title").toString();
+            inner_edit_.setText(text);
+        }
+    }
 }
 
-void LineEditView::mousePressEvent(QMouseEvent *event)
+void LineEditView::keyReleaseEvent(QKeyEvent *ke)
 {
-}
-
-void LineEditView::mouseMoveEvent(QMouseEvent * event)
-{
-}
-
-void LineEditView::mouseReleaseEvent(QMouseEvent *event)
-{
-}
-
-void LineEditView::keyReleaseEvent(QKeyEvent *)
-{
+    if (Qt::Key_Down == ke->key() || Qt::Key_Up == ke->key())
+    {
+        this->setFocus();
+        ContentView::keyReleaseEvent(ke);
+        to_focus_in_ = true;
+    }
 }
 
 void LineEditView::paintEvent(QPaintEvent * event)
 {
-}
 
-bool LineEditView::event(QEvent * event)
-{
-    return true;
 }
-
 
 void LineEditView::focusInEvent(QFocusEvent * event)
 {
+    if (to_focus_in_)
+    {
+        inner_edit_.setFocus();
+        inner_edit_.setCursorPosition(inner_edit_.cursorPosition());
+        to_focus_in_ = false;
+    }
 }
 
 void LineEditView::focusOutEvent(QFocusEvent * event)
 {
-}
-
 
 }
 
-
-
+}
 
