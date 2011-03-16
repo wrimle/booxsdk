@@ -264,16 +264,7 @@ void CoverView::drawTitle(QPainter & painter, QRect rect)
 CheckBoxView::CheckBoxView(QWidget *parent)
 : ContentView(parent)
 {
-    static const QString CHECKED = "checked";
-    if (data())
-    {
-        if (data()->contains(CHECKED))
-        {
-            setChecked(qVariantValue<bool>(data()->value(CHECKED)));
-            qDebug() << "contains checked data: " <<
-                    qVariantValue<bool>(data()->value(CHECKED));
-        }
-    }
+
 }
 
 CheckBoxView::~CheckBoxView()
@@ -297,6 +288,13 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
     if (data())
     {
+        static const QString CHECKED = "checked";
+        if (data()->contains(CHECKED))
+        {
+            setChecked(qVariantValue<bool> (data()->value(CHECKED)));
+            qDebug() << "contains checked data: " << qVariantValue<bool> (
+                    data()->value(CHECKED));
+        }
         if (isPressed() || isChecked())
         {
             painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
@@ -327,19 +325,22 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
 QRect CheckBoxView::drawCheckBox(QPainter & painter, QRect rect)
 {
-    int height = rect.height()/2;
+    int width = checkBoxViewWidth();
+    int height = width;
     int x = rect.x() + 20;
     int y = (rect.height() - height)/2;
-    QRect check_box_rect(x, y, height, height);
-    painter.drawRect(check_box_rect);
+    QRect check_box_rect(x, y, width, height);
     if (isChecked())
     {
+        painter.setPen(QPen(Qt::white, 2));
         painter.fillRect(check_box_rect, Qt::black);
     }
     else
     {
+        painter.setPen(QPen(Qt::black, 2));
         painter.fillRect(check_box_rect, Qt::white);
     }
+    painter.drawRect(check_box_rect);
     return check_box_rect;
 }
 

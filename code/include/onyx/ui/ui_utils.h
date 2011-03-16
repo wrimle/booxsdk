@@ -25,7 +25,7 @@ int distance(QPoint first, QPoint second);
 
 int keyboardKeyHeight();
 
-// the width of the CheckBoxView
+// the width of the check-box in CheckBoxView
 int checkBoxViewWidth();
 
 };
