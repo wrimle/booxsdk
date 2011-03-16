@@ -81,6 +81,50 @@ TEST(ContentManagerTest, GetContentNodeByName)
     current.remove(db);
 }
 
+
+/// Put a new content into the database and query it by url.
+TEST(ContentManagerTest, GetContentNodeByUrl)
+{
+    QDir current = QDir::current();
+    QString db = current.filePath("temp.db");
+    current.remove(db);
+
+    ContentManager mgr;
+    EXPECT_TRUE(mgr.open(db));
+
+    static const int SIZE = 1024;
+    static const QString TEMP_FILE_NAME = "temp.file";
+    QString temp_file = current.filePath(TEMP_FILE_NAME);
+    CreateTempFile(temp_file, SIZE);
+
+    ContentNode node;
+    QFileInfo info(current, TEMP_FILE_NAME);
+    node.updateLastAccess();
+    node.mutable_name() = info.fileName();
+    node.mutable_location() = info.path();
+    node.mutable_size() = info.size();
+    node.mutable_authors() = "zzzzzzzzzzzz";
+    node.mutable_description() = "test sample";
+    node.mutable_title() = "abc";
+    const QString my_url = "http://www.test.com/";
+    const QString wrong_url = "http://www.test.com./";
+    EXPECT_TRUE(mgr.updateContentNodeByUrl(node, my_url));
+
+    node.mutable_title() = "cba";
+    EXPECT_TRUE(mgr.updateContentNodeByUrl(node, my_url));
+
+    ContentNode result;
+    EXPECT_TRUE(mgr.getContentNodeByUrl(result, my_url));
+    EXPECT_TRUE(node.name() == result.name());
+    EXPECT_TRUE(node.authors() == result.authors());
+    EXPECT_TRUE(node.title() == result.title());
+    EXPECT_FALSE(mgr.getContentNodeByUrl(result, wrong_url));
+
+    // Should remove it otherwise the test will fail.
+    current.remove(db);
+}
+
+
 /// Test the attribute blob object.
 TEST(ContentManagerTest, GetAttribute)
 {

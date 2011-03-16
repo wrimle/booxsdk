@@ -76,7 +76,7 @@ void ContentView::activate(int user_data)
 void ContentView::repaintAndRefreshScreen()
 {
     update();
-    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
 }
 
 void ContentView::mousePressEvent(QMouseEvent *event)
@@ -92,9 +92,10 @@ void ContentView::mousePressEvent(QMouseEvent *event)
 
 void ContentView::mouseReleaseEvent(QMouseEvent *event)
 {
+    bool broadcast = false;
     if (isPressed())
     {
-        activate();
+        broadcast = true;
     }
     else
     {
@@ -106,6 +107,10 @@ void ContentView::mouseReleaseEvent(QMouseEvent *event)
         repaintAndRefreshScreen();
     }
     QWidget::mouseReleaseEvent(event);
+    if (broadcast)
+    {
+        activate();
+    }
 }
 
 void ContentView::mouseMoveEvent(QMouseEvent * e)
@@ -187,8 +192,6 @@ void ContentView::paintEvent(QPaintEvent * event)
 }
 
 
-
-
 CoverView::CoverView(QWidget *parent)
 : ContentView(parent)
 {
@@ -196,6 +199,11 @@ CoverView::CoverView(QWidget *parent)
 
 CoverView::~CoverView()
 {
+}
+
+const QString CoverView::type()
+{
+    return "CoverView";
 }
 
 void CoverView::updateView()
@@ -252,4 +260,174 @@ void CoverView::drawTitle(QPainter & painter, QRect rect)
     }
 }
 
+
+CheckBoxView::CheckBoxView(QWidget *parent)
+: ContentView(parent)
+{
+
 }
+
+CheckBoxView::~CheckBoxView()
+{
+}
+
+const QString CheckBoxView::type()
+{
+    return "CheckBoxView";
+}
+
+void CheckBoxView::updateView()
+{
+    update();
+}
+
+void CheckBoxView::paintEvent(QPaintEvent * event)
+{
+    QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
+
+    if (data())
+    {
+        static const QString CHECKED = "checked";
+        if (data()->contains(CHECKED))
+        {
+            setChecked(qVariantValue<bool> (data()->value(CHECKED)));
+            qDebug() << "contains checked data: " << qVariantValue<bool> (
+                    data()->value(CHECKED));
+        }
+        if (isPressed() || isChecked())
+        {
+            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
+        }
+        if (hasFocus())
+        {
+            QPen pen;
+            pen.setWidth(penWidth());
+            painter.setPen(pen);
+            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+        }
+
+        QRect check_box_r = drawCheckBox(painter, rect());
+
+        int icon_x = check_box_r.right() + MARGIN;
+        QRect icon_r = drawCover(painter, QRect(icon_x, rect().y(),
+                rect().width()-icon_x, rect().height()));
+
+        if (isPressed() || isChecked())
+        {
+            painter.setPen(Qt::white);
+        }
+        int title_x = icon_r.right() + MARGIN;
+        drawTitle(painter, QRect(title_x, rect().y(),
+                rect().width()-title_x, rect().height()));
+    }
+}
+
+QRect CheckBoxView::drawCheckBox(QPainter & painter, QRect rect)
+{
+    int width = checkBoxViewWidth();
+    int height = width;
+    int x = rect.x() + 20;
+    int y = (rect.height() - height)/2;
+    QRect check_box_rect(x, y, width, height);
+    if (isChecked())
+    {
+        painter.setPen(QPen(Qt::white, 2));
+        painter.fillRect(check_box_rect, Qt::black);
+    }
+    else
+    {
+        painter.setPen(QPen(Qt::black, 2));
+        painter.fillRect(check_box_rect, Qt::white);
+    }
+    painter.drawRect(check_box_rect);
+    return check_box_rect;
+}
+
+QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
+{
+    QRect icon_rect(rect.topLeft(), rect.topLeft());
+    if (data() && data()->contains("cover"))
+    {
+        QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
+        painter.drawPixmap(MARGIN, (rect.height() - pixmap.height()) / 2, pixmap);
+        icon_rect.setRight(pixmap.width());
+    }
+    return icon_rect;
+}
+
+void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
+{
+    if (data() && data()->contains("title"))
+    {
+        rect.adjust(MARGIN, 0, 0, 0);
+        QFont font;
+        font.setPointSize(ui::defaultFontPointSize());
+        painter.setFont(font);
+        painter.drawText(rect, Qt::AlignLeft|Qt::AlignVCenter,
+                data()->value("title").toString());
+    }
+}
+
+
+
+
+LineEditView::LineEditView(QWidget *parent)
+: ContentView(parent)
+//, inner_edit_(this)
+{
+}
+
+LineEditView::~LineEditView()
+{
+}
+
+const QString LineEditView::type()
+{
+    return "LineEditView";
+}
+
+void LineEditView::updateView()
+{
+}
+
+void LineEditView::mousePressEvent(QMouseEvent *event)
+{
+}
+
+void LineEditView::mouseMoveEvent(QMouseEvent * event)
+{
+}
+
+void LineEditView::mouseReleaseEvent(QMouseEvent *event)
+{
+}
+
+void LineEditView::keyReleaseEvent(QKeyEvent *)
+{
+}
+
+void LineEditView::paintEvent(QPaintEvent * event)
+{
+}
+
+bool LineEditView::event(QEvent * event)
+{
+    return true;
+}
+
+
+void LineEditView::focusInEvent(QFocusEvent * event)
+{
+}
+
+void LineEditView::focusOutEvent(QFocusEvent * event)
+{
+}
+
+
+}
+
+
+
+

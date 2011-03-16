@@ -75,7 +75,6 @@ private:
     QVBoxLayout             vlayout_;           ///< Vertical Layout
     QHBoxLayout             hlayout_;           ///< Horizontal Layout
     StatusBar               status_bar_;        ///< Status Bar
-    bool                    mandatory_update_;  ///< Mandatory Update
 
     NO_COPY_AND_ASSIGN(MainWindow);
 };

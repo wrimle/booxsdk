@@ -9,8 +9,10 @@ namespace onyx
 namespace screen
 {
 
-class ScreenUpdateWatcher
+class ScreenUpdateWatcher : public QObject
 {
+    Q_OBJECT
+
 public:
     static ScreenUpdateWatcher & instance()
     {
@@ -19,11 +21,19 @@ public:
     }
     ~ScreenUpdateWatcher();
 
-public:
+public Q_SLOTS:
+    void addWatcher(QWidget *widget);
+    void removeWatcher(QWidget *widget);
+
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void updateScreen();
+
+public:
     bool isQueueEmpty();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     ScreenUpdateWatcher();
@@ -32,19 +42,23 @@ private:
 private:
     struct UpdateItem
     {
-        QWidget *widget;
         onyx::screen::ScreenProxy::Waveform waveform;
         onyx::screen::ScreenCommand::WaitMode wait;
         QRect rc;
 
-        UpdateItem(QWidget * wnd, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm, QRect rect= QRect())
-            : widget(wnd)
-            , waveform(w)
+        UpdateItem(){}
+
+        UpdateItem(onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm, QRect rect= QRect())
+            : waveform(w)
             , wait(wm)
             , rc(rect)
         {}
     };
     QQueue<UpdateItem> queue_;
+
+private:
+    bool enqueue(UpdateItem &, QWidget *, onyx::screen::ScreenProxy::Waveform, onyx::screen::ScreenCommand::WaitMode, const QRect & rc = QRect());
+
 };
 
 ScreenUpdateWatcher & watcher();

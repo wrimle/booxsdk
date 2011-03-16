@@ -15,7 +15,20 @@ Factory::~Factory()
 
 ContentView * Factory::createView(QWidget *parent, const QString &type)
 {
-    return new CoverView(parent);
+    ContentView *target;
+    if (CheckBoxView::type() == type)
+    {
+        target = new CheckBoxView(parent);
+    }
+    else if (LineEditView::type() == type)
+    {
+        target = new LineEditView(parent);
+    }
+    else
+    {
+        target = new CoverView(parent);
+    }
+    return target;
 }
 
 }

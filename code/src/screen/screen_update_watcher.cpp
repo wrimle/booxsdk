@@ -30,12 +30,84 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
+void ScreenUpdateWatcher::addWatcher(QWidget *widget)
+{
+    if (widget)
+    {
+        widget->installEventFilter(this);
+    }
+}
+
+void ScreenUpdateWatcher::removeWatcher(QWidget *widget)
+{
+    if (widget)
+    {
+        widget->removeEventFilter(this);
+    }
+}
+
+bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::UpdateRequest)
+    {
+        QTimer::singleShot(0, this, SLOT(updateScreen()));
+    }
+    else if (event->type() == QEvent::WindowActivate)
+    {
+        if (obj->isWidgetType())
+        {
+            QWidget * wnd = static_cast<QWidget *>(obj);
+            wnd->update();
+            enqueue(wnd, onyx::screen::ScreenProxy::GC);
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
+
+bool ScreenUpdateWatcher::enqueue(UpdateItem & item,
+                                  QWidget *widget,
+                                  onyx::screen::ScreenProxy::Waveform w,
+                                  onyx::screen::ScreenCommand::WaitMode wait,
+                                  const QRect & rc)
+{
+    if (widget == 0)
+    {
+        widget = qApp->desktop();
+    }
+
+    if (!widget->isVisible())
+    {
+        return false;
+    }
+
+    QPoint pt = widget->mapToGlobal(rc.topLeft());
+    QSize s;
+    if (!rc.size().isEmpty())
+    {
+        s = rc.size();
+    }
+    else
+    {
+        s = widget->size();
+    }
+    item.rc = QRect(pt, s);
+    item.wait = wait;
+    item.waveform = w;
+    return true;
+}
+
 /// Add screen update request to queue.
 /// \widget The widget to update.
 /// \w Which kind of waveform to use to update screen.
-void ScreenUpdateWatcher::enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wm)
+void ScreenUpdateWatcher::enqueue(QWidget *widget,
+                                  onyx::screen::ScreenProxy::Waveform w,
+                                  onyx::screen::ScreenCommand::WaitMode wm)
 {
-    queue_.enqueue(UpdateItem(widget, w, wm));
+    UpdateItem item;
+    if (enqueue(item, widget, w, wm))
+    {
+        queue_.enqueue(item);
+    }
 }
 
 /// Add screen update request to queue.
@@ -47,7 +119,11 @@ void ScreenUpdateWatcher::enqueue(QWidget *widget,
                                   onyx::screen::ScreenProxy::Waveform w,
                                   onyx::screen::ScreenCommand::WaitMode wait)
 {
-    queue_.enqueue(UpdateItem(widget, w, wait, rc));
+    UpdateItem item;
+    if (enqueue(item, widget, w, wait, rc))
+    {
+        queue_.enqueue(item);
+    }
 }
 
 /// Get item from queue and decide which waveform to use.
@@ -59,29 +135,7 @@ void ScreenUpdateWatcher::updateScreen()
     while (!queue_.isEmpty())
     {
         UpdateItem i = queue_.dequeue();
-        QWidget *p = i.widget;
-        if (p == 0)
-        {
-            p = qApp->desktop();
-        }
-
-        if (!p->isVisible())
-        {
-            continue;
-        }
-
-        QPoint pt = p->mapToGlobal(i.rc.topLeft());
-        QSize s;
-        if (!i.rc.size().isEmpty())
-        {
-            s = i.rc.size();
-        }
-        else
-        {
-            s = p->size();
-        }
-        QRect t(pt, s);
-        rc = rc.united(t);
+        rc = rc.united(i.rc);
         if (i.waveform > w)
         {
             w = i.waveform;

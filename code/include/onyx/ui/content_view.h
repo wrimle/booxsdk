@@ -69,6 +69,8 @@ public:
     CoverView(QWidget *parent);
     virtual ~CoverView();
 
+    static const QString type();
+
 public:
     virtual void updateView();
 
@@ -76,8 +78,58 @@ protected:
     void paintEvent(QPaintEvent * event);
     void drawCover(QPainter & painter, QRect rect);
     void drawTitle(QPainter & painter, QRect rect);
-
 };
+
+/// CheckBox view provides a checkbox and title support.
+class CheckBoxView : public ContentView
+{
+    Q_OBJECT
+
+public:
+    CheckBoxView(QWidget *parent);
+    virtual ~CheckBoxView();
+
+    static const QString type();
+
+public:
+    virtual void updateView();
+
+protected:
+    void paintEvent(QPaintEvent * event);
+    QRect drawCheckBox(QPainter & painter, QRect rect);
+    QRect drawCover(QPainter & painter, QRect rect);
+    void drawTitle(QPainter & painter, QRect rect);
+};
+
+
+/// LineEditView.
+class LineEditView : public ContentView
+{
+    Q_OBJECT
+
+public:
+    LineEditView(QWidget *parent);
+    virtual ~LineEditView();
+
+    static const QString type();
+
+public:
+    virtual void updateView();
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void keyReleaseEvent(QKeyEvent *);
+    void paintEvent(QPaintEvent * event);
+    bool event(QEvent * event);
+    void focusInEvent(QFocusEvent * event);
+    void focusOutEvent(QFocusEvent * event);
+
+private:
+    //QLineEdit inner_edit_;
+};
+
 
 };
 
