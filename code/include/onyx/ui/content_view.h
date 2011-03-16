@@ -32,6 +32,9 @@ public:
     int penWidth() { return pen_width_; }
     void setPenWidth(int w) { pen_width_ = w; }
 
+    void setBkColor(Qt::GlobalColor color) { bk_color_ = color; }
+    Qt::GlobalColor bkColor() { return bk_color_; }
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
@@ -58,6 +61,7 @@ private:
     bool pressed_;
     bool checked_;
     int pen_width_;
+    Qt::GlobalColor bk_color_;
 };
 
 

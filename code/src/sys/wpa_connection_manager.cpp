@@ -217,9 +217,9 @@ bool WpaConnectionManager::checkWpaSupplicant()
         return true;
     }
 
-    setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
-    emit wpaStateChanged(false);
-    return false;
+    // setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
+    // emit wpaStateChanged(false);
+    return true;
 }
 
 void WpaConnectionManager::setupConnections()

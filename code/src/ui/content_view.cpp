@@ -20,6 +20,7 @@ ContentView::ContentView(QWidget *parent)
         , pressed_(false)
         , checked_(false)
         , pen_width_(3)
+        , bk_color_(Qt::white)
 {
     setFocusPolicy(Qt::StrongFocus);
     setAutoFillBackground(false);
@@ -174,7 +175,7 @@ void ContentView::focusOutEvent(QFocusEvent * e)
 void ContentView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
-    painter.fillRect(rect(), Qt::white);
+    painter.fillRect(rect(), bkColor());
 
     if (data())
     {
@@ -215,7 +216,7 @@ void CoverView::updateView()
 void CoverView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
-    painter.fillRect(rect(), Qt::white);
+    painter.fillRect(rect(), bkColor());
 
     if (data())
     {
@@ -285,7 +286,7 @@ void CheckBoxView::updateView()
 void CheckBoxView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
-    painter.fillRect(rect(), Qt::white);
+    painter.fillRect(rect(), bkColor());
 
     if (data())
     {
