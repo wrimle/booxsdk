@@ -435,5 +435,10 @@ void LineEditView::keyPressEvent(QKeyEvent * src)
     QApplication::postEvent(&inner_edit_, key);
 }
 
+void LineEditView::keyReleaseEvent(QKeyEvent * event)
+{
+    event->accept();
+}
+
 }
 
