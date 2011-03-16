@@ -264,6 +264,16 @@ void CoverView::drawTitle(QPainter & painter, QRect rect)
 CheckBoxView::CheckBoxView(QWidget *parent)
 : ContentView(parent)
 {
+    static const QString CHECKED = "checked";
+    if (data())
+    {
+        if (data()->contains(CHECKED))
+        {
+            setChecked(qVariantValue<bool>(data()->value(CHECKED)));
+            qDebug() << "contains checked data: " <<
+                    qVariantValue<bool>(data()->value(CHECKED));
+        }
+    }
 }
 
 CheckBoxView::~CheckBoxView()
@@ -299,33 +309,62 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
             painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
         }
 
-        drawCover(painter, rect());
+        QRect check_box_r = drawCheckBox(painter, rect());
+
+        int icon_x = check_box_r.right() + MARGIN;
+        QRect icon_r = drawCover(painter, QRect(icon_x, rect().y(),
+                rect().width()-icon_x, rect().height()));
+
         if (isPressed() || isChecked())
         {
             painter.setPen(Qt::white);
         }
-        drawTitle(painter, rect());
+        int title_x = icon_r.right() + MARGIN;
+        drawTitle(painter, QRect(title_x, rect().y(),
+                rect().width()-title_x, rect().height()));
     }
 }
 
-void CheckBoxView::drawCover(QPainter & painter, QRect rect)
+QRect CheckBoxView::drawCheckBox(QPainter & painter, QRect rect)
 {
+    int height = rect.height()/2;
+    int x = rect.x() + 20;
+    int y = (rect.height() - height)/2;
+    QRect check_box_rect(x, y, height, height);
+    painter.drawRect(check_box_rect);
+    if (isChecked())
+    {
+        painter.fillRect(check_box_rect, Qt::black);
+    }
+    else
+    {
+        painter.fillRect(check_box_rect, Qt::white);
+    }
+    return check_box_rect;
+}
+
+QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
+{
+    QRect icon_rect(rect.topLeft(), rect.topLeft());
     if (data() && data()->contains("cover"))
     {
         QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
         painter.drawPixmap(MARGIN, (rect.height() - pixmap.height()) / 2, pixmap);
+        icon_rect.setRight(pixmap.width());
     }
+    return icon_rect;
 }
 
 void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains("title"))
     {
-        rect.adjust(30, 0, 0, 0);
+        rect.adjust(MARGIN, 0, 0, 0);
         QFont font;
         font.setPointSize(ui::defaultFontPointSize());
         painter.setFont(font);
-        painter.drawText(rect, Qt::AlignCenter, data()->value("title").toString());
+        painter.drawText(rect, Qt::AlignLeft|Qt::AlignVCenter,
+                data()->value("title").toString());
     }
 }
 

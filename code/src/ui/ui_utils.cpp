@@ -69,7 +69,7 @@ int keyboardKeyHeight()
 
 int checkBoxViewWidth()
 {
-    return 150;
+    return 120;
 }
 
 }

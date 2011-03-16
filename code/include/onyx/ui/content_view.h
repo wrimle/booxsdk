@@ -96,7 +96,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent * event);
-    void drawCover(QPainter & painter, QRect rect);
+    QRect drawCheckBox(QPainter & painter, QRect rect);
+    QRect drawCover(QPainter & painter, QRect rect);
     void drawTitle(QPainter & painter, QRect rect);
 };
 
