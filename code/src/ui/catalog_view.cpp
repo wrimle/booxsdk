@@ -528,6 +528,14 @@ void CatalogView::setSubItemType(const QString &type)
     sub_item_type_ = type;
 }
 
+void CatalogView::setSubItemBkColor(Qt::GlobalColor color)
+{
+    foreach(ContentView * view, visibleSubItems())
+    {
+        view->setBkColor(color);
+    }
+}
+
 void CatalogView::broadcastPositionSignal()
 {
     qDebug("position changed %d %d", paginator().currentPage(), paginator().pages());

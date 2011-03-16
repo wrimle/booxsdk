@@ -57,6 +57,7 @@ public slots:
     int cols();
 
     void setSubItemType(const QString &type);
+    void setSubItemBkColor(Qt::GlobalColor color);
 
     void associateData(bool force = false);
     void associateEmptyData();
