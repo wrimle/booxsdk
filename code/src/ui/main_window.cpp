@@ -242,7 +242,7 @@ bool MainWindow::event(QEvent * event)
 {
     bool ret = QWidget::event(event);
     //qDebug("main window event type %d", event->type());
-    if (event->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled() && isActiveWindow())
+    if (event->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled())
     {
         static int count = 0;
         qDebug("Update request %d", ++count);
