@@ -50,6 +50,10 @@ void WpaConnectionManager::onSdioChanged(bool on)
     {
         start();
     }
+    else
+    {
+        stop();
+    }
 }
 
 void WpaConnectionManager::onScanTimeout()
