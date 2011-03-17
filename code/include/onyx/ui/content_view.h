@@ -117,6 +117,7 @@ public:
     virtual ~LineEditView();
 
     static const QString type();
+    inline OnyxLineEdit * innerEdit() { return &inner_edit_; }
 
 public:
     virtual void updateView();

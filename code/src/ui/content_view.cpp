@@ -106,7 +106,7 @@ void ContentView::mouseReleaseEvent(QMouseEvent *event)
     setPressed(false);
     if (data())
     {
-        repaintAndRefreshScreen();
+        //repaintAndRefreshScreen();
     }
     QWidget::mouseReleaseEvent(event);
     if (broadcast)
@@ -414,6 +414,8 @@ void LineEditView::focusInEvent(QFocusEvent * event)
     if (forward_focus_)
     {
         inner_edit_.setFocus();
+        onyx::screen::watcher().enqueue(&inner_edit_,
+                onyx::screen::ScreenProxy::DW);
     }
 }
 
@@ -427,17 +429,22 @@ void LineEditView::onEditOutOfRange(QKeyEvent *ke)
     forward_focus_ = false;
     setFocus();
     emit keyRelease(this, ke);
+    onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW);
 }
 
 void LineEditView::keyPressEvent(QKeyEvent * src)
 {
     QKeyEvent * key = new QKeyEvent(src->type(), src->key(), src->modifiers(), src->text());
-    QApplication::postEvent(&inner_edit_, key);
-    onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW);
+    QApplication::sendEvent(&inner_edit_, key);
 }
 
 void LineEditView::keyReleaseEvent(QKeyEvent * event)
 {
+    if (Qt::Key_Escape == event->key())
+    {
+        event->ignore();
+        return;
+    }
     event->accept();
 }
 

@@ -1,6 +1,7 @@
 
 #include <QtGui/QtGui>
 #include "onyx/ui/line_edit.h"
+#include "onyx/screen/screen_update_watcher.h"
 
 const QString LINE_EDIT_STYLE = "       \
 QLineEdit                               \
@@ -61,8 +62,14 @@ void OnyxLineEdit::focusInEvent(QFocusEvent *e)
 
 void OnyxLineEdit::keyReleaseEvent(QKeyEvent *ke)
 {
-    if (/*(ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
-        (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()) ||*/
+    if (ke->key() == Qt::Key_Escape)
+    {
+        ke->ignore();
+        return;
+    }
+
+    if ((ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
+        (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()) ||
         (ke->key() == Qt::Key_Up || ke->key() == Qt::Key_Down))
     {
         qDebug("broadcast out of range signal.");
@@ -79,6 +86,8 @@ void OnyxLineEdit::keyPressEvent(QKeyEvent * ke)
 {
     QLineEdit::keyPressEvent(ke);
     ke->accept();
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
 }
 
 void OnyxLineEdit::mouseReleaseEvent(QMouseEvent * event)
