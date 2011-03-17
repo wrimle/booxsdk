@@ -97,6 +97,8 @@ private:
     void stopAllTimers();
     void setState(WifiProfile profile, WpaConnection::ConnectionState s);
 
+    bool isWifiEnabled() { return wifi_enabled_; }
+
     WifiProfiles & records(sys::SystemConfig& conf);
     WpaConnection & proxy();
 
