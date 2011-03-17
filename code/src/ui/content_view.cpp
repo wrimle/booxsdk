@@ -433,6 +433,7 @@ void LineEditView::keyPressEvent(QKeyEvent * src)
 {
     QKeyEvent * key = new QKeyEvent(src->type(), src->key(), src->modifiers(), src->text());
     QApplication::postEvent(&inner_edit_, key);
+    onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW);
 }
 
 void LineEditView::keyReleaseEvent(QKeyEvent * event)
