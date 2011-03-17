@@ -40,7 +40,7 @@ bool WpaConnectionManager::start()
 
 bool WpaConnectionManager::stop()
 {
-    enableSdio(false);
+    wifi_enabled_ = false;
     return true;
 }
 
@@ -188,8 +188,7 @@ bool WpaConnectionManager::checkWifiDevice()
     enableSdio(true);
 
     // Check state again.
-    wifi_enabled_ = sdioState();
-    if (!wifi_enabled_)
+    if (!sdioState())
     {
         setState(dummy, WpaConnection::STATE_DISABLED);
         return false;
@@ -245,6 +244,7 @@ void WpaConnectionManager::setupConnections()
 
 void WpaConnectionManager::triggerScan()
 {
+    wifi_enabled_ = true;
     setConnecting(false);
     resetScanRetry();
     resetConnectRetry();
@@ -379,6 +379,12 @@ void WpaConnectionManager::saveAp(WifiProfile & profile)
 
 bool WpaConnectionManager::connectToBestAP()
 {
+    if (!isWifiEnabled())
+    {
+        qDebug("Wifi is disabled by app.");
+        return false;
+    }
+
     if (!allowAutoConnect())
     {
         qDebug("Auto connect is disabled.");
