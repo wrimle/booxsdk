@@ -115,6 +115,7 @@ void CatalogView::arrangeSubWidgets()
             layout_.removeWidget(p);
             p->hide();
         }
+        sub_items_.clear();
         add = true;
         if (isFixedGrid())
         {
