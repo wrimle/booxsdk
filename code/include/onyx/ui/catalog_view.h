@@ -133,6 +133,7 @@ private:
 
     int row(int index);
     int col(int index);
+    int visibleRows();
 
 private:
     QGridLayout layout_;

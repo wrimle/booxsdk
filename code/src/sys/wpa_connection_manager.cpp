@@ -217,9 +217,10 @@ bool WpaConnectionManager::checkWpaSupplicant()
         return true;
     }
 
+    qDebug("wpa_supplicant has been launched, wait a little bit to setup connection.");
     // setState(dummy, WpaConnection::STATE_HARDWARE_ERROR);
     // emit wpaStateChanged(false);
-    return true;
+    return false;
 }
 
 void WpaConnectionManager::setupConnections()
