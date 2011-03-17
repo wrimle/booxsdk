@@ -250,7 +250,7 @@ int CatalogView::moveUp(int current)
 
 int CatalogView::moveDown(int current)
 {
-    if (row(current) == paginator().rows() - 1)
+    if (row(current) == visibleRows())
     {
         if (!isVerSelfRecycle())
         {
@@ -265,6 +265,19 @@ int CatalogView::moveDown(int current)
         }
     }
     return current + paginator().cols();
+}
+
+int CatalogView::visibleRows()
+{
+    int visible_rows = 0;
+    for(int i = 0; i < paginator().rows(); ++i)
+    {
+        if (visibleSubItems().at(i * paginator().cols())->data())
+        {
+            visible_rows = i;
+        }
+    }
+    return visible_rows;
 }
 
 int CatalogView::row(int index)
