@@ -14,6 +14,8 @@
 #include "keyboard.h"
 #include "keyboard_key.h"
 #include "keyboard_utils.h"
+#include "onyx_keyboard.h"
+#include "onyx_keyboard_utils.h"
 #include "label.h"
 #include "line_edit.h"
 #include "list_widget.h"

@@ -228,5 +228,6 @@
     <file>images/retrieve_words.png</file>
     <file>images/similar_words.png</file>
     <file>images/hyperlink_navigation_mode.png</file>
+    <file>images/locale.png</file>
   </qresource>
 </RCC>
