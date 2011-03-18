@@ -19,6 +19,7 @@ ContentView::ContentView(QWidget *parent)
         , data_(0)
         , pressed_(false)
         , checked_(false)
+        , repaint_on_mouse_release_(true)
         , pen_width_(3)
         , bk_color_(Qt::white)
 {
@@ -81,6 +82,11 @@ void ContentView::repaintAndRefreshScreen()
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
 }
 
+void ContentView::setRepaintOnMouseRelease(bool enable)
+{
+    repaint_on_mouse_release_ = enable;
+}
+
 void ContentView::mousePressEvent(QMouseEvent *event)
 {
     s_mouse = event->globalPos();
@@ -104,9 +110,9 @@ void ContentView::mouseReleaseEvent(QMouseEvent *event)
         emit mouse(s_mouse, event->globalPos());
     }
     setPressed(false);
-    if (data())
+    if (data() && repaint_on_mouse_release_)
     {
-        //repaintAndRefreshScreen();
+        repaintAndRefreshScreen();
     }
     QWidget::mouseReleaseEvent(event);
     if (broadcast)

@@ -36,6 +36,8 @@ public:
     Qt::GlobalColor bkColor() { return bk_color_; }
 
 protected:
+    // set true to enable, false to disable.
+    void setRepaintOnMouseRelease(bool enable = true);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -60,6 +62,7 @@ private:
     OData* data_;
     bool pressed_;
     bool checked_;
+    bool repaint_on_mouse_release_;
     int pen_width_;
     Qt::GlobalColor bk_color_;
 };
