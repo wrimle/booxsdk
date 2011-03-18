@@ -10,7 +10,7 @@ static const int HEIGHT = 6;
 
 StatusBarItemProgress::StatusBarItemProgress(QWidget *parent)
     : StatusBarItem(PROGRESS, parent)
-    , current_(0)
+    , current_(1)
     , total_(1)
     , pressing_value_(-1)
     , show_message_(true)
