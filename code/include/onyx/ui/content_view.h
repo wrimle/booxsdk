@@ -145,6 +145,23 @@ private:
 };
 
 
+class ClockView : public ContentView
+{
+    Q_OBJECT
+
+public:
+    ClockView(QWidget *parent);
+    virtual ~ClockView();
+
+    static const QString type();
+
+public:
+    virtual void updateView();
+
+protected:
+    void paintEvent(QPaintEvent * event);
+};
+
 };
 
 #endif

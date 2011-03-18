@@ -15,7 +15,7 @@ Factory::~Factory()
 
 ContentView * Factory::createView(QWidget *parent, const QString &type)
 {
-    ContentView *target;
+    ContentView *target = 0;
     if (CheckBoxView::type() == type)
     {
         target = new CheckBoxView(parent);
@@ -23,6 +23,10 @@ ContentView * Factory::createView(QWidget *parent, const QString &type)
     else if (LineEditView::type() == type)
     {
         target = new LineEditView(parent);
+    }
+    else if (ClockView::type() == type)
+    {
+        target = new ClockView(parent);
     }
     else
     {

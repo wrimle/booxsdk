@@ -469,8 +469,8 @@ ContentView* CatalogView::createSubItem()
     ContentView * instance = 0;
     if (!factory_)
     {
-        qWarning("Content view factory is empty, use default factory.");
-        instance = new CoverView(this);
+        static Factory s_factory;
+        instance = s_factory.createView(this, sub_item_type_);
     }
     else
     {
