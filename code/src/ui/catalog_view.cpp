@@ -18,6 +18,8 @@ const QString CatalogView::RECYCLE_RIGHT= "r-right";
 const QString CatalogView::RECYCLE_UP   = "r-up";
 const QString CatalogView::RECYCLE_DOWN = "r-down";
 
+static const int FLAG_STOP = -2;
+
 
 CatalogView::CatalogView(Factory * factory, QWidget *parent)
         : QWidget(parent)
@@ -197,7 +199,7 @@ int CatalogView::moveLeft(int current)
         {
             if (searchNeighbors(LEFT) || searchNeighbors(RECYCLE_RIGHT))
             {
-                return -1;
+                return FLAG_STOP;
             }
         }
         if (horAutoRecycle())
@@ -216,7 +218,7 @@ int CatalogView::moveRight(int current)
         {
             if (searchNeighbors(RIGHT) ||searchNeighbors(RECYCLE_LEFT))
             {
-                return -1;
+                return FLAG_STOP;
             }
         }
         if (horAutoRecycle())
@@ -235,7 +237,7 @@ int CatalogView::moveUp(int current)
         {
             if (searchNeighbors(UP) || searchNeighbors(RECYCLE_DOWN))
             {
-                return -1;
+                return FLAG_STOP;
             }
         }
         if (verAutoRecycle())
@@ -254,7 +256,7 @@ int CatalogView::moveDown(int current)
         {
             if (searchNeighbors(DOWN) || searchNeighbors(RECYCLE_UP))
             {
-                return -1;
+                return FLAG_STOP;
             }
         }
         if (verAutoRecycle())
@@ -445,7 +447,7 @@ void CatalogView::keyPressEvent(QKeyEvent*e )
 /// If it returns itself, we need to refresh whole screen.
 QWidget * CatalogView::moveFocus(int index)
 {
-    if (index > data().size() )
+    if (index > data().size() || index == FLAG_STOP)
     {
         return 0;
     }
@@ -797,7 +799,7 @@ bool CatalogView::searchNeighbors(const QString &type)
         }
         else if (type == RECYCLE_UP)
         {
-            offset.setY(wnd->mapToGlobal(QPoint()).y() - view->mapToGlobal(QPoint()).y());
+            offset.setY(-view->height() - height());
         }
         else if (type == RECYCLE_DOWN)
         {
