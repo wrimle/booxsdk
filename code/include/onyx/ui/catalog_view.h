@@ -40,6 +40,9 @@ public slots:
     void setMargin(int m = 4);
     int margin() { return margin_; }
 
+    void setSpacing(int s = 2);
+    int spacing() { return spacing_; }
+
     void showBorder(bool show = true) { show_border_ = show; }
     bool hasBorder() { return show_border_; }
 
@@ -141,6 +144,7 @@ private:
     Factory * factory_;
     ODatas datas_;
     int margin_;
+    int spacing_;
     bool checked_;
     bool self_hor_recycle_;
     bool self_ver_recycle_;

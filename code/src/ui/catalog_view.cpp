@@ -24,6 +24,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , layout_(this)
         , factory_(factory)
         , margin_(0)
+        , spacing_(0)
         , checked_(true)
         , self_hor_recycle_(false)
         , self_ver_recycle_(false)
@@ -91,6 +92,13 @@ void CatalogView::setMargin(int m)
 {
     margin_ = m;
     layout_.setContentsMargins(m, m, m, m);
+}
+
+void CatalogView::setSpacing(int s)
+{
+    spacing_ = s;
+    layout_.setSpacing(spacing_);
+    layout_.setVerticalSpacing(spacing_);
 }
 
 /// Arrange all sub widgets according to current widget size.

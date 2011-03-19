@@ -25,8 +25,8 @@ OnyxKeyboard::OnyxKeyboard(QWidget *parent)
     , big_layout_(this)
     , line_edit_layout_(0)
     , layout_(0)
-    , line_edit_(new Factory(), this)
-    , sub_menu_(new Factory(), this)
+    , line_edit_(0, this)
+    , sub_menu_(0, this)
     , top_(&keyboard_key_view_factory, this)
     , left_(&keyboard_key_view_factory, this)
     , middle_(&keyboard_key_view_factory, this)
@@ -39,10 +39,6 @@ OnyxKeyboard::OnyxKeyboard(QWidget *parent)
     , language_(QLocale::system())
     , is_handwriting_(false)
 {
-    if (!parentWidget())
-    {
-        setFixedWidth(screenGeometry().width());
-    }
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Button);
     init(language_);
@@ -71,7 +67,7 @@ void OnyxKeyboard::createLayout()
 
     line_edit_layout_.setContentsMargins(0, 2, 0, 0);
     line_edit_layout_.addWidget(&line_edit_);
-    line_edit_layout_.addSpacing(4);
+    line_edit_layout_.setSpacing(2);
     line_edit_layout_.addWidget(&sub_menu_);
     big_layout_.addLayout(&line_edit_layout_);
     big_layout_.addWidget(&top_);
@@ -137,6 +133,7 @@ void OnyxKeyboard::createSubMenu()
     dd->insert(ODATA_KEY_TITLE, "Clear");
     dd->insert(MENU_TYPE, KEYBOARD_MENU_CLEAR);
     ds.push_back(dd);
+    sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(CATALOG_MARGIN);
     sub_menu_.setFixedWidth(keyboardKeyHeight()*4);
