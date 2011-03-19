@@ -24,6 +24,9 @@ public slots:
     void setChecked(bool checked = true);
     bool isChecked() { return checked_; }
 
+    void setNeighborFirst(bool search = true);
+    bool neighborFirst();
+
     void setHorSelfRecycle(bool r = true);
     bool isHorSelfRecycle();
 
@@ -136,7 +139,8 @@ private:
 
     int row(int index);
     int col(int index);
-    int visibleRows();
+    bool atDownEdge(int);
+    bool atRightEdge(int);
 
 private:
     QGridLayout layout_;
@@ -146,6 +150,7 @@ private:
     int margin_;
     int spacing_;
     bool checked_;
+    bool neighbor_first_;
     bool self_hor_recycle_;
     bool self_ver_recycle_;
     bool show_border_;

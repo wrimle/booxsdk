@@ -26,6 +26,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , margin_(0)
         , spacing_(0)
         , checked_(true)
+        , neighbor_first_(true)
         , self_hor_recycle_(false)
         , self_ver_recycle_(false)
         , show_border_(false)
@@ -37,6 +38,18 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
 
 CatalogView::~CatalogView()
 {
+    clearDatas(data());
+}
+
+
+void CatalogView::setNeighborFirst(bool search)
+{
+    neighbor_first_ = search;
+}
+
+bool CatalogView::neighborFirst()
+{
+    return neighbor_first_;
 }
 
 void CatalogView::setHorSelfRecycle(bool r)
@@ -203,7 +216,7 @@ int CatalogView::moveLeft(int current)
 {
     if (col(current) == 0)
     {
-        if (!isHorSelfRecycle())
+        if (neighborFirst())
         {
             if (searchNeighbors(LEFT) || searchNeighbors(RECYCLE_RIGHT))
             {
@@ -220,9 +233,9 @@ int CatalogView::moveLeft(int current)
 
 int CatalogView::moveRight(int current)
 {
-    if (col(current) == paginator().cols() - 1)
+    if (atRightEdge(current))
     {
-        if (!isHorSelfRecycle())
+        if (neighborFirst())
         {
             if (searchNeighbors(RIGHT) ||searchNeighbors(RECYCLE_LEFT))
             {
@@ -241,7 +254,7 @@ int CatalogView::moveUp(int current)
 {
     if (row(current) == 0)
     {
-        if (!isVerSelfRecycle())
+        if (neighborFirst())
         {
             if (searchNeighbors(UP) || searchNeighbors(RECYCLE_DOWN))
             {
@@ -258,9 +271,9 @@ int CatalogView::moveUp(int current)
 
 int CatalogView::moveDown(int current)
 {
-    if (row(current) == visibleRows())
+    if (atDownEdge(current))
     {
-        if (!isVerSelfRecycle())
+        if (neighborFirst())
         {
             if (searchNeighbors(DOWN) || searchNeighbors(RECYCLE_UP))
             {
@@ -275,17 +288,37 @@ int CatalogView::moveDown(int current)
     return current + paginator().cols();
 }
 
-int CatalogView::visibleRows()
+bool CatalogView::atDownEdge(int current)
 {
-    int visible_rows = 0;
-    for(int i = 0; i < paginator().rows(); ++i)
+    current += paginator().cols();
+    if (current >= visibleSubItems().size())
     {
-        if (visibleSubItems().at(i * paginator().cols())->data())
-        {
-            visible_rows = i;
-        }
+        return true;
     }
-    return visible_rows;
+    if (visibleSubItems().at(current)->data())
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CatalogView::atRightEdge(int current)
+{
+    if (col(current) >= cols() - 1)
+    {
+        return true;
+    }
+
+    ++current;
+    if (current >= visibleSubItems().size())
+    {
+        return true;
+    }
+    if (visibleSubItems().at(current)->data())
+    {
+        return false;
+    }
+    return true;
 }
 
 int CatalogView::row(int index)

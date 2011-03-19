@@ -486,6 +486,8 @@ void ClockView::paintEvent(QPaintEvent * event)
          QPoint(0, -70)
      };
 
+
+
      QColor hourColor(Qt::black);
      QColor minuteColor(Qt::black);
 
@@ -495,7 +497,16 @@ void ClockView::paintEvent(QPaintEvent * event)
      QPainter painter(this);
      painter.fillRect(rect(), bkColor());
      painter.setRenderHint(QPainter::Antialiasing);
-     painter.translate(width() / 2, height() / 2);
+
+     if (hasFocus())
+     {
+         QPen pen;
+         pen.setWidth(penWidth());
+         painter.setPen(pen);
+         painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+     }
+
+     painter.translate(width() / 2 - penWidth(), height() / 2 - penWidth());
      painter.scale(side / 200.0, side / 200.0);
 
      painter.setPen(Qt::NoPen);
@@ -528,6 +539,7 @@ void ClockView::paintEvent(QPaintEvent * event)
              painter.drawLine(92, 0, 96, 0);
          painter.rotate(6.0);
      }
+
 }
 
 }
