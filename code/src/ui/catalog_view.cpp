@@ -26,9 +26,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , margin_(0)
         , spacing_(0)
         , checked_(true)
-        , neighbor_first_(true)
-        , self_hor_recycle_(false)
-        , self_ver_recycle_(false)
+        , policy_(NeighborFirst)
         , show_border_(false)
         , fixed_grid_(false)
         , size_(200, 150)
@@ -41,35 +39,14 @@ CatalogView::~CatalogView()
     clearDatas(data());
 }
 
-
-void CatalogView::setNeighborFirst(bool search)
+void CatalogView::setSearchPolicy(int policy)
 {
-    neighbor_first_ = search;
+    policy_ = policy;
 }
 
-bool CatalogView::neighborFirst()
+int CatalogView::searchPolicy()
 {
-    return neighbor_first_;
-}
-
-void CatalogView::setHorSelfRecycle(bool r)
-{
-    self_hor_recycle_ = r;
-}
-
-bool CatalogView::isHorSelfRecycle()
-{
-    return self_hor_recycle_;
-}
-
-void CatalogView::setVerSelfRecycle(bool r)
-{
-    self_ver_recycle_ = r;
-}
-
-bool CatalogView::isVerSelfRecycle()
-{
-    return self_ver_recycle_;
+    return policy_;
 }
 
 void CatalogView::createLayout()
@@ -223,7 +200,7 @@ int CatalogView::moveLeft(int current)
                 return -1;
             }
         }
-        else
+        if (horAutoRecycle())
         {
             return current = paginator().last_visible();
         }
@@ -242,7 +219,7 @@ int CatalogView::moveRight(int current)
                 return -1;
             }
         }
-        else
+        if (horAutoRecycle())
         {
             return current = paginator().first_visible();
         }
@@ -261,7 +238,7 @@ int CatalogView::moveUp(int current)
                 return -1;
             }
         }
-        else
+        if (verAutoRecycle())
         {
             return current = paginator().last_visible();
         }
@@ -280,7 +257,7 @@ int CatalogView::moveDown(int current)
                 return -1;
             }
         }
-        else
+        if (verAutoRecycle())
         {
             return current = paginator().first_visible();
         }
@@ -329,6 +306,21 @@ int CatalogView::row(int index)
 int CatalogView::col(int index)
 {
     return index % paginator().cols();
+}
+
+bool CatalogView::neighborFirst()
+{
+    return policy_ & NeighborFirst;
+}
+
+bool CatalogView::horAutoRecycle()
+{
+    return policy_ & AutoHorRecycle;
+}
+
+bool CatalogView::verAutoRecycle()
+{
+    return policy_ & AutoVerRecycle;
 }
 
 Paginator & CatalogView::paginator()

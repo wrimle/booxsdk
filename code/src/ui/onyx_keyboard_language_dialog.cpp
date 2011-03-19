@@ -78,7 +78,7 @@ void OnyxKeyboardLanguageDialog::createLanguageGroup()
     language_group_.setData(ds);
 
     language_group_.setFixedGrid(LANGUAGE_COUNT, 1);
-    language_group_.setVerSelfRecycle(true);
+    language_group_.setSearchPolicy(CatalogView::AutoVerRecycle);
 }
 
 QLocale OnyxKeyboardLanguageDialog::getLocale(const QString language_text)

@@ -78,7 +78,6 @@ void WifiTitleItem::createDashBoard()
 
     dash_board_.setFixedGrid(1, 2);
     dash_board_.setData(datas_);
-    dash_board_.setHorSelfRecycle(true);
     dash_board_.setSubItemBkColor(Qt::transparent);
 }
 

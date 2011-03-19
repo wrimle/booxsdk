@@ -152,7 +152,7 @@ void OnyxKeyboard::createTop()
     top_.setData(keyboard_data_->topCodes());
     top_.setFixedGrid(1, 10);
     top_.setMargin(CATALOG_MARGIN);
-    top_.setHorSelfRecycle(true);
+    top_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     top_.setNeighbor(&left_, CatalogView::DOWN);
     top_.setNeighbor(&middle_, CatalogView::DOWN);
     top_.setNeighbor(&right_, CatalogView::DOWN);
@@ -163,7 +163,7 @@ void OnyxKeyboard::createBottom()
     bottom_.data().clear();
     bottom_.setSubItemType(KeyboardKeyView::type());
     bottom_.setFixedHeight(keyboardKeyHeight());
-    bottom_.setHorSelfRecycle(true);
+    bottom_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     bottom_.setPreferItemSize(s_size);
     bottom_.setData(keyboard_data_->bottomCodes());
     bottom_.setFixedGrid(1, 10);
@@ -176,7 +176,7 @@ void OnyxKeyboard::createMenu()
     menu_.data().clear();
     menu_.setSubItemType(KeyboardKeyView::type());
     menu_.setFixedHeight(keyboardKeyHeight());
-    menu_.setHorSelfRecycle(true);
+    menu_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     menu_.setPreferItemSize(s_size);
     menu_.setData(keyboard_data_->menuCodes());
     menu_.setFixedGrid(1, 4);

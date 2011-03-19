@@ -17,6 +17,24 @@ class CatalogView : public QWidget
     Q_OBJECT
 
 public:
+    static const QString LEFT;
+    static const QString RIGHT;
+    static const QString UP;
+    static const QString DOWN;
+    static const QString RECYCLE_LEFT;
+    static const QString RECYCLE_RIGHT;
+    static const QString RECYCLE_UP;
+    static const QString RECYCLE_DOWN;
+
+     enum SearchPolicy
+     {
+         Normal         = 0x0,
+         NeighborFirst  = 0x01,
+         AutoHorRecycle = 0x02,
+         AutoVerRecycle = 0x04,
+     };
+
+public:
     CatalogView(Factory * factory = 0, QWidget *parent = 0);
     ~CatalogView();
 
@@ -24,14 +42,8 @@ public slots:
     void setChecked(bool checked = true);
     bool isChecked() { return checked_; }
 
-    void setNeighborFirst(bool search = true);
-    bool neighborFirst();
-
-    void setHorSelfRecycle(bool r = true);
-    bool isHorSelfRecycle();
-
-    void setVerSelfRecycle(bool r = true);
-    bool isVerSelfRecycle();
+    void setSearchPolicy(int policy = NeighborFirst);
+    int searchPolicy();
 
     bool hasNext();
     bool hasPrev();
@@ -75,15 +87,6 @@ public slots:
     void setNeighbor(CatalogView *neighbor, const QString& type);
     bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
-public:
-    static const QString LEFT;
-    static const QString RIGHT;
-    static const QString UP;
-    static const QString DOWN;
-    static const QString RECYCLE_LEFT;
-    static const QString RECYCLE_RIGHT;
-    static const QString RECYCLE_UP;
-    static const QString RECYCLE_DOWN;
 
 protected Q_SLOTS:
     virtual void onItemActivated(ContentView *item, int);
@@ -114,7 +117,6 @@ Q_SIGNALS:
     void outOfDown(CatalogView*, int, int, bool &);
 
 private slots:
-
     QWidget * moveFocus(int index);
     ContentView *createSubItem();
 
@@ -141,6 +143,9 @@ private:
     int col(int index);
     bool atDownEdge(int);
     bool atRightEdge(int);
+    bool neighborFirst();
+    bool verAutoRecycle();
+    bool horAutoRecycle();
 
 private:
     QGridLayout layout_;
@@ -150,9 +155,7 @@ private:
     int margin_;
     int spacing_;
     bool checked_;
-    bool neighbor_first_;
-    bool self_hor_recycle_;
-    bool self_ver_recycle_;
+    int policy_;
     bool show_border_;
     bool fixed_grid_;
     QSize size_;
