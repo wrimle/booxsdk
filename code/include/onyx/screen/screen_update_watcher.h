@@ -28,6 +28,9 @@ public Q_SLOTS:
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
 
+    void dwEnqueueStart(QWidget *widget, const QRect & rc);
+    void dwEnqueueEnd(QWidget *widget, const QRect & rc);
+
     void updateScreen();
     void guUpdateScreen();
     void gcUpdateScreen();
@@ -44,6 +47,9 @@ private:
 
     void updateScreenInternal(bool automatic, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC);
 
+    bool dwEnqueue() { return dw_enqueue_; }
+    void useDwEnqueue(bool use) { dw_enqueue_ = use; }
+
 private:
     struct UpdateItem
     {
@@ -59,7 +65,6 @@ private:
             , rc(rect)
         {}
     };
-    QQueue<UpdateItem> queue_;
 
     struct UpdateCount
     {
@@ -76,11 +81,14 @@ private:
             , max(m)
         {}
     };
-    QMap<QWidget *, UpdateCount> widget_map_;
 
 private:
     bool enqueue(UpdateItem &, QWidget *, onyx::screen::ScreenProxy::Waveform, onyx::screen::ScreenCommand::WaitMode, const QRect & rc = QRect());
 
+private:
+    QQueue<UpdateItem> queue_;
+    QMap<QWidget *, UpdateCount> widget_map_;
+    bool dw_enqueue_;
 };
 
 ScreenUpdateWatcher & watcher();

@@ -30,6 +30,12 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
+/// Added widget to watcher list.
+/// \widget the widget wants to listen. When it's in watcher list, this class will
+/// automatically refresh screen when paint event is processed.
+/// \gc_interval. When update screen, after every gc_interval gu update, a gc update
+/// will be used. If gc_interval is zero, gu is always used. If gc_interval is one
+/// gc is always used.
 void ScreenUpdateWatcher::addWatcher(QWidget *widget, int gc_interval)
 {
     if (widget)
@@ -48,13 +54,36 @@ void ScreenUpdateWatcher::removeWatcher(QWidget *widget)
     if (widget)
     {
         widget->removeEventFilter(this);
+        if (widget_map_.contains(widget))
+        {
+            widget_map_.remove(widget);
+        }
     }
+}
+
+/// Added dw screen update to screen update queue.
+void ScreenUpdateWatcher::dwEnqueueStart(QWidget *widget, const QRect & rc)
+{
+    useDwEnqueue(true);
+    enqueue(widget, rc, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
+}
+
+void ScreenUpdateWatcher::dwEnqueueEnd(QWidget *widget, const QRect & rc)
+{
+    useDwEnqueue(false);
+    enqueue(widget, rc, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::UpdateRequest)
     {
+        if (dwEnqueue())
+        {
+            QTimer::singleShot(0, this, SLOT(updateScreen()));
+            return QObject::eventFilter(obj, event);
+        }
+
         QWidget * wnd = static_cast<QWidget *>(obj);
         if (widget_map_.contains(wnd))
         {
