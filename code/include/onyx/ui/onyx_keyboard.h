@@ -41,9 +41,6 @@ protected:
 protected Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
 
-Q_SIGNALS:
-    void okClicked(const QString text);
-
 private:
     void createLayout();
     void connectWithChildren();

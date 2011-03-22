@@ -72,8 +72,8 @@ MainWindow::MainWindow(QObject *parent)
             SIGNAL(musicPlayerStateChanged(int)),
             this,
             SLOT(onMusicPlayerStateChanged(int)));
-    sys::SystemConfig conf;
-    onyx::screen::instance().setGCInterval(conf.screenUpdateGCInterval());
+//    sys::SystemConfig conf;
+//    onyx::screen::instance().setGCInterval(conf.screenUpdateGCInterval());
 }
 
 MainWindow::~MainWindow()
@@ -246,7 +246,7 @@ bool MainWindow::event(QEvent * event)
     {
         static int count = 0;
         qDebug("Update request %d", ++count);
-        onyx::screen::ScreenUpdateWatcher::instance().updateScreen();
+//        onyx::screen::ScreenUpdateWatcher::instance().updateScreen();
         event->accept();
         return true;
     }

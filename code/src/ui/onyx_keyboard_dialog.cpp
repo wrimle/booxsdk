@@ -99,8 +99,24 @@ void OnyxKeyboardDialog::onItemActivated(CatalogView *catalog,
                                    ContentView *item,
                                    int user_data)
 {
-    // TODO
-    qDebug() << "item activated: " << item->data()->value(ODATA_KEY_TITLE);
+    OData * item_data = item->data();
+    if (item_data->contains(MENU_TYPE))
+    {
+        int menu_type = item->data()->value(MENU_TYPE).toInt();
+        if(OnyxKeyboard::KEYBOARD_MENU_OK == menu_type)
+        {
+            LineEditView *input = static_cast<LineEditView *>(
+                    line_edit_.visibleSubItems().front());
+            QString input_text = input->innerEdit()->text();
+            emit okClicked(input_text);
+        }
+        else if(OnyxKeyboard::KEYBOARD_MENU_CLEAR == menu_type)
+        {
+            clearClicked();
+            update();
+            onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+        }
+    }
 }
 
 void OnyxKeyboardDialog::connectWithChildren()

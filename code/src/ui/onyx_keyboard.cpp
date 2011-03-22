@@ -189,7 +189,7 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
                                    int user_data)
 {
     OData * item_data = item->data();
-    if (item_data->contains("menu_type"))
+    if (item_data->contains(MENU_TYPE))
     {
         menuItemActivated(item, user_data);
         return;

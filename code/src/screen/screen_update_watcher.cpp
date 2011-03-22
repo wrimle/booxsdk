@@ -34,9 +34,9 @@ void ScreenUpdateWatcher::addWatcher(QWidget *widget, int gc_interval)
 {
     if (widget)
     {
-        if (gc_interval > 0)
+        if (gc_interval >= 0)
         {
-            UpdateCount item(0, gc_interval);
+            UpdateCount item(gc_interval, gc_interval);
             widget_map_[widget] = item;
         }
         widget->installEventFilter(this);
@@ -59,7 +59,7 @@ bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
         if (widget_map_.contains(wnd))
         {
             UpdateCount & item = widget_map_[wnd];
-            if (++item.current > item.max)
+            if (++item.current >= item.max && item.max > 0)
             {
                 item.current = 0;
                 QTimer::singleShot(0, this, SLOT(gcUpdateScreen()));

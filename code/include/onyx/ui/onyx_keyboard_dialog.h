@@ -23,6 +23,9 @@ public:
 public:
     int popup(int bottom_margin);
 
+Q_SIGNALS:
+    void okClicked(const QString text);
+
 protected Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item,
             int user_data);
