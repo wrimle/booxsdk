@@ -121,6 +121,7 @@ bool WifiTitleItem::event(QEvent *e)
     return QWidget::event(e);
 }
 
+static QByteArray selected_bssid;
 scoped_ptr<QPixmap> WifiAPItem::selected_pixmap_;
 WifiAPItem *WifiAPItem::selected_item_ = 0;
 static WifiAPItem *previous_selected_item_ = 0;
@@ -155,6 +156,7 @@ void WifiAPItem::updateView()
     updateByProfile(profile_);
     selected_item_ = 0;
     previous_selected_item_ = 0;
+    selected_bssid.clear();
 }
 
 void WifiAPItem::setProfile(WifiProfile & profile)
@@ -166,6 +168,7 @@ void WifiAPItem::setProfile(WifiProfile & profile)
     }
     selected_item_ = 0;
     previous_selected_item_ = 0;
+    selected_bssid.clear();
 }
 
 WifiProfile & WifiAPItem::profile()
@@ -247,6 +250,7 @@ void WifiAPItem::activateItem()
     {
         previous_selected_item_ = selected_item_;
         selected_item_ = this;
+        selected_bssid = profile_.bssid();
         if (previous_selected_item_)
         {
             previous_selected_item_->repaint();
@@ -345,7 +349,7 @@ void WifiAPItem::updateByProfile(WifiProfile & profile)
 
 bool WifiAPItem::isSelected()
 {
-    return (selected_item_ == this);
+    return (selected_bssid == profile_.bssid() && selected_item_ == this);
 }
 
 void WifiAPItem::onConfigButtonClicked()
