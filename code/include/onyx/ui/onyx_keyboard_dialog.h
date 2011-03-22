@@ -21,10 +21,9 @@ public:
     ~OnyxKeyboardDialog();
 
 public:
+    void setOKButtonText(const QString button_text);
     int popup(int bottom_margin);
-
-Q_SIGNALS:
-    void okClicked(const QString text);
+    const QString inputText();
 
 protected Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item,

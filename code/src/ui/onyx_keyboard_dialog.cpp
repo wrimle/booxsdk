@@ -26,6 +26,11 @@ OnyxKeyboardDialog::~OnyxKeyboardDialog()
 {
 }
 
+void OnyxKeyboardDialog::setOKButtonText(const QString button_text)
+{
+    ok_button_text_ = button_text;
+}
+
 int OnyxKeyboardDialog::popup(int bottom_margin)
 {
     if (isHidden())
@@ -35,6 +40,14 @@ int OnyxKeyboardDialog::popup(int bottom_margin)
     resize(parentWidget()->width(), height());
     move(parentWidget()->x(), parentWidget()->height() - height());
     return exec();
+}
+
+const QString OnyxKeyboardDialog::inputText()
+{
+    LineEditView *input = static_cast<LineEditView *>(
+                        line_edit_.visibleSubItems().front());
+    const QString input_text = input->innerEdit()->text();
+    return input_text;
 }
 
 void OnyxKeyboardDialog::createLineEdit()
@@ -105,10 +118,7 @@ void OnyxKeyboardDialog::onItemActivated(CatalogView *catalog,
         int menu_type = item->data()->value(MENU_TYPE).toInt();
         if(OnyxKeyboard::KEYBOARD_MENU_OK == menu_type)
         {
-            LineEditView *input = static_cast<LineEditView *>(
-                    line_edit_.visibleSubItems().front());
-            QString input_text = input->innerEdit()->text();
-            emit okClicked(input_text);
+            accept();
         }
         else if(OnyxKeyboard::KEYBOARD_MENU_CLEAR == menu_type)
         {
