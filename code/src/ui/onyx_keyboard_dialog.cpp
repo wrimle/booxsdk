@@ -7,15 +7,19 @@ namespace ui
 
 static const int CATALOG_MARGIN = 1;
 
-OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent)
+// The text of "OK" item can be changed by specifying ok_button_text.
+OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent,
+        const QString ok_button_text)
     : OnyxDialog(parent)
     , big_layout_(&content_widget_)
     , line_edit_layout_(0)
     , line_edit_(0, this)
     , sub_menu_(0, this)
     , keyboard_(this)
+    , ok_button_text_(ok_button_text)
 {
     createLayout();
+    connectWithChildren();
 }
 
 OnyxKeyboardDialog::~OnyxKeyboardDialog()
@@ -56,7 +60,7 @@ void OnyxKeyboardDialog::createSubMenu()
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
     OData *dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "OK");
+    dd->insert(ODATA_KEY_TITLE, ok_button_text_);
     dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
     dd = new OData;
@@ -91,11 +95,32 @@ void OnyxKeyboardDialog::createLayout()
     big_layout_.addWidget(&keyboard_);
 }
 
+void OnyxKeyboardDialog::onItemActivated(CatalogView *catalog,
+                                   ContentView *item,
+                                   int user_data)
+{
+    // TODO
+    qDebug() << "item activated: " << item->data()->value(ODATA_KEY_TITLE);
+}
+
+void OnyxKeyboardDialog::connectWithChildren()
+{
+    connect(&line_edit_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+    connect(&sub_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+}
+
 void OnyxKeyboardDialog::clearClicked()
 {
     LineEditView *input = static_cast<LineEditView *>(
             line_edit_.visibleSubItems().front());
     input->innerEdit()->clear();
+}
+
+void OnyxKeyboardDialog::keyPressEvent(QKeyEvent *event)
+{
+    QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
 }
 
 }   // namespace ui
