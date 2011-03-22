@@ -19,10 +19,12 @@ ScreenUpdateWatcher & watcher()
 
 
 ScreenUpdateWatcher::ScreenUpdateWatcher()
+: dw_enqueue_(false)
 {
 }
 
 ScreenUpdateWatcher::ScreenUpdateWatcher(ScreenUpdateWatcher &ref)
+: dw_enqueue_(false)
 {
 }
 
