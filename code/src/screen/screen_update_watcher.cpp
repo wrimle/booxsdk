@@ -30,15 +30,15 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
-void ScreenUpdateWatcher::addWatcherWithGCInterval(QWidget *widget, int count)
-{
-    // TODO;
-}
-
-void ScreenUpdateWatcher::addWatcher(QWidget *widget)
+void ScreenUpdateWatcher::addWatcher(QWidget *widget, int gc_interval)
 {
     if (widget)
     {
+        if (gc_interval > 0)
+        {
+            UpdateCount item(0, gc_interval);
+            widget_map_[widget] = item;
+        }
         widget->installEventFilter(this);
     }
 }
@@ -55,7 +55,24 @@ bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::UpdateRequest)
     {
-        QTimer::singleShot(0, this, SLOT(updateScreen()));
+        QWidget * wnd = static_cast<QWidget *>(obj);
+        if (widget_map_.contains(wnd))
+        {
+            UpdateCount & item = widget_map_[wnd];
+            if (++item.current > item.max)
+            {
+                item.current = 0;
+                QTimer::singleShot(0, this, SLOT(gcUpdateScreen()));
+            }
+            else
+            {
+                QTimer::singleShot(0, this, SLOT(guUpdateScreen()));
+            }
+        }
+        else
+        {
+            QTimer::singleShot(0, this, SLOT(updateScreen()));
+        }
     }
     else if (event->type() == QEvent::WindowActivate)
     {
@@ -137,15 +154,14 @@ void ScreenUpdateWatcher::updateScreen()
     updateScreenInternal(true);
 }
 
-// Forward method call to screen proxy.
-void ScreenUpdateWatcher::setGCInterval(const int interval)
+void ScreenUpdateWatcher::guUpdateScreen()
 {
-    onyx::screen::instance().setGCInterval(interval);
+    updateScreenInternal(false, onyx::screen::ScreenProxy::GU);
 }
 
-void ScreenUpdateWatcher::resetGUCount()
+void ScreenUpdateWatcher::gcUpdateScreen()
 {
-    onyx::screen::instance().resetGUCount();
+    updateScreenInternal(false, onyx::screen::ScreenProxy::GC);
 }
 
 void ScreenUpdateWatcher::updateScreenInternal(bool automatic,
@@ -180,10 +196,6 @@ void ScreenUpdateWatcher::updateScreenInternal(bool automatic,
         qDebug() << "update screen " << rc << "Waveform " << w;
         onyx::screen::instance().updateWidgetRegion(0, rc, w, wait);
     }
-}
-
-void ScreenUpdateWatcher::updateScreenWithGCInterval()
-{
 }
 
 bool ScreenUpdateWatcher::isQueueEmpty()

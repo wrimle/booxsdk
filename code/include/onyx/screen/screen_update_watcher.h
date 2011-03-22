@@ -22,18 +22,15 @@ public:
     ~ScreenUpdateWatcher();
 
 public Q_SLOTS:
-    void addWatcher(QWidget *widget);
-    void addWatcherWithGCInterval(QWidget *widget, int count = 10);
+    void addWatcher(QWidget *widget, int gc_interval = -1);
     void removeWatcher(QWidget *widget);
 
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
 
     void updateScreen();
-
-    void setGCInterval(const int interval);
-    void resetGUCount();
-    void updateScreenWithGCInterval();
+    void guUpdateScreen();
+    void gcUpdateScreen();
 
 public:
     bool isQueueEmpty();
@@ -63,6 +60,23 @@ private:
         {}
     };
     QQueue<UpdateItem> queue_;
+
+    struct UpdateCount
+    {
+        int current;
+        int max;
+
+        UpdateCount()
+            : current(0)
+            , max(0)
+        {}
+
+        UpdateCount(int c, int m)
+            : current(c)
+            , max(m)
+        {}
+    };
+    QMap<QWidget *, UpdateCount> widget_map_;
 
 private:
     bool enqueue(UpdateItem &, QWidget *, onyx::screen::ScreenProxy::Waveform, onyx::screen::ScreenCommand::WaitMode, const QRect & rc = QRect());
