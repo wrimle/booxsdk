@@ -6,6 +6,7 @@
 #include "onyx/ui/factory.h"
 #include "onyx/ui/keyboard_key_view_factory.h"
 #include "onyx/ui/onyx_keyboard_language_dialog.h"
+#include "onyx/ui/keyboard_data.h"
 
 namespace ui
 {
@@ -23,10 +24,7 @@ static KeyBoardKeyViewFactory keyboard_key_view_factory;
 OnyxKeyboard::OnyxKeyboard(QWidget *parent)
     : QWidget(parent, Qt::FramelessWindowHint)
     , big_layout_(this)
-    , line_edit_layout_(0)
     , layout_(0)
-    , line_edit_(0, this)
-    , sub_menu_(0, this)
     , top_(&keyboard_key_view_factory, this)
     , left_(&keyboard_key_view_factory, this)
     , middle_(&keyboard_key_view_factory, this)
@@ -56,8 +54,6 @@ void OnyxKeyboard::init(const QLocale & locale)
 
 void OnyxKeyboard::createLayout()
 {
-    createLineEdit();
-    createSubMenu();
     createTop();
     createLeft();
     createMiddle();
@@ -65,11 +61,6 @@ void OnyxKeyboard::createLayout()
     createBottom();
     createMenu();
 
-    line_edit_layout_.setContentsMargins(0, 2, 0, 0);
-    line_edit_layout_.addWidget(&line_edit_);
-    line_edit_layout_.setSpacing(2);
-    line_edit_layout_.addWidget(&sub_menu_);
-    big_layout_.addLayout(&line_edit_layout_);
     big_layout_.addWidget(&top_);
     layout_.addWidget(&left_);
     layout_.addWidget(&middle_);
@@ -87,8 +78,6 @@ void OnyxKeyboard::createLayout()
 
 void OnyxKeyboard::connectWithChildren()
 {
-    connect(&sub_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
-                this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
     connect(&top_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
     connect(&left_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
@@ -101,46 +90,6 @@ void OnyxKeyboard::connectWithChildren()
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
     connect(&menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
-}
-
-void OnyxKeyboard::createLineEdit()
-{
-    line_edit_.setSubItemType(LineEditView::type());
-    line_edit_.setPreferItemSize(
-            QSize(rect().width()-4*keyboardKeyHeight(), 36));
-    ODatas ds;
-    OData *dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "");
-    ds.push_back(dd);
-    line_edit_.setFixedGrid(1, 1);
-    line_edit_.setMargin(CATALOG_MARGIN);
-    line_edit_.setData(ds);
-    line_edit_.setNeighbor(&top_, CatalogView::DOWN);
-    line_edit_.setNeighbor(&menu_, CatalogView::RECYCLE_DOWN);
-    line_edit_.setNeighbor(&sub_menu_, CatalogView::RIGHT);
-    line_edit_.setNeighbor(&sub_menu_, CatalogView::RECYCLE_RIGHT);
-}
-
-void OnyxKeyboard::createSubMenu()
-{
-    sub_menu_.setPreferItemSize(s_size);
-    ODatas ds;
-    OData *dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "OK");
-    dd->insert(MENU_TYPE, KEYBOARD_MENU_OK);
-    ds.push_back(dd);
-    dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "Clear");
-    dd->insert(MENU_TYPE, KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
-    sub_menu_.setSpacing(2);
-    sub_menu_.setFixedGrid(1, 2);
-    sub_menu_.setMargin(CATALOG_MARGIN);
-    sub_menu_.setFixedWidth(keyboardKeyHeight()*4);
-    sub_menu_.setData(ds);
-    sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
-    sub_menu_.setNeighbor(&top_, CatalogView::DOWN);
-    sub_menu_.setNeighbor(&menu_, CatalogView::RECYCLE_DOWN);
 }
 
 void OnyxKeyboard::createTop()
@@ -181,7 +130,6 @@ void OnyxKeyboard::createMenu()
     menu_.setData(keyboard_data_->menuCodes());
     menu_.setFixedGrid(1, 4);
     menu_.setMargin(CATALOG_MARGIN);
-    menu_.setNeighbor(&line_edit_, CatalogView::DOWN);
 }
 
 void OnyxKeyboard::createLeft()
@@ -262,8 +210,7 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
         }
         QKeyEvent * key_event = new QKeyEvent(QEvent::KeyPress, key_code,
                 Qt::NoModifier, key_text);
-        QApplication::sendEvent(line_edit_.visibleSubItems().front(),
-                key_event);
+        QApplication::sendEvent(parentWidget(), key_event);
     }
 }
 
@@ -290,20 +237,6 @@ void OnyxKeyboard::menuItemActivated(ContentView *item, int user_data)
     {
         // TODO
     }
-    else if(KEYBOARD_MENU_OK == menu_type)
-    {
-        LineEditView *input = static_cast<LineEditView *>(
-                line_edit_.visibleSubItems().front());
-        QString input_text = input->innerEdit()->text();
-        emit okClicked(input_text);
-    }
-    else if(KEYBOARD_MENU_CLEAR == menu_type)
-    {
-        clearClicked();
-        update();
-        onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
-    }
-
 }
 
 void OnyxKeyboard::resetData(bool shift)
@@ -357,13 +290,6 @@ void OnyxKeyboard::languageClicked()
             resetData(false);
         }
     }
-}
-
-void OnyxKeyboard::clearClicked()
-{
-    LineEditView *input = static_cast<LineEditView *>(
-            line_edit_.visibleSubItems().front());
-    input->innerEdit()->clear();
 }
 
 }   // namespace ui
