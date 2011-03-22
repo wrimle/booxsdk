@@ -30,6 +30,11 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
+void addWatcherWithGCInterval(QWidget *widget, int count)
+{
+    // TODO;
+}
+
 void ScreenUpdateWatcher::addWatcher(QWidget *widget)
 {
     if (widget)
@@ -129,16 +134,40 @@ void ScreenUpdateWatcher::enqueue(QWidget *widget,
 /// Get item from queue and decide which waveform to use.
 void ScreenUpdateWatcher::updateScreen()
 {
-    QRect rc;
+    updateScreenInternal(true);
+}
+
+// Forward method call to screen proxy.
+void ScreenUpdateWatcher::setGCInterval(const int interval)
+{
+    onyx::screen::instance().setGCInterval(interval);
+}
+
+void ScreenUpdateWatcher::resetGUCount()
+{
+    onyx::screen::instance().resetGUCount();
+}
+
+void ScreenUpdateWatcher::updateScreenInternal(bool automatic,
+                                               onyx::screen::ScreenProxy::Waveform waveform)
+{
     onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::DW;
     onyx::screen::ScreenCommand::WaitMode wait = onyx::screen::ScreenCommand::WAIT_NONE;
+    QRect rc;
     while (!queue_.isEmpty())
     {
         UpdateItem i = queue_.dequeue();
         rc = rc.united(i.rc);
-        if (i.waveform > w)
+        if (automatic)
         {
-            w = i.waveform;
+            if (i.waveform > w)
+            {
+                w = i.waveform;
+            }
+        }
+        else
+        {
+            w = waveform;
         }
 
         if (i.wait > wait)
@@ -151,6 +180,10 @@ void ScreenUpdateWatcher::updateScreen()
         qDebug() << "update screen " << rc << "Waveform " << w;
         onyx::screen::instance().updateWidgetRegion(0, rc, w, wait);
     }
+}
+
+void ScreenUpdateWatcher::updateScreenWithGCInterval()
+{
 }
 
 bool ScreenUpdateWatcher::isQueueEmpty()

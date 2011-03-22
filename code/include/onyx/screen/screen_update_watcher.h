@@ -23,11 +23,17 @@ public:
 
 public Q_SLOTS:
     void addWatcher(QWidget *widget);
+    void addWatcherWithGCInterval(QWidget *widget, int count = 10);
     void removeWatcher(QWidget *widget);
 
     void enqueue(QWidget *widget, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
     void enqueue(QWidget *widget, const QRect & rc, onyx::screen::ScreenProxy::Waveform w, onyx::screen::ScreenCommand::WaitMode wait = ScreenCommand::WAIT_BEFORE_UPDATE);
+
     void updateScreen();
+
+    void setGCInterval(const int interval);
+    void resetGUCount();
+    void updateScreenWithGCInterval();
 
 public:
     bool isQueueEmpty();
@@ -38,6 +44,8 @@ protected:
 private:
     ScreenUpdateWatcher();
     ScreenUpdateWatcher(ScreenUpdateWatcher &ref);
+
+    void updateScreenInternal(bool automatic, onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GC);
 
 private:
     struct UpdateItem
