@@ -30,7 +30,7 @@ ScreenUpdateWatcher::~ScreenUpdateWatcher()
 {
 }
 
-void addWatcherWithGCInterval(QWidget *widget, int count)
+void ScreenUpdateWatcher::addWatcherWithGCInterval(QWidget *widget, int count)
 {
     // TODO;
 }
