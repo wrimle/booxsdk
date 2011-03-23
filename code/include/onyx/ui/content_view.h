@@ -58,6 +58,8 @@ protected:
     bool isPressed();
     void setPressed(bool p = true);
 
+    void drawTitle(QPainter &painter, QRect rect, int flags);
+
 private:
     OData* data_;
     bool pressed_;

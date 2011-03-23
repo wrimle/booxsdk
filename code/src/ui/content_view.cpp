@@ -7,6 +7,7 @@
 #include "onyx/screen/screen_update_watcher.h"
 #include "onyx/ui/ui_utils.h"
 #include "onyx/ui/content_view.h"
+#include "onyx/data/data_tags.h"
 
 namespace ui
 {
@@ -199,6 +200,23 @@ void ContentView::paintEvent(QPaintEvent * event)
     }
 }
 
+void ContentView::drawTitle(QPainter &painter, QRect rect, int flags)
+{
+    if (data() && data()->contains(TAG_TITLE))
+    {
+        QString family = data()->value(TAG_FONT_FAMILY).toString();
+        int size = data()->value(TAG_FONT_SIZE).toInt();
+        if (size <= 0)
+        {
+            size = ui::defaultFontPointSize();
+        }
+        QFont font(family, size);
+        painter.setFont(font);
+        painter.drawText(rect, flags, data()->value(TAG_TITLE).toString());
+    }
+}
+
+
 
 CoverView::CoverView(QWidget *parent)
 : ContentView(parent)
@@ -249,9 +267,9 @@ void CoverView::paintEvent(QPaintEvent * event)
 
 void CoverView::drawCover(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains("cover"))
+    if (data() && data()->contains(TAG_COVER))
     {
-        QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
+        QPixmap pixmap(qVariantValue<QPixmap>(data()->value(TAG_COVER)));
         int x = (rect.width() - pixmap.width()) / 2;
         painter.drawPixmap(x, MARGIN, pixmap);
     }
@@ -259,13 +277,7 @@ void CoverView::drawCover(QPainter & painter, QRect rect)
 
 void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains("title"))
-    {
-        QFont font;
-        font.setPointSize(ui::defaultFontPointSize());
-        painter.setFont(font);
-        painter.drawText(rect, Qt::AlignCenter, data()->value("title").toString());
-    }
+    ContentView::drawTitle(painter, rect, Qt::AlignCenter);
 }
 
 
@@ -296,10 +308,9 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
     if (data())
     {
-        static const QString CHECKED = "checked";
-        if (data()->contains(CHECKED))
+        if (data()->contains(TAG_CHECKED))
         {
-            setChecked(qVariantValue<bool> (data()->value(CHECKED)));
+            setChecked(qVariantValue<bool> (data()->value(TAG_CHECKED)));
         }
         if (isPressed() || isChecked())
         {
@@ -353,9 +364,9 @@ QRect CheckBoxView::drawCheckBox(QPainter & painter, QRect rect)
 QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
 {
     QRect icon_rect(rect.topLeft(), rect.topLeft());
-    if (data() && data()->contains("cover"))
+    if (data() && data()->contains(TAG_COVER))
     {
-        QPixmap pixmap(qVariantValue<QPixmap>(data()->value("cover")));
+        QPixmap pixmap(qVariantValue<QPixmap>(data()->value(TAG_COVER)));
         painter.drawPixmap(MARGIN, (rect.height() - pixmap.height()) / 2, pixmap);
         icon_rect.setRight(pixmap.width());
     }
@@ -364,15 +375,7 @@ QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
 
 void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains("title"))
-    {
-        rect.adjust(MARGIN, 0, 0, 0);
-        QFont font;
-        font.setPointSize(ui::defaultFontPointSize());
-        painter.setFont(font);
-        painter.drawText(rect, Qt::AlignLeft|Qt::AlignVCenter,
-                data()->value("title").toString());
-    }
+    ContentView::drawTitle(painter, rect, Qt::AlignVCenter|Qt::AlignLeft);
 }
 
 
@@ -407,9 +410,9 @@ void LineEditView::updateView()
 {
     if (data())
     {
-        if (data()->contains("title"))
+        if (data()->contains(TAG_TITLE))
         {
-            QString text = data()->value("title").toString();
+            QString text = data()->value(TAG_TITLE).toString();
             inner_edit_.setText(text);
         }
     }
