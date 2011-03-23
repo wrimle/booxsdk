@@ -146,7 +146,14 @@ void OnyxKeyboardDialog::clearClicked()
 
 void OnyxKeyboardDialog::keyPressEvent(QKeyEvent *event)
 {
-    QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
+    int key = event->key();
+    if (Qt::Key_Up != key
+            && Qt::Key_Down != key
+            && Qt::Key_Left != key
+            && Qt::Key_Right != key)
+    {
+        QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
+    }
 }
 
 }   // namespace ui
