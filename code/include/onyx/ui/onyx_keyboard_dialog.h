@@ -16,13 +16,12 @@ class OnyxKeyboardDialog: public OnyxDialog
     Q_OBJECT
 
 public:
-    OnyxKeyboardDialog(QWidget *parent = 0,
-            const QString ok_button_text = "OK");
+    OnyxKeyboardDialog(QWidget *parent = 0, const QString &text = "OK");
     ~OnyxKeyboardDialog();
 
 public:
-    void setOKButtonText(const QString button_text);
-    int popup(int bottom_margin);
+    void setOKButtonText(const QString &button_text);
+    int popup();
     const QString inputText();
 
 protected Q_SLOTS:

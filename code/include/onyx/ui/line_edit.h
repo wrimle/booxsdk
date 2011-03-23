@@ -26,6 +26,9 @@ protected:
     void keyReleaseEvent(QKeyEvent *ke);
     void keyPressEvent(QKeyEvent * ke);
     void mouseReleaseEvent(QMouseEvent * event);
+
+private:
+    bool out_of_range_;
 };
 
 };

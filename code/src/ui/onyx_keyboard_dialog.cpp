@@ -9,14 +9,14 @@ static const int CATALOG_MARGIN = 1;
 
 // The text of "OK" item can be changed by specifying ok_button_text.
 OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent,
-        const QString ok_button_text)
+                                       const QString &text)
     : OnyxDialog(parent)
     , big_layout_(&content_widget_)
     , line_edit_layout_(0)
     , line_edit_(0, this)
     , sub_menu_(0, this)
     , keyboard_(this)
-    , ok_button_text_(ok_button_text)
+    , ok_button_text_(text)
 {
     createLayout();
     connectWithChildren();
@@ -26,12 +26,12 @@ OnyxKeyboardDialog::~OnyxKeyboardDialog()
 {
 }
 
-void OnyxKeyboardDialog::setOKButtonText(const QString button_text)
+void OnyxKeyboardDialog::setOKButtonText(const QString& text)
 {
-    ok_button_text_ = button_text;
+    ok_button_text_ = text;
 }
 
-int OnyxKeyboardDialog::popup(int bottom_margin)
+int OnyxKeyboardDialog::popup()
 {
     if (isHidden())
     {
@@ -46,8 +46,7 @@ const QString OnyxKeyboardDialog::inputText()
 {
     LineEditView *input = static_cast<LineEditView *>(
                         line_edit_.visibleSubItems().front());
-    const QString input_text = input->innerEdit()->text();
-    return input_text;
+    return input->innerEdit()->text();
 }
 
 void OnyxKeyboardDialog::createLineEdit()
@@ -104,6 +103,8 @@ void OnyxKeyboardDialog::createLayout()
     line_edit_layout_.setSpacing(2);
     line_edit_layout_.addWidget(&sub_menu_);
 
+    big_layout_.setContentsMargins(2, 2, 2, 2);
+    big_layout_.setSpacing(0);
     big_layout_.addLayout(&line_edit_layout_);
     big_layout_.addWidget(&keyboard_);
 }

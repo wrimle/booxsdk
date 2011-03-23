@@ -38,6 +38,7 @@ namespace ui
 
 OnyxLineEdit::OnyxLineEdit(QWidget *parent)
 : QLineEdit(parent)
+, out_of_range_(false)
 {
     setStyleSheet(LINE_EDIT_STYLE);
     QApplication::setCursorFlashTime(0);
@@ -45,6 +46,7 @@ OnyxLineEdit::OnyxLineEdit(QWidget *parent)
 
 OnyxLineEdit::OnyxLineEdit(const QString & text, QWidget *parent)
 : QLineEdit(text, parent)
+, out_of_range_(false)
 {
     setStyleSheet(LINE_EDIT_STYLE);
     QApplication::setCursorFlashTime(0);
@@ -68,10 +70,9 @@ void OnyxLineEdit::keyReleaseEvent(QKeyEvent *ke)
         return;
     }
 
-    if ((ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
-        (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()) ||
-        (ke->key() == Qt::Key_Up || ke->key() == Qt::Key_Down))
+    if (out_of_range_ || (ke->key() == Qt::Key_Up || ke->key() == Qt::Key_Down))
     {
+        out_of_range_ = false;
         qDebug("broadcast out of range signal.");
         ke->ignore();
         emit outOfRange(ke);
@@ -84,6 +85,11 @@ void OnyxLineEdit::keyReleaseEvent(QKeyEvent *ke)
 
 void OnyxLineEdit::keyPressEvent(QKeyEvent * ke)
 {
+    if ((ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
+        (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()))
+    {
+        out_of_range_ = true;
+    }
     QLineEdit::keyPressEvent(ke);
     ke->accept();
     update();
