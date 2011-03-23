@@ -371,12 +371,15 @@ void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 {
     if (data() && data()->contains(TAG_TITLE))
     {
-        rect.adjust(MARGIN, 0, 0, 0);
-        QFont font;
-        font.setPointSize(ui::defaultFontPointSize());
+        QString family = data()->value(TAG_FONT_FAMILY).toString();
+        int size = data()->value(TAG_FONT_SIZE).toInt();
+        if (size <= 0)
+        {
+            size = ui::defaultFontPointSize();
+        }
+        QFont font(family, size);
         painter.setFont(font);
-        painter.drawText(rect, Qt::AlignLeft|Qt::AlignVCenter,
-                data()->value(TAG_TITLE).toString());
+        painter.drawText(rect, Qt::AlignVCenter|Qt::AlignLeft, data()->value(TAG_TITLE).toString());
     }
 }
 
