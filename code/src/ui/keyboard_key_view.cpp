@@ -37,7 +37,7 @@ void KeyboardKeyView::paintEvent(QPaintEvent * event)
     {
         if (isPressed())
         {
-            painter.fillRect(rect(), Qt::darkGray);
+            // painter.fillRect(rect(), Qt::darkGray);
         }
         if (hasFocus())
         {
