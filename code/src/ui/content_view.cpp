@@ -246,7 +246,7 @@ void CoverView::paintEvent(QPaintEvent * event)
     {
         if (isPressed() || isChecked())
         {
-            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
+            // painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
         }
         if (hasFocus())
         {
@@ -314,7 +314,7 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
         }
         if (isPressed() || isChecked())
         {
-            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
+            // painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
         }
         if (hasFocus())
         {
