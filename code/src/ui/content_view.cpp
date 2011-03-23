@@ -200,6 +200,23 @@ void ContentView::paintEvent(QPaintEvent * event)
     }
 }
 
+void ContentView::drawTitle(QPainter &painter, QRect rect, int flags)
+{
+    if (data() && data()->contains(TAG_TITLE))
+    {
+        QString family = data()->value(TAG_FONT_FAMILY).toString();
+        int size = data()->value(TAG_FONT_SIZE).toInt();
+        if (size <= 0)
+        {
+            size = ui::defaultFontPointSize();
+        }
+        QFont font(family, size);
+        painter.setFont(font);
+        painter.drawText(rect, flags, data()->value(TAG_TITLE).toString());
+    }
+}
+
+
 
 CoverView::CoverView(QWidget *parent)
 : ContentView(parent)
@@ -260,18 +277,7 @@ void CoverView::drawCover(QPainter & painter, QRect rect)
 
 void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains(TAG_TITLE))
-    {
-        QString family = data()->value(TAG_FONT_FAMILY).toString();
-        int size = data()->value(TAG_FONT_SIZE).toInt();
-        if (size <= 0)
-        {
-            size = ui::defaultFontPointSize();
-        }
-        QFont font(family, size);
-        painter.setFont(font);
-        painter.drawText(rect, Qt::AlignCenter, data()->value(TAG_TITLE).toString());
-    }
+    ContentView::drawTitle(painter, rect, Qt::AlignCenter);
 }
 
 
@@ -369,18 +375,7 @@ QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
 
 void CheckBoxView::drawTitle(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains(TAG_TITLE))
-    {
-        QString family = data()->value(TAG_FONT_FAMILY).toString();
-        int size = data()->value(TAG_FONT_SIZE).toInt();
-        if (size <= 0)
-        {
-            size = ui::defaultFontPointSize();
-        }
-        QFont font(family, size);
-        painter.setFont(font);
-        painter.drawText(rect, Qt::AlignVCenter|Qt::AlignLeft, data()->value(TAG_TITLE).toString());
-    }
+    ContentView::drawTitle(painter, rect, Qt::AlignVCenter|Qt::AlignLeft);
 }
 
 
