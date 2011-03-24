@@ -6,6 +6,11 @@
 namespace ui
 {
 
+enum SearchNavigateType {
+    SEARCH_NAV_PREVIOUS = 11,
+    SEARCH_NAV_NEXT = 12,
+};
+
 OnyxSearchContext::OnyxSearchContext(void)
     : pattern_()
     , forward_(true)
@@ -63,33 +68,15 @@ OnyxSearchDialog::OnyxSearchDialog(QWidget *parent, OnyxSearchContext & ctx)
     , navigate_menu_(0, this)
     , ctx_(ctx)
     , full_mode_(true)
-    , update_parent_(true)
 {
     createLayout();
     connectWithChildren();
+    line_edit_item_ = dynamic_cast<LineEditView *>(
+                line_edit_.visibleSubItems().front());
 }
 
 OnyxSearchDialog::~OnyxSearchDialog()
 {
-}
-
-int OnyxSearchDialog::popup(int bottom_margin)
-{
-    if (isHidden())
-    {
-        show();
-    }
-    resize(parentWidget()->width(), height());
-    move(parentWidget()->x(), parentWidget()->height() - height());
-    return exec();
-}
-
-const QString OnyxSearchDialog::inputText()
-{
-    LineEditView *input = static_cast<LineEditView *>(
-                        line_edit_.visibleSubItems().front());
-    const QString input_text = input->innerEdit()->text();
-    return input_text;
 }
 
 void OnyxSearchDialog::adjustPosition()
@@ -97,24 +84,14 @@ void OnyxSearchDialog::adjustPosition()
     int x = 0;
     if (!keyboard_.isVisible())
     {
-        x = parentWidget()->width() - width();
+        x = parentWidget()->width() - (width()+4*SPACING);
     }
     int y = parentWidget()->height() - height() - ui::statusBarHeight();
     move(x, y);
 }
 
-/// This function is called by parent widget to display the search widget.
-void OnyxSearchDialog::ensureVisible()
+void OnyxSearchDialog::customResize()
 {
-    qDebug() << "in OnyxSearchDialog::ensureVisible begin";
-    // shadows_.show(true);
-    if (isHidden())
-    {
-        show();
-    }
-
-    updateChildrenWidgets(!full_mode_);
-
     if (full_mode_)
     {
         QRect parent_rect = parentWidget()->rect();
@@ -122,25 +99,34 @@ void OnyxSearchDialog::ensureVisible()
         int width = parent_rect.width() - border * 2;
         if (size().width() != width)
         {
-            resize(width, height());
+            setFixedSize(width, minimumHeight());
         }
     }
+    else
+    {
+        setFixedSize(250, WIDGET_HEIGHT+8*SPACING);
+    }
+}
 
+/// This function is called by parent widget to display the search widget.
+void OnyxSearchDialog::ensureVisible()
+{
+    if (isHidden())
+    {
+        show();
+    }
+
+    updateChildrenWidgets(!full_mode_);
+    customResize();
     adjustPosition();
 
-    qDebug() << "input text is empty? " << inputText().isEmpty();
-    if (inputText().isEmpty())
+    OnyxLineEdit *edit = line_edit_item_->innerEdit();
+    if (edit->text().isEmpty())
     {
-        qDebug() << "input text is empty, set text: " << ctx_.pattern();
-        LineEditView *input = static_cast<LineEditView *>(
-                line_edit_.visibleSubItems().front());
-        input->innerEdit()->setText(ctx_.pattern());
+        edit->setText(ctx_.pattern());
     }
-    LineEditView *input = static_cast<LineEditView *>(
-                line_edit_.visibleSubItems().front());
-    input->innerEdit()->setFocus();
+    edit->setFocus();
     updateTitle();
-    qDebug() << "in OnyxSearchDialog::ensureVisible end";
 }
 
 void OnyxSearchDialog::createLineEdit()
@@ -162,7 +148,7 @@ void OnyxSearchDialog::createLineEdit()
 
 void OnyxSearchDialog::createSubMenu()
 {
-    const int height = WIDGET_HEIGHT;
+    const int height = keyboardKeyHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
     OData *dd = new OData;
@@ -185,7 +171,7 @@ void OnyxSearchDialog::createSubMenu()
 
 void OnyxSearchDialog::createNavigateMenu()
 {
-    const int height = WIDGET_HEIGHT;
+    const int height = keyboardKeyHeight();
     navigate_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
     OData *dd = new OData;
@@ -203,7 +189,8 @@ void OnyxSearchDialog::createNavigateMenu()
     navigate_menu_.setSpacing(2);
     navigate_menu_.setFixedGrid(1, 2);
     navigate_menu_.setMargin(CATALOG_MARGIN);
-    navigate_menu_.setFixedWidth(WIDGET_HEIGHT*6);
+    navigate_menu_.setFixedHeight(WIDGET_HEIGHT+4*SPACING);
+    navigate_menu_.setFixedWidth(WIDGET_HEIGHT*7);
     navigate_menu_.setData(ds);
     navigate_menu_.setSearchPolicy(CatalogView::NeighborFirst
             | CatalogView::AutoHorRecycle);
@@ -225,7 +212,9 @@ void OnyxSearchDialog::createLayout()
     line_edit_layout_.setSpacing(2);
     line_edit_layout_.addWidget(&sub_menu_);
 
-    big_layout_.addLayout(&line_edit_layout_);
+    big_layout_.setContentsMargins(2, 2, 2, 2);
+    big_layout_.setSpacing(0);
+    big_layout_.addLayout(&line_edit_layout_, 0);
     big_layout_.addWidget(&keyboard_);
     // navigate_menu_ will be hidden at initialization.
     big_layout_.addWidget(&navigate_menu_);
@@ -272,9 +261,7 @@ void OnyxSearchDialog::connectWithChildren()
 
 void OnyxSearchDialog::clearClicked()
 {
-    LineEditView *input = static_cast<LineEditView *>(
-            line_edit_.visibleSubItems().front());
-    input->innerEdit()->clear();
+    line_edit_item_->innerEdit()->clear();
 }
 
 void OnyxSearchDialog::keyPressEvent(QKeyEvent *event)
@@ -285,7 +272,7 @@ void OnyxSearchDialog::keyPressEvent(QKeyEvent *event)
             && Qt::Key_Left != key
             && Qt::Key_Right != key)
     {
-        QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
+        QApplication::sendEvent(line_edit_item_, event);
     }
 }
 
@@ -301,7 +288,7 @@ void OnyxSearchDialog::keyReleaseEvent(QKeyEvent *ke)
 
 void OnyxSearchDialog::readyToSearch(bool forward)
 {
-    ctx_.setPattern(inputText());
+    ctx_.setPattern(line_edit_item_->innerEdit()->text());
     ctx_.setForward(forward);
     emit search(ctx_);
 }
@@ -361,8 +348,9 @@ void OnyxSearchDialog::onSearchClicked()
     full_mode_ = false;
     onyx::screen::instance().enableUpdate(false);
     updateChildrenWidgets(true);
-    ctx_.setPattern(inputText());
+    ctx_.setPattern(line_edit_item_->innerEdit()->text());
     updateTitle();
+    customResize();
     adjustPosition();
     QApplication::processEvents();
     onyx::screen::instance().enableUpdate(true);
@@ -386,14 +374,6 @@ void OnyxSearchDialog::onSearchPrevClicked()
 void OnyxSearchDialog::moveEvent(QMoveEvent *e)
 {
     OnyxDialog::moveEvent(e);
-    update();
-    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
-}
-
-void OnyxSearchDialog::resizeEvent(QResizeEvent *e)
-{
-    OnyxDialog::resizeEvent(e);
-    adjustPosition();
     update();
     onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
 }

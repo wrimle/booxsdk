@@ -56,18 +56,10 @@ class OnyxSearchDialog: public OnyxDialog
     Q_OBJECT
 
 public:
-    enum SearchNavigateType {
-        SEARCH_NAV_PREVIOUS = 11,
-        SEARCH_NAV_NEXT = 12,
-    };
-
-public:
     OnyxSearchDialog(QWidget *parent, OnyxSearchContext & ctx);
     ~OnyxSearchDialog();
 
 public:
-    int popup(int bottom_margin);
-    const QString inputText();
     void adjustPosition();
     void ensureVisible();
 
@@ -100,6 +92,7 @@ private:
     void createSubMenu();
     void createNavigateMenu();
     void connectWithChildren();
+    void customResize();
 
     void clearClicked();
 
@@ -112,7 +105,6 @@ private:
     void updateTitle(const QString &message = QString());
 
     void moveEvent(QMoveEvent *e);
-    void resizeEvent(QResizeEvent *e);
 
 private:
     QVBoxLayout big_layout_;
@@ -120,14 +112,13 @@ private:
     CatalogView line_edit_;
     // contains Search and Clear menu items
     CatalogView sub_menu_;
-
     OnyxKeyboard keyboard_;
-
     CatalogView navigate_menu_;
 
     OnyxSearchContext & ctx_;
+    LineEditView *line_edit_item_;
+
     bool full_mode_;
-    bool update_parent_;
 };
 
 }   // namespace ui
