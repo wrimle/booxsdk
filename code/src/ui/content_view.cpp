@@ -332,7 +332,7 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
         if (isPressed() || isChecked())
         {
-            painter.setPen(Qt::white);
+            painter.setPen(Qt::black);
         }
         int title_x = icon_r.right() + MARGIN;
         drawTitle(painter, QRect(title_x, rect().y(),
