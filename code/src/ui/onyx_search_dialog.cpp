@@ -134,7 +134,7 @@ void OnyxSearchDialog::ensureVisible()
 void OnyxSearchDialog::createLineEdit()
 {
     line_edit_.setSubItemType(LineEditView::type());
-    line_edit_.setPreferItemSize(QSize(rect().width(), keyboardKeyHeight()));
+    line_edit_.setPreferItemSize(QSize(rect().width(), WIDGET_HEIGHT));
 
     ODatas ds;
     OData *dd = new OData;
@@ -142,7 +142,7 @@ void OnyxSearchDialog::createLineEdit()
     ds.push_back(dd);
 
     line_edit_.setFixedGrid(1, 1);
-    line_edit_.setFixedHeight(keyboardKeyHeight());
+    line_edit_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -153,7 +153,7 @@ void OnyxSearchDialog::createLineEdit()
 
 void OnyxSearchDialog::createSubMenu()
 {
-    const int height = keyboardKeyHeight();
+    const int height = WIDGET_HEIGHT;
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
@@ -170,7 +170,7 @@ void OnyxSearchDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    sub_menu_.setFixedHeight(keyboardKeyHeight());
+    sub_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
     sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
@@ -180,7 +180,7 @@ void OnyxSearchDialog::createSubMenu()
 
 void OnyxSearchDialog::createNavigateMenu()
 {
-    const int height = keyboardKeyHeight();
+    const int height = WIDGET_HEIGHT;
     navigate_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
@@ -197,7 +197,7 @@ void OnyxSearchDialog::createNavigateMenu()
     navigate_menu_.setSpacing(2);
     navigate_menu_.setFixedGrid(1, 2);
     navigate_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    navigate_menu_.setFixedHeight(WIDGET_HEIGHT+4*SPACING);
+    navigate_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
     navigate_menu_.setFixedWidth(WIDGET_HEIGHT*7);
     navigate_menu_.setData(ds);
     navigate_menu_.setSearchPolicy(CatalogView::NeighborFirst

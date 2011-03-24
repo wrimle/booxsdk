@@ -67,7 +67,7 @@ void OnyxKeyboardDialog::createLineEdit()
     dd->insert(TAG_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
-    line_edit_.setFixedHeight(keyboardKeyHeight());
+    line_edit_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -92,7 +92,7 @@ void OnyxKeyboardDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    sub_menu_.setFixedHeight(keyboardKeyHeight());
+    sub_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
     sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
