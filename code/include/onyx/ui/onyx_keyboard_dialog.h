@@ -21,8 +21,7 @@ public:
 
 public:
     void setOKButtonText(const QString &button_text);
-    int popup();
-    const QString inputText();
+    QString popup();
 
 protected Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item,
@@ -33,6 +32,7 @@ private:
     void createLineEdit();
     void createSubMenu();
     void connectWithChildren();
+    QString inputText();
 
     void clearClicked();
 
