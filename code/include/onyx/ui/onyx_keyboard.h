@@ -26,6 +26,7 @@ public:
         KEYBOARD_MENU_OK = 5,
         KEYBOARD_MENU_CLEAR = 6,
     };
+    static const int CATALOG_MARGIN = 1;
 
 public:
     explicit OnyxKeyboard(QWidget *parent = 0);

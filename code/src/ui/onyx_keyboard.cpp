@@ -17,7 +17,6 @@ static const int LETTER_ROWS = 3;
 static const int LEFT_COLS = 3;
 static const int MIDDLE_COLS = 3;
 static const int RIGHT_COLS = 3;
-static const int CATALOG_MARGIN = 1;
 
 static KeyBoardKeyViewFactory keyboard_key_view_factory;
 
@@ -189,7 +188,7 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
                                    int user_data)
 {
     OData * item_data = item->data();
-    if (item_data->contains(MENU_TYPE))
+    if (item_data->contains(TAG_MENU_TYPE))
     {
         menuItemActivated(item, user_data);
         return;
@@ -198,14 +197,14 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
     {
         int key_code;
         QString key_text;
-        if (item_data->contains(ODATA_KEY_SPECIAL))
+        if (item_data->contains(TAG_SPECIAL_KEY))
         {
-            key_text = item_data->value(ODATA_KEY_SPECIAL_TEXT).toString();
-            key_code = item_data->value(ODATA_KEY_SPECIAL).toInt();
+            key_text = item_data->value(TAG_SPECIAL_KEY_TEXT).toString();
+            key_code = item_data->value(TAG_SPECIAL_KEY).toInt();
         }
         else
         {
-            key_text = item_data->value(ODATA_KEY_CODE).toString();
+            key_text = item_data->value(TAG_TITLE).toString();
             key_code = key_text.at(0).unicode();
         }
         QKeyEvent * key_event = new QKeyEvent(QEvent::KeyPress, key_code,
@@ -216,7 +215,7 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
 
 void OnyxKeyboard::menuItemActivated(ContentView *item, int user_data)
 {
-    int menu_type = item->data()->value(MENU_TYPE).toInt();
+    int menu_type = item->data()->value(TAG_MENU_TYPE).toInt();
     if (KEYBOARD_MENU_SHIFT == menu_type)
     {
         shiftClicked();

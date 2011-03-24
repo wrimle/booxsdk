@@ -68,10 +68,10 @@ void OnyxKeyboardLanguageDialog::createLanguageGroup()
     for (int i=0; i<LANGUAGE_COUNT; i++)
     {
         OData *dd = new OData;
-        dd->insert(ODATA_KEY_TITLE, LANGUAGES[i].text);
+        dd->insert(TAG_TITLE, LANGUAGES[i].text);
         if (LANGUAGES[i].locale.name() == language_.name())
         {
-            dd->insert(ODATA_KEY_CHECKED, true);
+            dd->insert(TAG_CHECKED, true);
         }
         ds.push_back(dd);
     }
@@ -99,7 +99,7 @@ void OnyxKeyboardLanguageDialog::onItemActivated(CatalogView *catalog,
         ContentView *item, int user_data)
 {
     OData * item_data = item->data();
-    language_ = getLocale(item_data->value(ODATA_KEY_TITLE).toString());
+    language_ = getLocale(item_data->value(TAG_TITLE).toString());
     accept();
 }
 

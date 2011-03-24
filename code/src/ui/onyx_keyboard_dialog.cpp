@@ -6,18 +6,17 @@
 namespace ui
 {
 
-static const int CATALOG_MARGIN = 1;
-
 // The text of "OK" item can be changed by specifying ok_button_text.
 OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent,
-                                       const QString &text)
+                                       const QString &title)
     : OnyxDialog(parent)
     , big_layout_(&content_widget_)
     , line_edit_layout_(0)
     , line_edit_(0, this)
     , sub_menu_(0, this)
     , keyboard_(this)
-    , ok_button_text_(text)
+    , title_(title)
+    , ok_button_text_(tr("OK"))
 {
     createLayout();
     connectWithChildren();
@@ -27,9 +26,9 @@ OnyxKeyboardDialog::~OnyxKeyboardDialog()
 {
 }
 
-void OnyxKeyboardDialog::setOKButtonText(const QString& text)
+void OnyxKeyboardDialog::setOKButtonText(const QString& button_text)
 {
-    ok_button_text_ = text;
+    ok_button_text_ = button_text;
 }
 
 QString OnyxKeyboardDialog::popup()
@@ -64,11 +63,11 @@ void OnyxKeyboardDialog::createLineEdit()
     line_edit_.setPreferItemSize(QSize(rect().width(), WIDGET_HEIGHT));
     ODatas ds;
     OData *dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "");
+    dd->insert(TAG_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
     line_edit_.setFixedHeight(keyboardKeyHeight());
-    line_edit_.setMargin(CATALOG_MARGIN);
+    line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
     line_edit_.setNeighbor(keyboard_.menu(), CatalogView::RECYCLE_DOWN);
@@ -82,16 +81,16 @@ void OnyxKeyboardDialog::createSubMenu()
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
     OData *dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, ok_button_text_);
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
+    dd->insert(TAG_TITLE, ok_button_text_);
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
     dd = new OData;
-    dd->insert(ODATA_KEY_TITLE, "Clear");
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
+    dd->insert(TAG_TITLE, tr("Clear"));
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
     ds.push_back(dd);
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
-    sub_menu_.setMargin(CATALOG_MARGIN);
+    sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     sub_menu_.setFixedHeight(keyboardKeyHeight());
     sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
     sub_menu_.setData(ds);
@@ -105,6 +104,7 @@ void OnyxKeyboardDialog::createLayout()
     vbox_.setSpacing(0);
     content_widget_.setBackgroundRole(QPalette::Button);
     content_widget_.setContentsMargins(0, 0, 0, 0);
+    updateTitle(title_);
 
     createLineEdit();
     createSubMenu();
@@ -125,9 +125,9 @@ void OnyxKeyboardDialog::onItemActivated(CatalogView *catalog,
                                    int user_data)
 {
     OData * item_data = item->data();
-    if (item_data->contains(MENU_TYPE))
+    if (item_data->contains(TAG_MENU_TYPE))
     {
-        int menu_type = item->data()->value(MENU_TYPE).toInt();
+        int menu_type = item->data()->value(TAG_MENU_TYPE).toInt();
         if(OnyxKeyboard::KEYBOARD_MENU_OK == menu_type)
         {
             accept();

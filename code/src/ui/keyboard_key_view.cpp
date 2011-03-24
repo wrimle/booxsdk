@@ -54,9 +54,9 @@ void KeyboardKeyView::paintEvent(QPaintEvent * event)
 
 void KeyboardKeyView::drawIcon(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains(ODATA_KEY_ICON))
+    if (data() && data()->contains(TAG_COVER))
     {
-        QPixmap pixmap(qVariantValue<QPixmap> (data()->value(ODATA_KEY_ICON)));
+        QPixmap pixmap(qVariantValue<QPixmap> (data()->value(TAG_COVER)));
         int x = (rect.width() - pixmap.width()) / 2;
         int y = (rect.height() - pixmap.height()) / 2;
         painter.drawPixmap(x, y, pixmap);
@@ -65,18 +65,18 @@ void KeyboardKeyView::drawIcon(QPainter & painter, QRect rect)
 
 void KeyboardKeyView::drawText(QPainter & painter, QRect rect)
 {
-    if (data() && data()->contains(ODATA_KEY_CODE))
+    if (data() && data()->contains(TAG_TITLE))
     {
         QFont font;
         font.setPointSize(24);
-        if (data()->contains(ODATA_KEY_FONT))
+        if (data()->contains(TAG_FONT_SIZE))
         {
-            int font_size = qVariantValue<int>(data()->value(ODATA_KEY_FONT));
+            int font_size = qVariantValue<int>(data()->value(TAG_FONT_SIZE));
             font.setPointSize(font_size);
         }
         painter.setFont(font);
         painter.drawText(rect, Qt::AlignCenter, data()->value(
-                ODATA_KEY_CODE).toString());
+                TAG_TITLE).toString());
     }
 }
 
