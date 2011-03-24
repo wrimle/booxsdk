@@ -160,8 +160,8 @@ void RussianKeyboardData::initBottomKeyShiftCode()
 void RussianKeyboardData::initLeftKeySymbolCode()
 {
     const QChar chs[] = {'[', ']', '\\',
-                         ' ', ' ', ' ',
-                         ' ', ' ', ' ', };
+                         QChar(0x00B5), QChar(0x00AC), QChar(0x00A2),
+                         QChar(0x00AD), QChar(0x00AF), QChar(0x00B7), };
     for (int i = 0; i < 9; i++)
     {
         OData *dd = createData(QString(chs[i]));

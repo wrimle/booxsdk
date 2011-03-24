@@ -148,12 +148,17 @@ void EnglishKeyboardData::initBottomKeyShiftCode()
 
 void EnglishKeyboardData::initLeftKeySymbolCode()
 {
-    const QChar chs[] = {' ', ' ', ' ',
-                         ' ', ' ', ' ',
-                         ' ', ' ', ' ', };
+    const QString chs[] = {"<-", "->", "...",
+                           "www.", ".com", QString(QChar(0x00A2)),
+                           QString(QChar(0x00B9)), QString(QChar(0x00B2)),
+                           QString(QChar(0x00B3)), };
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        OData *dd = createData(chs[i]);
+        if (chs[i].size() > 2)
+        {
+            dd->insert(TAG_FONT_SIZE, 16);
+        }
         left_symbol_codes_.push_back(dd);
     }
 }
@@ -172,9 +177,9 @@ void EnglishKeyboardData::initMiddleKeySymbolCode()
 
 void EnglishKeyboardData::initRightKeySymbolCode()
 {
-    const QChar chs[] = {QChar(0x00B1), QChar(0x00B5), ' ',
-                         ' ', ' ', ' ',
-                         ' ', ' ', ' ', };
+    const QChar chs[] = {QChar(0x00B1), QChar(0x00B5), QChar(0x00AC),
+                         QChar(0x00AD), QChar(0x00AF), QChar(0x00B7),
+                         QChar(0x00AB), QChar(0x00BB), QChar(0x00AE), };
     for (int i = 0; i < 9; i++)
     {
         OData *dd = createData(QString(chs[i]));
