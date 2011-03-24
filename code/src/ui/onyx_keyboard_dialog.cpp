@@ -1,6 +1,7 @@
 #include "onyx/ui/onyx_keyboard_dialog.h"
 #include "onyx/ui/onyx_keyboard_utils.h"
 #include "onyx/screen/screen_update_watcher.h"
+#include "onyx/ui/ui_utils.h"
 
 namespace ui
 {
@@ -66,6 +67,7 @@ void OnyxKeyboardDialog::createLineEdit()
     dd->insert(ODATA_KEY_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
+    line_edit_.setFixedHeight(keyboardKeyHeight());
     line_edit_.setMargin(CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -90,6 +92,7 @@ void OnyxKeyboardDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(CATALOG_MARGIN);
+    sub_menu_.setFixedHeight(keyboardKeyHeight());
     sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);

@@ -138,6 +138,7 @@ void OnyxSearchDialog::createLineEdit()
     dd->insert(ODATA_KEY_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
+    line_edit_.setFixedHeight(keyboardKeyHeight());
     line_edit_.setMargin(CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -162,6 +163,7 @@ void OnyxSearchDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(CATALOG_MARGIN);
+    sub_menu_.setFixedHeight(keyboardKeyHeight());
     sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
@@ -208,16 +210,17 @@ void OnyxSearchDialog::createLayout()
     createNavigateMenu();
 
     line_edit_layout_.setContentsMargins(0, 2, 0, 0);
-    line_edit_layout_.addWidget(&line_edit_);
     line_edit_layout_.setSpacing(2);
+    line_edit_layout_.addWidget(&line_edit_);
     line_edit_layout_.addWidget(&sub_menu_);
+    // navigate_menu_ will be hidden at initialization.
+    line_edit_layout_.addWidget(&navigate_menu_);
 
     big_layout_.setContentsMargins(2, 2, 2, 2);
     big_layout_.setSpacing(0);
     big_layout_.addLayout(&line_edit_layout_, 0);
     big_layout_.addWidget(&keyboard_);
-    // navigate_menu_ will be hidden at initialization.
-    big_layout_.addWidget(&navigate_menu_);
+
 }
 
 void OnyxSearchDialog::onItemActivated(CatalogView *catalog,
