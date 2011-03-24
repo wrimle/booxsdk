@@ -259,7 +259,7 @@ void CoverView::paintEvent(QPaintEvent * event)
         drawCover(painter, rect());
         if (isPressed() || isChecked())
         {
-            painter.setPen(Qt::white);
+            painter.setPen(Qt::black);
         }
         drawTitle(painter, rect());
     }
