@@ -20,6 +20,7 @@ OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent,
 {
     createLayout();
     connectWithChildren();
+    onyx::screen::watcher().addWatcher(this);
 }
 
 OnyxKeyboardDialog::~OnyxKeyboardDialog()
