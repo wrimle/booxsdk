@@ -699,8 +699,17 @@ bool SysStatus::setScreenTransformation(int degree)
     }
     else
     {
-        QString data("export QWS_DISPLAY=Transformed:Rot%1:OnyxScreen:/dev/mem");
-        data = data.arg(degree);
+        QString qws_args=getenv("QWS_DISPLAY");
+        QString data;
+        if (qws_args.isEmpty()) {
+            data = QString("export QWS_DISPLAY=Transformed:Rot%1:OnyxScreen:/dev/mem");
+            #ifdef BUILD_FOR_FB
+            data = QString("export QWS_DISPLAY=Transformed:Rot%1:LinuxFb:/dev/fb0:depth=all"); 
+            #endif
+            data = data.arg(degree);
+        } else {//replace Rotxx to Rot&degree
+            data = qws_args.replace(QRegExp(":Rot\\d+"),QString(":Rot%1").arg(degree));
+        }
         file.write(data.toAscii());
         file.flush();
         file.close();
