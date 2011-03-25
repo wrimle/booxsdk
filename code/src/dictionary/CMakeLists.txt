@@ -19,7 +19,8 @@ SET(SRCS
   ${QSTARDICT_PLUGIN_SRCS}
   dictionary_manager.cpp
   dict_widget.cpp
-  dict_frame.cpp)
+  dict_frame.cpp
+  onyx_dict_frame.cpp)
 
 # moc
 set(MOC_HDRS ${HDRS}  ${QSTARDICT_PLUGIN_HDRS})
