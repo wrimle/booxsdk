@@ -35,7 +35,7 @@ OnyxKeyboardLanguageDialog::OnyxKeyboardLanguageDialog(QLocale language,
     , language_(language)
 {
     createLayout();
-    resize(120, 350);
+    resize(200, 400);
 }
 
 OnyxKeyboardLanguageDialog::~OnyxKeyboardLanguageDialog()

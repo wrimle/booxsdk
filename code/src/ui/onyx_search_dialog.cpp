@@ -187,12 +187,12 @@ void OnyxSearchDialog::createNavigateMenu()
     ODatas ds;
 
     OData *dd = new OData;
-    dd->insert(TAG_TITLE, "Previous");
+    dd->insert(TAG_TITLE, tr("Previous"));
     dd->insert(TAG_MENU_TYPE, SEARCH_NAV_PREVIOUS);
     ds.push_back(dd);
 
     dd = new OData;
-    dd->insert(TAG_TITLE, "Next");
+    dd->insert(TAG_TITLE, tr("Next"));
     dd->insert(TAG_MENU_TYPE, SEARCH_NAV_NEXT);
     ds.push_back(dd);
 

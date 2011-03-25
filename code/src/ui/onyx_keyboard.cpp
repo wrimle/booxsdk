@@ -278,6 +278,8 @@ void OnyxKeyboard::languageClicked()
     OnyxKeyboardLanguageDialog dialog(language_, 0);
     onyx::screen::watcher().addWatcher(&dialog);
     int ret = dialog.exec();
+    onyx::screen::watcher().removeWatcher(&dialog);
+    onyx::screen::watcher().enqueue(0);
 
     if (ret != QDialog::Rejected)
     {
