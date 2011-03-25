@@ -60,8 +60,11 @@ public:
     ~OnyxSearchDialog();
 
 public:
-    void adjustPosition();
-    void ensureVisible();
+    void showNormal();
+    void showNextPrev();
+    void showSimple();
+
+    void adjustSizeAndPosition();
 
 public Q_SLOTS:
     void noMoreMatches();
@@ -102,23 +105,26 @@ private:
     void keyReleaseEvent(QKeyEvent *event);
     void moveEvent(QMoveEvent *e);
 
-    void updateChildrenWidgets(bool searching);
+    void updateChildrenWidgets(int);
     void readyToSearch(bool forward);
     void updateTitle(const QString &message = QString());
+
+    void setMode(int);
+    int  mode() { return mode_; }
+
+    OnyxLineEdit *editor();
 
 private:
     QVBoxLayout big_layout_;
     QHBoxLayout line_edit_layout_;
     CatalogView line_edit_;
-    // contains Search and Clear menu items
     CatalogView sub_menu_;
     OnyxKeyboard keyboard_;
-    CatalogView navigate_menu_;
+    CatalogView next_prev_;
 
     OnyxSearchContext & ctx_;
-    LineEditView *line_edit_item_;
 
-    bool full_mode_;
+    int mode_;
 };
 
 }   // namespace ui

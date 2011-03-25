@@ -87,19 +87,19 @@ void SearchWidget::createLayout()
 {
     title_icon_label_.setPixmap(QPixmap(":/images/search.png"));
 
-    content_widget_.setFixedHeight(WIDGET_HEIGHT + 4 * SPACING);
+    content_widget_.setFixedHeight(defaultItemHeight() + 4 * SPACING);
 
     // hbox to layout line edit and buttons.
     hbox_.setContentsMargins(SPACING, SPACING, SPACING, SPACING);
     hbox_.setSpacing(SPACING * 4);
 
     // Line edit.
-    text_edit_.setFixedHeight(WIDGET_HEIGHT);
+    text_edit_.setFixedHeight(defaultItemHeight());
     hbox_.addWidget(&text_edit_, 400);
 
     // Buttons.
-    search_button_.setFixedHeight(WIDGET_HEIGHT);
-    clear_button_.setFixedHeight(WIDGET_HEIGHT);
+    search_button_.setFixedHeight(defaultItemHeight());
+    clear_button_.setFixedHeight(defaultItemHeight());
 
     search_next_.setIcon(QIcon(":/images/next.png"));
     search_next_.useDefaultHeight();

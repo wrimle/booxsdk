@@ -32,8 +32,14 @@ protected:
     void showCloseButton(bool show = true);
     QRect outbounding(QWidget *parent);
 
+    int spacing();
+    int defaultItemHeight();
+
 protected Q_SLOTS:
     virtual void onCloseClicked();
+
+protected:
+    static const int SPACING = 2;
 
 protected:
     bool show_shadows_;
@@ -49,9 +55,6 @@ protected:
     OnyxPushButton close_button_;
 
     QWidget content_widget_;
-
-    static const int SPACING = 2;
-    static const int WIDGET_HEIGHT = 36;
 };
 
 };  // namespace ui

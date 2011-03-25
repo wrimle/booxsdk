@@ -7,6 +7,10 @@
 namespace ui
 {
 
+static const int MODE_FULL      = 0;
+static const int MODE_NEXT_PREV = 1;
+static const int MODE_SIMPLE    = 2;
+
 enum SearchNavigateType {
     SEARCH_NAV_PREVIOUS = 11,
     SEARCH_NAV_NEXT = 12,
@@ -62,10 +66,9 @@ OnyxSearchDialog::OnyxSearchDialog(QWidget *parent, OnyxSearchContext & ctx)
     , line_edit_(0, this)
     , sub_menu_(0, this)
     , keyboard_(this)
-    , navigate_menu_(0, this)
+    , next_prev_(0, this)
     , ctx_(ctx)
-    , line_edit_item_(0)
-    , full_mode_(true)
+    , mode_(MODE_FULL)
 {
     createLayout();
     connectWithChildren();
@@ -75,68 +78,80 @@ OnyxSearchDialog::~OnyxSearchDialog()
 {
 }
 
-void OnyxSearchDialog::adjustPosition()
+void OnyxSearchDialog::adjustSizeAndPosition()
 {
-    int x = 0;
-    QWidget *safe_parent = safeParentWidget(parentWidget());
-    if (!keyboard_.isVisible())
+    // Change size at first.
+    int x = 0, y = 0;
+    QWidget *parent = safeParentWidget(parentWidget());
+    QRect parent_rect = parent->rect();
+    if (mode() == MODE_FULL)
     {
-        x = (safe_parent->width() - width())/2;
+        resize(parent_rect.width(), minimumHeight());
     }
-    int y = safe_parent->height() - height() - ui::statusBarHeight();
+    else if (mode() == MODE_NEXT_PREV)
+    {
+        setFixedSize(250, defaultItemHeight() * 2 + 2 *SPACING);
+    }
+    else if (mode() == MODE_SIMPLE)
+    {
+        resize(rect().width(), minimumHeight());
+    }
+    y = parent->height() - height();
     move(x, y);
 }
 
-void OnyxSearchDialog::customResize()
+void OnyxSearchDialog::setMode(int m)
 {
-    if (full_mode_)
-    {
-        QRect parent_rect = safeParentWidget(parentWidget())->rect();
-        int border = 0;
-        int width = parent_rect.width() - border * 2;
-        if (size().width() != width)
-        {
-            setFixedSize(width, minimumHeight());
-        }
-    }
-    else
-    {
-        setFixedSize(250, WIDGET_HEIGHT+8*SPACING);
-    }
-}
-
-void OnyxSearchDialog::setLineEditView()
-{
-    line_edit_item_ = static_cast<LineEditView *>(
-            line_edit_.visibleSubItems().front());
+    mode_ = m;
 }
 
 /// This function is called by parent widget to display the search widget.
-void OnyxSearchDialog::ensureVisible()
+/// It shows line edit and keyboard.
+void OnyxSearchDialog::showNormal()
 {
+    setMode(MODE_FULL);
+
     if (isHidden())
     {
         show();
     }
 
-    updateChildrenWidgets(!full_mode_);
-    customResize();
-    adjustPosition();
+    updateChildrenWidgets(mode());
+    adjustSizeAndPosition();
 
     // Set line edit view each time after updating the children and resize.
-    setLineEditView();
-    OnyxLineEdit *edit = line_edit_item_->innerEdit();
-    if (edit->text().isEmpty())
+    if (editor()->text().isEmpty())
     {
-        edit->setText(ctx_.pattern());
+        editor()->setText(ctx_.pattern());
     }
     updateTitle();
+}
+
+/// Show next previous buttons and title bar.
+void OnyxSearchDialog::showNextPrev()
+{
+    setMode(MODE_NEXT_PREV);
+
+    if (isHidden())
+    {
+        show();
+    }
+
+    updateChildrenWidgets(mode());
+    adjustSizeAndPosition();
+    updateTitle();
+}
+
+/// Show dialog in simple way.
+void OnyxSearchDialog::showSimple()
+{
+    setMode(MODE_SIMPLE);
 }
 
 void OnyxSearchDialog::createLineEdit()
 {
     line_edit_.setSubItemType(LineEditView::type());
-    line_edit_.setPreferItemSize(QSize(rect().width(), WIDGET_HEIGHT));
+    line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
 
     ODatas ds;
     OData *dd = new OData;
@@ -144,7 +159,7 @@ void OnyxSearchDialog::createLineEdit()
     ds.push_back(dd);
 
     line_edit_.setFixedGrid(1, 1);
-    line_edit_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
+    line_edit_.setFixedHeight(defaultItemHeight()+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -155,7 +170,7 @@ void OnyxSearchDialog::createLineEdit()
 
 void OnyxSearchDialog::createSubMenu()
 {
-    const int height = WIDGET_HEIGHT;
+    const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
@@ -172,8 +187,8 @@ void OnyxSearchDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    sub_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
-    sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
+    sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
+    sub_menu_.setFixedWidth(defaultItemHeight()*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
     sub_menu_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -182,8 +197,8 @@ void OnyxSearchDialog::createSubMenu()
 
 void OnyxSearchDialog::createNavigateMenu()
 {
-    const int height = WIDGET_HEIGHT;
-    navigate_menu_.setPreferItemSize(QSize(height, height));
+    const int height = defaultItemHeight();
+    next_prev_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
     OData *dd = new OData;
@@ -196,13 +211,13 @@ void OnyxSearchDialog::createNavigateMenu()
     dd->insert(TAG_MENU_TYPE, SEARCH_NAV_NEXT);
     ds.push_back(dd);
 
-    navigate_menu_.setSpacing(2);
-    navigate_menu_.setFixedGrid(1, 2);
-    navigate_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    navigate_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
-    navigate_menu_.setFixedWidth(WIDGET_HEIGHT*7);
-    navigate_menu_.setData(ds);
-    navigate_menu_.setSearchPolicy(CatalogView::NeighborFirst
+    next_prev_.setSpacing(2);
+    next_prev_.setFixedGrid(1, 2);
+    next_prev_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
+    next_prev_.setFixedHeight(defaultItemHeight()+2*SPACING);
+    next_prev_.setFixedWidth(defaultItemHeight()*7);
+    next_prev_.setData(ds);
+    next_prev_.setSearchPolicy(CatalogView::NeighborFirst
             | CatalogView::AutoHorRecycle);
 }
 
@@ -221,14 +236,12 @@ void OnyxSearchDialog::createLayout()
     line_edit_layout_.setSpacing(2);
     line_edit_layout_.addWidget(&line_edit_);
     line_edit_layout_.addWidget(&sub_menu_);
-    // navigate_menu_ will be hidden at initialization.
-    line_edit_layout_.addWidget(&navigate_menu_);
+    line_edit_layout_.addWidget(&next_prev_);
 
     big_layout_.setContentsMargins(2, 2, 2, 2);
     big_layout_.setSpacing(0);
     big_layout_.addLayout(&line_edit_layout_, 0);
     big_layout_.addWidget(&keyboard_);
-
 }
 
 void OnyxSearchDialog::onItemActivated(CatalogView *catalog,
@@ -266,13 +279,18 @@ void OnyxSearchDialog::connectWithChildren()
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
     connect(&sub_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
-    connect(&navigate_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+    connect(&next_prev_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+}
+
+OnyxLineEdit *OnyxSearchDialog::editor()
+{
+    return static_cast<LineEditView *>(line_edit_.visibleSubItems().front())->innerEdit();
 }
 
 void OnyxSearchDialog::clearClicked()
 {
-    line_edit_item_->innerEdit()->clear();
+    editor()->clear();
 }
 
 void OnyxSearchDialog::keyPressEvent(QKeyEvent *event)
@@ -283,7 +301,7 @@ void OnyxSearchDialog::keyPressEvent(QKeyEvent *event)
             && Qt::Key_Left != key
             && Qt::Key_Right != key)
     {
-        QApplication::sendEvent(line_edit_item_, event);
+        QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
     }
 }
 
@@ -299,7 +317,7 @@ void OnyxSearchDialog::keyReleaseEvent(QKeyEvent *ke)
 
 void OnyxSearchDialog::readyToSearch(bool forward)
 {
-    ctx_.setPattern(line_edit_item_->innerEdit()->text());
+    ctx_.setPattern(editor()->text());
     ctx_.setForward(forward);
     emit search(ctx_);
 }
@@ -308,7 +326,7 @@ void OnyxSearchDialog::updateTitle(const QString &message)
 {
     if (message.isEmpty())
     {
-        if (full_mode_)
+        if (mode() == MODE_FULL)
         {
             OnyxDialog::updateTitle(tr("Search"));
         }
@@ -327,46 +345,42 @@ void OnyxSearchDialog::updateTitle(const QString &message)
 /// result.
 void OnyxSearchDialog::noMoreMatches()
 {
-    // Heave ghosting when using the fast waveform.
-    // Use full instead.
     updateTitle(tr("No more matches"));
     update();
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
 }
 
 /// Update all widget according to the specified parameter.
-void OnyxSearchDialog::updateChildrenWidgets(bool searching)
+void OnyxSearchDialog::updateChildrenWidgets(int mode)
 {
-    if (searching)
+    if (mode == MODE_NEXT_PREV)
     {
-        navigate_menu_.show();
+        next_prev_.show();
         line_edit_.hide();
         sub_menu_.hide();
         keyboard_.hide();
     }
-    else
+    else if (mode == MODE_FULL)
     {
-        navigate_menu_.hide();
+        next_prev_.hide();
         line_edit_.show();
         sub_menu_.show();
         keyboard_.show();
+    }
+    else if (mode == MODE_SIMPLE)
+    {
+        next_prev_.hide();
+        line_edit_.show();
+        sub_menu_.hide();
+        keyboard_.hide();
     }
     adjustSize();
 }
 
 void OnyxSearchDialog::onSearchClicked()
 {
-    full_mode_ = false;
-    onyx::screen::instance().enableUpdate(false);
-    updateChildrenWidgets(true);
-    updateTitle();
-    customResize();
-    adjustPosition();
-    QApplication::processEvents();
-    onyx::screen::instance().enableUpdate(true);
-    update();
-    onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()),
-            onyx::screen::ScreenProxy::GU);
+    showNextPrev();
+    onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
     readyToSearch(ctx_.forward());
 }
 
@@ -395,9 +409,7 @@ void OnyxSearchDialog::onCloseClicked()
     // Make sure caller stop searching.
     ctx_.stop(true);
     done(QDialog::Rejected);
-    full_mode_ = true;
     emit closeClicked();
-
 }
 
 }   // namespace ui

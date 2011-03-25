@@ -61,8 +61,7 @@ void OnyxKeyboardLanguageDialog::createLayout()
 void OnyxKeyboardLanguageDialog::createLanguageGroup()
 {
     language_group_.setSubItemType(CheckBoxView::type());
-    language_group_.setPreferItemSize(QSize(120,
-            WIDGET_HEIGHT));
+    language_group_.setPreferItemSize(QSize(120, defaultItemHeight()));
 
     ODatas ds;
     for (int i=0; i<LANGUAGE_COUNT; i++)

@@ -30,21 +30,21 @@ PasswordDialog::~PasswordDialog(void)
 void PasswordDialog::createLayout()
 {
     title_icon_label_.setPixmap(QPixmap(":/images/dictionary_search.png"));
-    content_widget_.setFixedHeight(WIDGET_HEIGHT + 4 * SPACING);
+    content_widget_.setFixedHeight(defaultItemHeight() + 4 * SPACING);
 
     // hbox to layout line edit and buttons.
     hbox_.setContentsMargins(SPACING, 0, SPACING, 0);
     hbox_.setSpacing(SPACING * 4);
 
     // Line edit.
-    text_edit_.setFixedHeight(WIDGET_HEIGHT);
+    text_edit_.setFixedHeight(defaultItemHeight());
     hbox_.addWidget(&text_edit_, 400);
     hbox_.addWidget(&ok_button_, 100);
     hbox_.addWidget(&clear_button_, 100);
 
     // Buttons.
     ok_button_.useDefaultHeight();
-    show_plain_text_.setFixedHeight(WIDGET_HEIGHT);
+    show_plain_text_.setFixedHeight(defaultItemHeight());
     show_plain_text_.selectOnClicked(false);
     clear_button_.useDefaultHeight();
 

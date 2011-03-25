@@ -519,8 +519,8 @@ void DictWidget::createLayout()
     big_vbox_.addLayout(&content_vbox_);
 
     func_description_label_.setAlignment(Qt::AlignVCenter);
-    func_description_label_.setFixedHeight(WIDGET_HEIGHT-SPACING*2);
-    func_description_label_.setFixedHeight(WIDGET_HEIGHT-SPACING*2);
+    func_description_label_.setFixedHeight(defaultItemHeight()-SPACING*2);
+    func_description_label_.setFixedHeight(defaultItemHeight()-SPACING*2);
 
     top_hbox_.setContentsMargins(0, 0, SPACING*2, 0);
     top_hbox_.setSpacing(SPACING*2);

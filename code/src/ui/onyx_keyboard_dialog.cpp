@@ -62,13 +62,13 @@ QString OnyxKeyboardDialog::inputText()
 void OnyxKeyboardDialog::createLineEdit()
 {
     line_edit_.setSubItemType(LineEditView::type());
-    line_edit_.setPreferItemSize(QSize(rect().width(), WIDGET_HEIGHT));
+    line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
     ODatas ds;
     OData *dd = new OData;
     dd->insert(TAG_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
-    line_edit_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
+    line_edit_.setFixedHeight(defaultItemHeight()+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     line_edit_.setData(ds);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -79,7 +79,7 @@ void OnyxKeyboardDialog::createLineEdit()
 
 void OnyxKeyboardDialog::createSubMenu()
 {
-    const int height = WIDGET_HEIGHT;
+    const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
     OData *dd = new OData;
@@ -93,8 +93,8 @@ void OnyxKeyboardDialog::createSubMenu()
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    sub_menu_.setFixedHeight(WIDGET_HEIGHT+2*SPACING);
-    sub_menu_.setFixedWidth(WIDGET_HEIGHT*6);
+    sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
+    sub_menu_.setFixedWidth(defaultItemHeight()*6);
     sub_menu_.setData(ds);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
     sub_menu_.setNeighbor(keyboard_.top(), CatalogView::DOWN);

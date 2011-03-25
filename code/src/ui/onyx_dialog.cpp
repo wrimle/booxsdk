@@ -73,8 +73,8 @@ void OnyxDialog::createDefaultLayout()
     // title hbox.
     title_icon_label_.setPixmap(QPixmap(":/images/dictionary_search.png"));
     title_text_label_.setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-    title_icon_label_.setFixedHeight(WIDGET_HEIGHT);
-    title_text_label_.setFixedHeight(WIDGET_HEIGHT);
+    title_icon_label_.setFixedHeight(defaultItemHeight());
+    title_text_label_.setFixedHeight(defaultItemHeight());
     title_text_label_.useTitleBarStyle();
 
     close_button_.setStyleSheet(BUTTON_STYLE);
@@ -103,7 +103,7 @@ void OnyxDialog::createDefaultLayout()
     title_widget_.setAutoFillBackground(true);
     title_widget_.setBackgroundRole(QPalette::Dark);
     title_widget_.setContentsMargins(0, 0, 0, 0);
-    title_widget_.setFixedHeight(WIDGET_HEIGHT + SPACING * 2);
+    title_widget_.setFixedHeight(defaultItemHeight() + SPACING * 2);
     vbox_.addWidget(&title_widget_);
 
     // content widget.
@@ -186,6 +186,16 @@ void OnyxDialog::keyReleaseEvent(QKeyEvent * ke)
     {
         reject();
     }
+}
+
+int OnyxDialog::spacing()
+{
+    return SPACING;
+}
+
+int OnyxDialog::defaultItemHeight()
+{
+    return 36;
 }
 
 }   // namespace ui

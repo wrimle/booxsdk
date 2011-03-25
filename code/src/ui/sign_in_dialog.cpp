@@ -35,7 +35,7 @@ void SignInDialog::createLayout()
     QRect desk = qApp->desktop()->screenGeometry();
     setFixedWidth(desk.width() - 2 * MARGIN);
     title_icon_label_.setPixmap(QPixmap(":/images/dictionary_search.png"));
-    content_widget_.setFixedHeight(2 * WIDGET_HEIGHT + 4 * SPACING);
+    content_widget_.setFixedHeight(2 * defaultItemHeight() + 4 * SPACING);
 
     input_layout_.setContentsMargins(SPACING, 0, SPACING, 0);
     id_label_.setText(tr("User ID "));
@@ -46,8 +46,8 @@ void SignInDialog::createLayout()
     input_layout_.addWidget(&password_label_, 1, 0);
     input_layout_.addWidget(&password_edit_, 1, 1);
 
-    id_edit_.setFixedHeight(WIDGET_HEIGHT);
-    password_edit_.setFixedHeight(WIDGET_HEIGHT);
+    id_edit_.setFixedHeight(defaultItemHeight());
+    password_edit_.setFixedHeight(defaultItemHeight());
 
     vbox_.addLayout(&hbox_);
     hbox_.addWidget(&show_plain_text_, 800);
@@ -56,7 +56,7 @@ void SignInDialog::createLayout()
 
     // Buttons.
     ok_button_.useDefaultHeight();
-    show_plain_text_.setFixedHeight(WIDGET_HEIGHT);
+    show_plain_text_.setFixedHeight(defaultItemHeight());
     show_plain_text_.selectOnClicked(false);
     clear_button_.useDefaultHeight();
 
