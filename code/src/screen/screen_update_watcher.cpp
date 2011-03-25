@@ -1,6 +1,6 @@
 
 #include <QtGui/QtGui>
-#ifdef ENABLE_EINK_SCREEN
+#ifdef BUILD_FOR_ARM
 #include <QtGui/qscreen_qws.h>
 #endif
 
