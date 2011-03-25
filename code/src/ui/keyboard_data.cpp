@@ -61,7 +61,7 @@ ODatas & KeyboardData::rightSymbolCodes()
 OData * KeyboardData::createData(const QString & value)
 {
     OData * data = new OData;
-    data->insert(ODATA_KEY_CODE, value);
+    data->insert(TAG_TITLE, value);
     return data;
 }
 
@@ -69,9 +69,9 @@ OData * KeyboardData::createBackspaceData()
 {
     QPixmap backspace_pixmap(":/images/back_spac.png");
     OData * dd = new OData;
-    dd->insert(ODATA_KEY_ICON, backspace_pixmap);
-    dd->insert(ODATA_KEY_SPECIAL, Qt::Key_Backspace);
-    dd->insert(ODATA_KEY_SPECIAL_TEXT, "backspace");
+    dd->insert(TAG_COVER, backspace_pixmap);
+    dd->insert(TAG_SPECIAL_KEY, Qt::Key_Backspace);
+    dd->insert(TAG_SPECIAL_KEY_TEXT, "backspace");
     return dd;
 }
 
@@ -79,20 +79,20 @@ void KeyboardData::initMenuKeyCode()
 {
     OData *dd = createData(QApplication::tr("Shift"));
     static const int MENU_FONT_SIZE = 20;
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SHIFT);
-    dd->insert(ODATA_KEY_FONT, MENU_FONT_SIZE);
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SHIFT);
+    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
     dd = createData(QApplication::tr("Symbol"));
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SYMBOL);
-    dd->insert(ODATA_KEY_FONT, MENU_FONT_SIZE);
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SYMBOL);
+    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
     dd = createData(QApplication::tr("Language"));
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_LANGUAGE);
-    dd->insert(ODATA_KEY_FONT, MENU_FONT_SIZE);
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_LANGUAGE);
+    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
     dd = createData(QApplication::tr("Write"));
-    dd->insert(MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_WRITE);
-    dd->insert(ODATA_KEY_FONT, MENU_FONT_SIZE);
+    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_WRITE);
+    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
 }
 
