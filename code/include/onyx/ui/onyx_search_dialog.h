@@ -93,6 +93,7 @@ private:
     void createNavigateMenu();
     void connectWithChildren();
     void customResize();
+    void setLineEditView();
 
     void clearClicked();
 

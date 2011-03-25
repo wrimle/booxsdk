@@ -104,6 +104,12 @@ void OnyxSearchDialog::customResize()
     }
 }
 
+void OnyxSearchDialog::setLineEditView()
+{
+    line_edit_item_ = static_cast<LineEditView *>(
+            line_edit_.visibleSubItems().front());
+}
+
 /// This function is called by parent widget to display the search widget.
 void OnyxSearchDialog::ensureVisible()
 {
@@ -112,16 +118,12 @@ void OnyxSearchDialog::ensureVisible()
         show();
     }
 
-    if (!line_edit_item_)
-    {
-        line_edit_item_ = static_cast<LineEditView *>(
-                line_edit_.visibleSubItems().front());
-    }
-
     updateChildrenWidgets(!full_mode_);
     customResize();
     adjustPosition();
 
+    // Set line edit view each time after updating the children.
+    setLineEditView();
     OnyxLineEdit *edit = line_edit_item_->innerEdit();
     if (edit->text().isEmpty())
     {
@@ -357,7 +359,6 @@ void OnyxSearchDialog::onSearchClicked()
     full_mode_ = false;
     onyx::screen::instance().enableUpdate(false);
     updateChildrenWidgets(true);
-    ctx_.setPattern(line_edit_item_->innerEdit()->text());
     updateTitle();
     customResize();
     adjustPosition();
