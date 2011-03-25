@@ -651,8 +651,8 @@ void CatalogView::onItemKeyRelease(ContentView *item, QKeyEvent *key)
     p = moveFocus(index);
     if (p)
     {
-        onyx::screen::watcher().enqueue(item, onyx::screen::ScreenProxy::DW);
-        onyx::screen::watcher().enqueue(p, onyx::screen::ScreenProxy::DW);
+        onyx::screen::watcher().enqueue(item, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
+        onyx::screen::watcher().enqueue(p, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
     }
 }
 

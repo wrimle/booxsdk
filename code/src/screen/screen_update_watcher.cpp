@@ -224,7 +224,7 @@ void ScreenUpdateWatcher::updateScreenInternal(bool automatic,
     }
     if (!rc.isEmpty())
     {
-        qDebug() << "update screen " << rc << "Waveform " << w;
+        qDebug() << "update screen " << rc << "Waveform " << w << "wait " << wait;
         onyx::screen::instance().updateWidgetRegion(0, rc, w, wait);
     }
 }
