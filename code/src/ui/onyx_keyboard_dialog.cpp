@@ -38,11 +38,7 @@ QString OnyxKeyboardDialog::popup()
     {
         show();
     }
-    QWidget * widget = parentWidget();
-    if (widget == 0)
-    {
-        widget = qApp->desktop();
-    }
+    QWidget * widget = safeParentWidget(parentWidget());
     resize(widget->width(), height());
     move(widget->x(), widget->height() - height());
     int is_accepted = exec();

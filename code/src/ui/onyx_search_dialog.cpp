@@ -78,11 +78,12 @@ OnyxSearchDialog::~OnyxSearchDialog()
 void OnyxSearchDialog::adjustPosition()
 {
     int x = 0;
+    QWidget *safe_parent = safeParentWidget(parentWidget());
     if (!keyboard_.isVisible())
     {
-        x = (parentWidget()->width() - width())/2;
+        x = (safe_parent->width() - width())/2;
     }
-    int y = parentWidget()->height() - height() - ui::statusBarHeight();
+    int y = safe_parent->height() - height() - ui::statusBarHeight();
     move(x, y);
 }
 
@@ -90,7 +91,7 @@ void OnyxSearchDialog::customResize()
 {
     if (full_mode_)
     {
-        QRect parent_rect = parentWidget()->rect();
+        QRect parent_rect = safeParentWidget(parentWidget())->rect();
         int border = 0;
         int width = parent_rect.width() - border * 2;
         if (size().width() != width)
@@ -122,14 +123,13 @@ void OnyxSearchDialog::ensureVisible()
     customResize();
     adjustPosition();
 
-    // Set line edit view each time after updating the children.
+    // Set line edit view each time after updating the children and resize.
     setLineEditView();
     OnyxLineEdit *edit = line_edit_item_->innerEdit();
     if (edit->text().isEmpty())
     {
         edit->setText(ctx_.pattern());
     }
-    edit->setFocus();
     updateTitle();
 }
 
@@ -365,7 +365,8 @@ void OnyxSearchDialog::onSearchClicked()
     QApplication::processEvents();
     onyx::screen::instance().enableUpdate(true);
     update();
-    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GU);
+    onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()),
+            onyx::screen::ScreenProxy::GU);
     readyToSearch(ctx_.forward());
 }
 
@@ -385,7 +386,8 @@ void OnyxSearchDialog::moveEvent(QMoveEvent *e)
 {
     OnyxDialog::moveEvent(e);
     update();
-    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
+    onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()),
+            onyx::screen::ScreenProxy::GC);
 }
 
 void OnyxSearchDialog::onCloseClicked()
@@ -395,8 +397,7 @@ void OnyxSearchDialog::onCloseClicked()
     done(QDialog::Rejected);
     full_mode_ = true;
     emit closeClicked();
-    update();
-    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
+
 }
 
 }   // namespace ui

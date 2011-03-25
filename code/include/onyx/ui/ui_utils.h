@@ -28,6 +28,9 @@ int keyboardKeyHeight();
 // the width of the check-box in CheckBoxView
 int checkBoxViewWidth();
 
+// If the parent_widget is null, return the desktop widget.
+QWidget * safeParentWidget(QWidget *parent_widget);
+
 };
 
 #endif  // ONYX_UI_UTILS_H_

@@ -72,6 +72,16 @@ int checkBoxViewWidth()
     return 18;
 }
 
+QWidget * safeParentWidget(QWidget *parent_widget)
+{
+    QWidget * safe_ptr = parent_widget;
+    if (0 == safe_ptr)
+    {
+        safe_ptr = qApp->desktop();
+    }
+    return safe_ptr;
+}
+
 }
 
 
