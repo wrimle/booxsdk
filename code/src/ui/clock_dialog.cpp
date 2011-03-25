@@ -1,6 +1,7 @@
 
 #include "onyx/ui/clock_dialog.h"
 #include "onyx/screen/screen_proxy.h"
+#include <QTimer>
 
 namespace ui
 {
@@ -130,6 +131,11 @@ FullScreenClock::FullScreenClock(QWidget *parent)
     setModal(true);
     connect(&sys::SysStatus::instance(), SIGNAL(hardwareTimerTimeout()), this, SLOT(updateFSClock()));
     sys::SysStatus::instance().startSingleShotHardwareTimer(60 - QTime::currentTime().second());
+
+    //update clock per minute in connecting USB
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateFSClock()));
+    timer->start(60000);
 }
 
 FullScreenClock::~FullScreenClock(void)
