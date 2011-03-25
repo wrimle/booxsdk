@@ -24,4 +24,8 @@ static const QString TAG_FONT_FAMILY = "fontfamily";
 static const QString TAG_FONT_SIZE = "fontsize";
 static const QString TAG_CHECKED = "checked";
 
+static const QString TAG_MENU_TYPE = "menu_type"; // for keyboard
+static const QString TAG_SPECIAL_KEY = "special_key";
+static const QString TAG_SPECIAL_KEY_TEXT = "special_key_text";
+
 #endif

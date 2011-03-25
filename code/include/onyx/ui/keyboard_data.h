@@ -25,9 +25,9 @@ public:
     ODatas & rightSymbolCodes();
 
 protected:
-    // Should insert a QString value of ODATA_KEY_CODE for normal keys (like a, b,
+    // Should insert a QString value of TAG_TITLE for normal keys (like a, b,
     // c, etc). And for special keys (like back-space), should insert both 1) a
-    // QPixmap instance of ODATA_KEY_ICON ; 2) a QString value of ODATA_KEY_SPECIAL.
+    // QPixmap instance of TAG_COVER ; 2) a QString value of TAG_SPECIAL_KEY.
     virtual void initTopKeyCode() = 0;
     virtual void initLeftKeyCode() = 0;
     virtual void initMiddleKeyCode() = 0;

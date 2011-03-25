@@ -80,7 +80,7 @@ void ContentView::activate(int user_data)
 void ContentView::repaintAndRefreshScreen()
 {
     update();
-    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void ContentView::setRepaintOnMouseRelease(bool enable)
@@ -170,18 +170,19 @@ bool ContentView::event(QEvent * e)
 void ContentView::focusInEvent(QFocusEvent * e)
 {
     QWidget::focusInEvent(e);
-    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void ContentView::focusOutEvent(QFocusEvent * e)
 {
     QWidget::focusOutEvent(e);
-    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void ContentView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), bkColor());
 
     if (data())
@@ -240,6 +241,7 @@ void CoverView::updateView()
 void CoverView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), bkColor());
 
     if (data())
@@ -304,6 +306,7 @@ void CheckBoxView::updateView()
 void CheckBoxView::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), bkColor());
 
     if (data())
@@ -332,7 +335,7 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
         if (isPressed() || isChecked())
         {
-            painter.setPen(Qt::white);
+            painter.setPen(Qt::black);
         }
         int title_x = icon_r.right() + MARGIN;
         drawTitle(painter, QRect(title_x, rect().y(),
@@ -423,8 +426,7 @@ void LineEditView::focusInEvent(QFocusEvent * event)
     if (forward_focus_)
     {
         inner_edit_.setFocus();
-        onyx::screen::watcher().enqueue(&inner_edit_,
-                onyx::screen::ScreenProxy::DW);
+        onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
     }
 }
 
@@ -438,13 +440,13 @@ void LineEditView::onEditOutOfRange(QKeyEvent *ke)
     forward_focus_ = false;
     setFocus();
     emit keyRelease(this, ke);
-    onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW);
+    onyx::screen::watcher().enqueue(&inner_edit_, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void LineEditView::keyPressEvent(QKeyEvent * src)
 {
-    QKeyEvent * key = new QKeyEvent(src->type(), src->key(), src->modifiers(), src->text());
-    QApplication::sendEvent(&inner_edit_, key);
+    QKeyEvent key(src->type(), src->key(), src->modifiers(), src->text());
+    QApplication::sendEvent(&inner_edit_, &key);
 }
 
 void LineEditView::keyReleaseEvent(QKeyEvent * event)
@@ -498,6 +500,7 @@ void ClockView::paintEvent(QPaintEvent * event)
      QTime time = QTime::currentTime();
 
      QPainter painter(this);
+     painter.setRenderHint(QPainter::Antialiasing);
      painter.fillRect(rect(), bkColor());
      painter.setRenderHint(QPainter::Antialiasing);
 

@@ -16,11 +16,11 @@ class OnyxKeyboardDialog: public OnyxDialog
     Q_OBJECT
 
 public:
-    OnyxKeyboardDialog(QWidget *parent = 0, const QString &text = "OK");
+    OnyxKeyboardDialog(QWidget *parent = 0, const QString &title = "");
     ~OnyxKeyboardDialog();
 
 public:
-    void setOKButtonText(const QString &button_text);
+    void setOKButtonText(const QString &button_text = tr("OK"));
     QString popup();
     QString inputText();
 
@@ -47,6 +47,7 @@ private:
     CatalogView sub_menu_;
 
     OnyxKeyboard keyboard_;
+    QString title_;
     QString ok_button_text_;
 };
 

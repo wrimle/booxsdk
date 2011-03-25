@@ -93,18 +93,18 @@ private:
     void createNavigateMenu();
     void connectWithChildren();
     void customResize();
+    void setLineEditView();
 
     void clearClicked();
 
     // handling key event
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void moveEvent(QMoveEvent *e);
 
     void updateChildrenWidgets(bool searching);
     void readyToSearch(bool forward);
     void updateTitle(const QString &message = QString());
-
-    void moveEvent(QMoveEvent *e);
 
 private:
     QVBoxLayout big_layout_;
