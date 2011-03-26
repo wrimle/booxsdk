@@ -81,11 +81,11 @@ void ApConfigDialog::createLayout()
     psk_hbox_.addWidget(&psk_edit_, 0, 0);
     psk_hbox_.addWidget(&clear_button_, 0, 1);
     psk_hbox_.addWidget(&ok_button_, 0, 2);
-    psk_edit_.setFixedHeight(WIDGET_HEIGHT);
+    psk_edit_.setFixedHeight(defaultItemHeight());
 
     // Buttons.
     ok_button_.useDefaultHeight();
-    show_plain_text_.setFixedHeight(WIDGET_HEIGHT);
+    show_plain_text_.setFixedHeight(defaultItemHeight());
     show_plain_text_.selectOnClicked(false);
     clear_button_.useDefaultHeight();
 

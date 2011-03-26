@@ -11,7 +11,7 @@ class Factory
 {
 public:
     Factory();
-    ~Factory();
+    virtual ~Factory();
 
 public:
     virtual ContentView * createView(QWidget *parent, const QString &type = QString());
