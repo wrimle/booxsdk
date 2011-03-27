@@ -140,6 +140,14 @@ void OnyxSearchDialog::showNextPrev()
     updateChildrenWidgets(mode());
     adjustSizeAndPosition();
     updateTitle();
+    if (ctx_.forward())
+    {
+        next_prev_.setFocusTo(0, 1);
+    }
+    else
+    {
+        next_prev_.setFocusTo(0, 0);
+    }
 }
 
 /// Show dialog in simple way.
@@ -321,7 +329,6 @@ void OnyxSearchDialog::keyReleaseEvent(QKeyEvent *ke)
 
 void OnyxSearchDialog::readyToSearch(bool forward)
 {
-    ctx_.setPattern(editor()->text());
     ctx_.setForward(forward);
     emit search(ctx_);
 }
@@ -383,9 +390,10 @@ void OnyxSearchDialog::updateChildrenWidgets(int mode)
 
 void OnyxSearchDialog::onSearchClicked()
 {
-    readyToSearch(ctx_.forward());
+    ctx_.setPattern(editor()->text());
     showNextPrev();
     onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
+    readyToSearch(ctx_.forward());
 }
 
 void OnyxSearchDialog::onSearchNextClicked()
