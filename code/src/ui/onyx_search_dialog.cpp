@@ -293,7 +293,6 @@ void OnyxSearchDialog::connectWithChildren()
 
 OnyxLineEdit *OnyxSearchDialog::editor()
 {
-    int count = line_edit_.visibleSubItems().size();
     LineEditView *view = static_cast<LineEditView *>(line_edit_.visibleSubItems().front());
     OnyxLineEdit *edit = view->innerEdit();
     qDebug() << "line edit text" << edit->text();
