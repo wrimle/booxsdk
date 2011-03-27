@@ -1,3 +1,9 @@
+#ifdef BUILD_FOR_ARM
+#include <QtGui/qwsdisplay_qws.h>
+#include <QtGui/qscreen_qws.h>
+#endif
+
+#include "onyx/sys/sys.h"
 #include "onyx/dictionary/onyx_dict_frame.h"
 #include "onyx/data/data_tags.h"
 #include "onyx/screen/screen_update_watcher.h"
@@ -5,9 +11,10 @@
 enum OnyxDictionaryMenuType
 {
     MENU_DICTIONARIES = 11,
-    MENU_SIMULAR_WORDS = 12,
+    MENU_SIMILAR_WORDS = 12,
     MENU_EXPLANATION = 13,
     MENU_LOOKUP = 14,
+    MENU_TTS = 15,
 };
 
 static const int DICT_MENU_FONT_SIZE = 20;
@@ -20,7 +27,7 @@ OnyxDictFrame::OnyxDictFrame(QWidget *parent, DictionaryManager & dict,
     , dict_menu_layout_(0)
     , line_edit_(0, this)
     , explanation_(0)
-    , words_list_widget_(0, 0)
+    , list_widget_(0, 0)
     , dictionary_menu_(0, this)
     , tts_button_view_(0, this)
     , keyboard_(this)
@@ -28,6 +35,7 @@ OnyxDictFrame::OnyxDictFrame(QWidget *parent, DictionaryManager & dict,
     , dict_mgr_(dict)
     , tts_engine_(tts)
     , internal_state_(-1)
+    , similar_words_checked_(false)
 {
 #ifndef Q_WS_QWS
     resize(600, 800);
@@ -36,12 +44,74 @@ OnyxDictFrame::OnyxDictFrame(QWidget *parent, DictionaryManager & dict,
 #endif
 
     createLayout();
+    initBrowser();
+    initDictionaries();
+
+    connectWithChildren();
+    connect(&status_bar_, SIGNAL(menuClicked()), this, SLOT(popupMenu()));
+    connect(&status_bar_, SIGNAL(requestInputText()), this, SLOT(onHideKeyboard()));
+#ifdef Q_WS_QWS
+    connect(qApp->desktop(), SIGNAL(resized(int)), this, SLOT(onScreenSizeChanged(int)), Qt::QueuedConnection);
+#endif
+
+    // connect the signals with sys_state_
+    SysStatus & sys_status = SysStatus::instance();
+    connect(&sys_status, SIGNAL(volumeChanged(int, bool)), this, SLOT(onSystemVolumeChanged(int, bool)));
 }
 
 OnyxDictFrame::~OnyxDictFrame()
 {
-
 }
+
+void OnyxDictFrame::initBrowser()
+{
+    QFont font(QApplication::font());
+    font.setPointSize(20);
+    doc_.setDefaultFont(font);
+    explanation_.setDocument(&doc_);
+}
+
+void OnyxDictFrame::initDictionaries()
+{
+    dict_mgr_.loadDictionaries();
+}
+
+void OnyxDictFrame::onItemClicked(const QModelIndex & index)
+{
+    onyx::screen::instance().enableUpdate(false);
+    if (similar_words_checked_)
+    {
+        QString text = similar_words_model_.itemFromIndex(index)->data().toString();
+        editor()->setText(text);
+        lookup(text);
+    }
+    else
+    {
+        dict_mgr_.select(dict_list_model_.itemFromIndex(index)->text());
+        lookup(word_);
+    }
+    onyx::screen::instance().enableUpdate(true);
+    onyx::screen::instance().flush(this, onyx::screen::ScreenProxy::GU);
+}
+
+void OnyxDictFrame::moreSimilarWords(bool begin)
+{
+    if (!similar_words_checked_)
+    {
+        return;
+    }
+
+    if (begin)
+    {
+        similar_words_offset_ -= list_widget_.itemsPerPage();
+    }
+    else
+    {
+        similar_words_offset_ += list_widget_.itemsPerPage();
+    }
+    updateSimilarWords();
+}
+
 
 void OnyxDictFrame::createLineEdit()
 {
@@ -98,7 +168,7 @@ void OnyxDictFrame::createDictionaryMenu()
 
     dd = new OData;
     dd->insert(TAG_TITLE, tr("Similar Words"));
-    dd->insert(TAG_MENU_TYPE, MENU_SIMULAR_WORDS);
+    dd->insert(TAG_MENU_TYPE, MENU_SIMILAR_WORDS);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
     ds.push_back(dd);
 
@@ -134,7 +204,7 @@ void OnyxDictFrame::createTtsButtonView()
     OData *dd = new OData;
     QPixmap tts_pixmap(":/images/tts_menu.png");
     dd->insert(TAG_COVER, tts_pixmap);
-    dd->insert(TAG_MENU_TYPE, MENU_DICTIONARIES);
+    dd->insert(TAG_MENU_TYPE, MENU_TTS);
     ds.push_back(dd);
 
     tts_button_view_.setFixedGrid(1, 1);
@@ -171,8 +241,8 @@ void OnyxDictFrame::createLayout()
 
     // for explanation and similar words list
     big_layout_.addWidget(&explanation_);
-    big_layout_.addWidget(&words_list_widget_);
-    words_list_widget_.setVisible(false);
+    big_layout_.addWidget(&list_widget_);
+    list_widget_.setVisible(false);
 
     dict_menu_layout_.setContentsMargins(0, 2, 0, 0);
     dict_menu_layout_.setSpacing(2);
@@ -182,12 +252,99 @@ void OnyxDictFrame::createLayout()
     big_layout_.addLayout(&dict_menu_layout_, 0);
     big_layout_.addWidget(&keyboard_);
     big_layout_.addWidget(&status_bar_);
+
+    connect(&list_widget_, SIGNAL(activated(const QModelIndex &)),
+            this, SLOT(onItemClicked(const QModelIndex &)));
+    connect(&list_widget_, SIGNAL(exceed(bool)),
+            this, SLOT(moreSimilarWords(bool)));
+    list_widget_.showHeader(false);
+}
+
+void OnyxDictFrame::onSystemVolumeChanged(int value, bool muted)
+{
+    qDebug("Volume Change:%d", value);
+    tts_engine_->sound().setVolume(value);
+}
+
+void OnyxDictFrame::onHideKeyboard()
+{
+    if (keyboard_.isHidden())
+    {
+        keyboard_.setVisible(true);
+    }
+    else
+    {
+        keyboard_.setVisible(false);
+    }
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
+}
+
+void OnyxDictFrame::onScreenSizeChanged(int)
+{
+    onyx::screen::instance().enableUpdate(false);
+    resize(qApp->desktop()->screenGeometry().size());
+    QApplication::processEvents();
+    onyx::screen::instance().enableUpdate(true);
+}
+
+
+void OnyxDictFrame::updateActions()
+{
+    std::vector<int> actions;
+    actions.push_back(ROTATE_SCREEN);
+    actions.push_back(SCREEN_UPDATE_TYPE);
+    actions.push_back(RETURN_TO_LIBRARY);
+    system_actions_.generateActions(actions);
+}
+
+void OnyxDictFrame::connectWithChildren()
+{
+    connect(&line_edit_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+    connect(&sub_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+    connect(&dictionary_menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+    connect(&tts_button_view_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+}
+
+void OnyxDictFrame::formatResult(QString &result)
+{
+    if (result.isEmpty())
+    {
+        result = "Not Found In Dictionary.";
+    }
+    if (!result.contains("<html>", Qt::CaseInsensitive))
+    {
+        result.replace("\n", "<br>");
+    }
 }
 
 bool OnyxDictFrame::lookup(const QString &word)
 {
-    // TODO
-    return false;
+    if (word.isEmpty())
+    {
+        return false;
+    }
+
+    resetSimilarWordsOffset();
+
+    // Clean the word.
+    word_ = word.trimmed();
+
+    // Title
+    QString result;
+    bool ret = dict_mgr_.translate(word_, result);
+
+    formatResult(result);
+
+    // Result
+    doc_.setHtml(result);
+
+    explanationClicked();
+    return ret;
 }
 
 void OnyxDictFrame::setDefaultFocus()
@@ -203,12 +360,247 @@ void OnyxDictFrame::resizeEvent(QResizeEvent *e)
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
 }
 
+OnyxLineEdit *OnyxDictFrame::editor()
+{
+    return static_cast<LineEditView *>(line_edit_.visibleSubItems().front())->innerEdit();
+}
+
+void OnyxDictFrame::updateSimilarWordsModel(int count)
+{
+    // Pick up similar words from current dictionary.
+    similar_words_.clear();
+    dict_mgr_.similarWords(word_, similar_words_, similar_words_offset_, count);
+    similar_words_model_.clear();
+    QStandardItem *parentItem = similar_words_model_.invisibleRootItem();
+    QString explanation;
+    foreach(QString item, similar_words_)
+    {
+        // Get explanation.
+        dict_mgr_.translate(item, explanation);
+        QStandardItem *ptr = new QStandardItem();
+        ptr->setData(item);
+
+        item = item.trimmed();
+        explanation = explanation.trimmed();
+        item += "\t";
+        item += explanation;
+        ptr->setText(item);
+        parentItem->appendRow(ptr);
+    }
+}
+
+void OnyxDictFrame::updateSimilarWords()
+{
+    similar_words_checked_ = true;
+    list_widget_.clear();
+    list_widget_.setFocus();
+    list_widget_.show();
+    updateSimilarWordsModel(list_widget_.itemsPerPage());
+
+    // Update the list.
+    list_widget_.setModel(&similar_words_model_);
+}
+
+void OnyxDictFrame::updateDictionaryListModel()
+{
+    int count = dict_list_model_.rowCount(dict_list_model_.invisibleRootItem()->index());
+    if (count <= 0)
+    {
+        dict_list_model_.clear();
+        QStringList list;
+        dict_mgr_.dictionaries(list);
+        foreach(QString item, list)
+        {
+            dict_list_model_.appendRow(new QStandardItem(item));
+        }
+    }
+}
+
+void OnyxDictFrame::updateDictionaryList()
+{
+    similar_words_checked_ = false;
+    resetSimilarWordsOffset();
+    updateDictionaryListModel();
+    list_widget_.clear();
+    list_widget_.setModel(&dict_list_model_);
+    list_widget_.show();
+    list_widget_.select(dict_mgr_.selected());
+    list_widget_.setFocus();
+}
+
 void OnyxDictFrame::onItemActivated(CatalogView *catalog, ContentView *item,
                                    int user_data)
 {
     OData * item_data = item->data();
     if (item_data->contains(TAG_MENU_TYPE))
     {
-        // TODO
+        int menu_type = item->data()->value(TAG_MENU_TYPE).toInt();
+        if(OnyxKeyboard::KEYBOARD_MENU_CLEAR == menu_type)
+        {
+            editor()->clear();
+            update();
+            onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
+        }
+        else if (MENU_DICTIONARIES == menu_type)
+        {
+            dictionariesClicked();
+        }
+        else if (MENU_SIMILAR_WORDS == menu_type)
+        {
+            similarWordsClicked();
+        }
+        else if (MENU_EXPLANATION == menu_type)
+        {
+            explanationClicked();
+        }
+        else if (MENU_LOOKUP == menu_type)
+        {
+            lookupClicked();
+        }
+        else if (MENU_TTS == menu_type)
+        {
+            ttsClicked();
+        }
     }
+}
+
+void OnyxDictFrame::dictionariesClicked()
+{
+    onyx::screen::instance().enableUpdate(false);
+    explanation_.hide();
+    updateDictionaryList();
+    onyx::screen::instance().enableUpdate(true);
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
+}
+
+void OnyxDictFrame::similarWordsClicked()
+{
+    onyx::screen::instance().enableUpdate(false);
+    explanation_.hide();
+    updateSimilarWords();
+    onyx::screen::instance().enableUpdate(true);
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
+}
+
+void OnyxDictFrame::explanationClicked()
+{
+    explanation_.show();
+    list_widget_.hide();
+    update();
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
+}
+
+void OnyxDictFrame::lookupClicked()
+{
+    lookup(editor()->text());
+}
+
+void OnyxDictFrame::ttsClicked()
+{
+    QString text = editor()->text();
+    if (!text.isEmpty() && tts_engine_ != 0)
+    {
+        tts_engine_->speak(text);
+    }
+}
+
+QWidget * OnyxDictFrame::getVisibleWidget()
+{
+    QWidget * wid = &explanation_;
+    if (list_widget_.isVisible())
+    {
+        wid = &list_widget_;
+    }
+    return wid;
+}
+
+void OnyxDictFrame::keyPressEvent(QKeyEvent *event)
+{
+    int key = event->key();
+    if (Qt::Key_PageDown == key
+            || Qt::Key_PageUp == key)
+    {
+        qDebug() << "page turing key pressed.";
+        QApplication::sendEvent(getVisibleWidget(), event);
+        update();
+        onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
+    }
+    else if (Qt::Key_Up != key
+            && Qt::Key_Down != key
+            && Qt::Key_Left != key
+            && Qt::Key_Right != key)
+    {
+        QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
+    }
+}
+
+static RotateDegree getSystemRotateDegree()
+{
+    int degree = 0;
+#ifdef BUILD_FOR_ARM
+    degree = QScreen::instance()->transformOrientation();
+#endif
+    return static_cast<RotateDegree>(degree);
+}
+
+void OnyxDictFrame::rotate()
+{
+#ifndef Q_WS_QWS
+    RotateDegree prev_degree = getSystemRotateDegree();
+    if (prev_degree == ROTATE_0_DEGREE)
+    {
+        resize(800, 600);
+    }
+    else
+    {
+        resize(600, 800);
+    }
+#else
+    SysStatus::instance().rotateScreen();
+#endif
+}
+
+void OnyxDictFrame::popupMenu()
+{
+    ui::PopupMenu menu(this);
+    updateActions();
+    menu.setSystemAction(&system_actions_);
+
+    if (menu.popup() != QDialog::Accepted)
+    {
+        return;
+    }
+
+    QAction * group = menu.selectedCategory();
+    if (group == system_actions_.category())
+    {
+        SystemAction system = system_actions_.selected();
+        if (system == RETURN_TO_LIBRARY)
+        {
+            returnToLibrary();
+        }
+        else if (system == SCREEN_UPDATE_TYPE)
+        {
+            onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GU);
+            onyx::screen::instance().toggleWaveform();
+        }
+        else if (system == MUSIC)
+        {
+            // Start or show music player.
+            onyx::screen::instance().flush(this, onyx::screen::ScreenProxy::GU);
+            sys::SysStatus::instance().requestMusicPlayer(sys::START_PLAYER);
+        }
+        else if (system == ROTATE_SCREEN)
+        {
+            rotate();
+        }
+        return;
+    }
+}
+
+void OnyxDictFrame::returnToLibrary()
+{
+    qApp->exit();
 }

@@ -27,8 +27,21 @@ Q_SIGNALS:
     void keyReleaseSignal(int);
     void closeClicked();
 
+protected Q_SLOTS:
+    void onItemActivated(CatalogView *catalog, ContentView *item,
+                                           int user_data);
+
 protected:
     void resizeEvent(QResizeEvent *e);
+
+private Q_SLOTS:
+    void popupMenu();
+    void onScreenSizeChanged(int);
+    void onHideKeyboard();
+    void onSystemVolumeChanged(int value, bool muted);
+
+    void onItemClicked(const QModelIndex & index);
+    void moreSimilarWords(bool);
 
 private:
     void createLineEdit();
@@ -36,9 +49,35 @@ private:
     void createDictionaryMenu();
     void createTtsButtonView();
     void createLayout();
+    void connectWithChildren();
 
-    void onItemActivated(CatalogView *catalog, ContentView *item,
-                                       int user_data);
+    void keyPressEvent(QKeyEvent *event);
+
+    OnyxLineEdit *editor();
+
+    void initBrowser();
+    void initDictionaries();
+    void updateActions();
+
+    void rotate();
+    void returnToLibrary();
+
+    void updateSimilarWordsModel(int count);
+    void resetSimilarWordsOffset() { similar_words_offset_ = 0; }
+    void updateSimilarWords();
+
+    void updateDictionaryListModel();
+    void updateDictionaryList();
+
+    QWidget * getVisibleWidget();
+    void dictionariesClicked();
+    void similarWordsClicked();
+    void explanationClicked();
+    void lookupClicked();
+    void ttsClicked();
+
+    // for the result of dictionary look up
+    void formatResult(QString &result);
 
 private:
     QVBoxLayout big_layout_;
@@ -48,7 +87,7 @@ private:
     CatalogView line_edit_;
     CatalogView sub_menu_;
     OnyxTextBrowser explanation_;       ///< The lookup result.
-    OnyxTreeView words_list_widget_;
+    OnyxTreeView list_widget_;          ///< Storing words and dictionary list.
     CatalogView dictionary_menu_;
     CatalogView tts_button_view_;
 
@@ -68,8 +107,9 @@ private:
     QStandardItemModel similar_words_model_;
     QStandardItemModel dict_list_model_;
 
-    int internal_state_;
     SystemActions system_actions_;      ///< System Actions
+    int internal_state_;
+    bool similar_words_checked_;
 
 private:
     NO_COPY_AND_ASSIGN(OnyxDictFrame);
