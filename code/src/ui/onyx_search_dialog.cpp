@@ -285,7 +285,11 @@ void OnyxSearchDialog::connectWithChildren()
 
 OnyxLineEdit *OnyxSearchDialog::editor()
 {
-    return static_cast<LineEditView *>(line_edit_.visibleSubItems().front())->innerEdit();
+    int count = line_edit_.visibleSubItems().size();
+    LineEditView *view = static_cast<LineEditView *>(line_edit_.visibleSubItems().front());
+    OnyxLineEdit *edit = view->innerEdit();
+    qDebug() << "line edit text" << edit->text();
+    return edit;
 }
 
 void OnyxSearchDialog::clearClicked()
@@ -379,9 +383,9 @@ void OnyxSearchDialog::updateChildrenWidgets(int mode)
 
 void OnyxSearchDialog::onSearchClicked()
 {
+    readyToSearch(ctx_.forward());
     showNextPrev();
     onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
-    readyToSearch(ctx_.forward());
 }
 
 void OnyxSearchDialog::onSearchNextClicked()
