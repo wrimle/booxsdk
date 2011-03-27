@@ -57,6 +57,9 @@ OnyxDictFrame::OnyxDictFrame(QWidget *parent, DictionaryManager & dict,
     // connect the signals with sys_state_
     SysStatus & sys_status = SysStatus::instance();
     connect(&sys_status, SIGNAL(volumeChanged(int, bool)), this, SLOT(onSystemVolumeChanged(int, bool)));
+
+    explanation_.installEventFilter(this);
+    list_widget_.installEventFilter(this);
 }
 
 OnyxDictFrame::~OnyxDictFrame()
@@ -487,6 +490,7 @@ void OnyxDictFrame::similarWordsClicked()
 void OnyxDictFrame::explanationClicked()
 {
     explanation_.show();
+    explanation_.setFocus();
     list_widget_.hide();
     update();
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
@@ -519,21 +523,58 @@ QWidget * OnyxDictFrame::getVisibleWidget()
 void OnyxDictFrame::keyPressEvent(QKeyEvent *event)
 {
     int key = event->key();
-    if (Qt::Key_PageDown == key
-            || Qt::Key_PageUp == key)
-    {
-        qDebug() << "page turing key pressed.";
-        QApplication::sendEvent(getVisibleWidget(), event);
-        update();
-        onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
-    }
-    else if (Qt::Key_Up != key
+    if (Qt::Key_Up != key
             && Qt::Key_Down != key
             && Qt::Key_Left != key
             && Qt::Key_Right != key)
     {
         QApplication::sendEvent(line_edit_.visibleSubItems().front(), event);
     }
+}
+
+void OnyxDictFrame::keyReleaseEvent(QKeyEvent *event)
+{
+    int key = event->key();
+    if (key == ui::Device_Menu_Key)
+    {
+        popupMenu();
+        return;
+    }
+    OnyxDialog::keyReleaseEvent(event);
+}
+
+bool OnyxDictFrame::eventFilter(QObject *obj, QEvent *event)
+{
+    bool ret = OnyxDialog::eventFilter(obj, event);
+    if (event->type() == QEvent::KeyRelease)
+    {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        if (ke->key() == Qt::Key_Escape)
+        {
+            ke->accept();
+            sub_menu_.visibleSubItems().front()->setFocus();
+            return true;
+        }
+        else if (ke->key() == Qt::Key_PageDown
+                || ke->key() == Qt::Key_PageUp
+                || ke->key() == Qt::Key_Up
+                || ke->key() == Qt::Key_Down
+                || ke->key() == Qt::Key_Left
+                || ke->key() == Qt::Key_Right)
+        {
+            onyx::screen::ScreenProxy::Waveform w = onyx::screen::ScreenProxy::GU;
+            if (obj == &list_widget_
+                    && ke->key() != Qt::Key_PageUp
+                    && ke->key() != Qt::Key_PageDown)
+            {
+                w = onyx::screen::ScreenProxy::DW;
+            }
+            update();
+            onyx::screen::watcher().enqueue(this, w,
+                    onyx::screen::ScreenCommand::WAIT_NONE);
+        }
+    }
+    return ret;
 }
 
 static RotateDegree getSystemRotateDegree()

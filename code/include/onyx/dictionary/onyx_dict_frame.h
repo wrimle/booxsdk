@@ -52,6 +52,8 @@ private:
     void connectWithChildren();
 
     void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
     OnyxLineEdit *editor();
 
