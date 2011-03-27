@@ -122,7 +122,7 @@ void Shadows::show(bool show)
 void Shadows::onWidgetMoved(QWidget *sibling)
 {
     hor_shadow_.move(sibling->frameGeometry().left() + PIXELS, sibling->frameGeometry().bottom());
-    ver_shadow_.move(sibling->frameGeometry().right() + 1, sibling->frameGeometry().top() + PIXELS);
+    ver_shadow_.move(sibling->frameGeometry().right() + 1, sibling->frameGeometry().top() + PIXELS - 1);
 }
 
 void Shadows::onWidgetResized(QWidget *sibling)
