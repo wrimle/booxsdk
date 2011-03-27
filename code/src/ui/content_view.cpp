@@ -496,7 +496,7 @@ void ClockView::paintEvent(QPaintEvent * event)
      QColor hourColor(Qt::black);
      QColor minuteColor(Qt::black);
 
-     int side = qMin(width(), height());
+     int side = qMin(width() - 2 * penWidth(), height() - 2 * penWidth());
      QTime time = QTime::currentTime();
 
      QPainter painter(this);
@@ -512,7 +512,7 @@ void ClockView::paintEvent(QPaintEvent * event)
          painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
 
-     painter.translate(width() / 2 - penWidth(), height() / 2 - penWidth());
+     painter.translate(width() / 2, height() / 2);
      painter.scale(side / 200.0, side / 200.0);
 
      painter.setPen(Qt::NoPen);
