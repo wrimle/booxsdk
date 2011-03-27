@@ -539,13 +539,6 @@ void ClockView::paintEvent(QPaintEvent * event)
      painter.restore();
 
      painter.setPen(minuteColor);
-
-     for (int j = 0; j < 60; ++j) {
-         if ((j % 5) != 0)
-             painter.drawLine(92, 0, 96, 0);
-         painter.rotate(6.0);
-     }
-
 }
 
 }
