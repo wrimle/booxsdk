@@ -33,11 +33,14 @@ public:
     bool match_whole_word() const { return match_whole_word_; }
     void setMatchWholeWord(bool match = true);
 
-    bool isStopped() { return stop_; }
+    bool &isStopped() { return stop_; }
     void stop(bool s = true) { stop_ = s; }
 
     int userData() const { return user_data_; }
     int & userData() { return user_data_; }
+
+    bool searchAll() const { return search_all_; }
+    void setSearchAll(bool all = true) { search_all_ = all; }
 
 private:
     QString pattern_;
@@ -46,6 +49,7 @@ private:
     bool match_whole_word_;
     bool stop_;
     int user_data_;
+    bool search_all_;
 };
 
 
@@ -62,9 +66,7 @@ public:
 public:
     void showNormal();
     void showNextPrev();
-    void showSimple();
-
-    void adjustSizeAndPosition();
+    void showSearching();
 
 public Q_SLOTS:
     void noMoreMatches();
@@ -88,6 +90,8 @@ private Q_SLOTS:
     void onSearchNextClicked();
     void onSearchPrevClicked();
     void onCloseClicked();
+
+    void adjustSizeAndPosition();
 
 private:
     void createLayout();
