@@ -495,7 +495,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
         pen.setWidth(pen_width);
         pen.setColor(Qt::black);
         painter.setPen(pen);
-        painter.drawRoundedRect(rect().adjusted(0, 0, -pen_width , -pen_width), 5, 5);
+        painter.drawRoundedRect(rect().adjusted(pen_width, pen_width, -pen_width , -pen_width), 5, 5);
     }
 }
 
