@@ -44,7 +44,7 @@ void KeyboardKeyView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
 
         drawIcon(painter, rect());

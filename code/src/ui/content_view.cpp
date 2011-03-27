@@ -196,7 +196,7 @@ void ContentView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
     }
 }
@@ -255,7 +255,7 @@ void CoverView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
 
         drawCover(painter, rect());
@@ -324,7 +324,7 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
 
         QRect check_box_r = drawCheckBox(painter, rect());
@@ -509,7 +509,7 @@ void ClockView::paintEvent(QPaintEvent * event)
          QPen pen;
          pen.setWidth(penWidth());
          painter.setPen(pen);
-         painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+         painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
 
      painter.translate(width() / 2 - penWidth(), height() / 2 - penWidth());
