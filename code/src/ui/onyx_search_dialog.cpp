@@ -9,7 +9,7 @@ namespace ui
 
 static const int MODE_FULL      = 0;
 static const int MODE_NEXT_PREV = 1;
-static const int MODE_SIMPLE    = 2;
+static const int MODE_SEARCHING = 2;
 
 enum SearchNavigateType {
     SEARCH_NAV_PREVIOUS = 11,
@@ -23,6 +23,7 @@ OnyxSearchContext::OnyxSearchContext(void)
     , match_whole_word_(false)
     , stop_(false)
     , user_data_(0)
+    , search_all_(false)
 {
 }
 
@@ -37,6 +38,7 @@ void OnyxSearchContext::reset()
     case_sensitive_ = false;
     match_whole_word_ = false;
     stop_ = false;
+    search_all_ = false;
 }
 
 void OnyxSearchContext::setPattern(const QString &pattern)
@@ -86,15 +88,15 @@ void OnyxSearchDialog::adjustSizeAndPosition()
     QRect parent_rect = parent->rect();
     if (mode() == MODE_FULL)
     {
-        resize(parent_rect.width(), minimumHeight());
+        setFixedSize(parent_rect.width(), minimumHeight());
     }
     else if (mode() == MODE_NEXT_PREV)
     {
         setFixedSize(250, defaultItemHeight() * 2 + 2 *SPACING);
     }
-    else if (mode() == MODE_SIMPLE)
+    else if (mode() == MODE_SEARCHING)
     {
-        resize(rect().width(), minimumHeight());
+        setFixedSize(parent_rect.width(), defaultItemHeight() * 2 + 2 *SPACING);
     }
     y = parent->height() - height();
     move(x, y);
@@ -151,9 +153,18 @@ void OnyxSearchDialog::showNextPrev()
 }
 
 /// Show dialog in simple way.
-void OnyxSearchDialog::showSimple()
+void OnyxSearchDialog::showSearching()
 {
-    setMode(MODE_SIMPLE);
+    setMode(MODE_SEARCHING);
+
+    if (isHidden())
+    {
+        show();
+    }
+
+    updateChildrenWidgets(mode());
+    adjustSizeAndPosition();
+    updateTitle();
 }
 
 void OnyxSearchDialog::createLineEdit()
@@ -340,9 +351,9 @@ void OnyxSearchDialog::updateTitle(const QString &message)
         {
             OnyxDialog::updateTitle(tr("Search"));
         }
-        else
+        else if (mode() == MODE_SEARCHING)
         {
-            OnyxDialog::updateTitle(tr("Search") + " " + ctx_.pattern());
+            OnyxDialog::updateTitle(tr("Search...") + " " + ctx_.pattern());
         }
     }
     else
@@ -377,11 +388,11 @@ void OnyxSearchDialog::updateChildrenWidgets(int mode)
         sub_menu_.show();
         keyboard_.show();
     }
-    else if (mode == MODE_SIMPLE)
+    else if (mode == MODE_SEARCHING)
     {
         next_prev_.hide();
         line_edit_.show();
-        sub_menu_.hide();
+        sub_menu_.show();
         keyboard_.hide();
     }
     adjustSize();
@@ -390,9 +401,18 @@ void OnyxSearchDialog::updateChildrenWidgets(int mode)
 void OnyxSearchDialog::onSearchClicked()
 {
     ctx_.setPattern(editor()->text());
-    showNextPrev();
-    onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
-    readyToSearch(ctx_.forward());
+    if (!ctx_.searchAll())
+    {
+        showNextPrev();
+        onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
+        readyToSearch(ctx_.forward());
+    }
+    else
+    {
+        showSearching();
+        onyx::screen::watcher().enqueue(safeParentWidget(parentWidget()), onyx::screen::ScreenProxy::GU);
+        readyToSearch(ctx_.forward());
+    }
 }
 
 void OnyxSearchDialog::onSearchNextClicked()
