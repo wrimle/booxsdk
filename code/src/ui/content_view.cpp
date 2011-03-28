@@ -196,7 +196,7 @@ void ContentView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
     }
 }
@@ -255,7 +255,7 @@ void CoverView::paintEvent(QPaintEvent * event)
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
 
         drawCover(painter, rect());
@@ -317,14 +317,14 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
         }
         if (isPressed() || isChecked())
         {
-            // painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
+            painter.fillRect(rect().adjusted(penWidth(), penWidth(), -penWidth() - 1, -penWidth() - 1), Qt::gray);
         }
         if (hasFocus())
         {
             QPen pen;
             pen.setWidth(penWidth());
             painter.setPen(pen);
-            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+            painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
         }
 
         QRect check_box_r = drawCheckBox(painter, rect());
@@ -551,7 +551,7 @@ void ClockView::paintEvent(QPaintEvent * event)
      QColor hourColor(Qt::black);
      QColor minuteColor(Qt::black);
 
-     int side = qMin(width(), height());
+     int side = qMin(width() - 2 * penWidth(), height() - 2 * penWidth());
      QTime time = QTime::currentTime();
 
      QPainter painter(this);
@@ -564,10 +564,10 @@ void ClockView::paintEvent(QPaintEvent * event)
          QPen pen;
          pen.setWidth(penWidth());
          painter.setPen(pen);
-         painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+         painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
 
-     painter.translate(width() / 2 - penWidth(), height() / 2 - penWidth());
+     painter.translate(width() / 2, height() / 2);
      painter.scale(side / 200.0, side / 200.0);
 
      painter.setPen(Qt::NoPen);
@@ -594,13 +594,6 @@ void ClockView::paintEvent(QPaintEvent * event)
      painter.restore();
 
      painter.setPen(minuteColor);
-
-     for (int j = 0; j < 60; ++j) {
-         if ((j % 5) != 0)
-             painter.drawLine(92, 0, 96, 0);
-         painter.rotate(6.0);
-     }
-
 }
 
 }

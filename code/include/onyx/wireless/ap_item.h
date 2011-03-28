@@ -40,7 +40,6 @@ private:
     QHBoxLayout layout_;
     OnyxLabel title_label_;
     ui::CatalogView dash_board_;
-    ODatas datas_;
 };
 
 

@@ -32,6 +32,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , show_border_(false)
         , fixed_grid_(false)
         , size_(200, 150)
+        , bk_color_(Qt::white)
 {
     createLayout();
 }
@@ -495,7 +496,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
         pen.setWidth(pen_width);
         pen.setColor(Qt::black);
         painter.setPen(pen);
-        painter.drawRoundedRect(rect().adjusted(0, 0, -pen_width , -pen_width), 5, 5);
+        painter.drawRoundedRect(rect().adjusted(pen_width, pen_width, -pen_width , -pen_width), 5, 5);
     }
 }
 
@@ -511,6 +512,7 @@ ContentView* CatalogView::createSubItem()
     {
         instance = factory_->createView(this, sub_item_type_);
     }
+    instance->setBkColor(bk_color_);
     connect(instance, SIGNAL(activated(ContentView*,int)), this, SLOT(onItemActivated(ContentView *,int)));
     connect(instance, SIGNAL(keyRelease(ContentView*, QKeyEvent*)), this, SLOT(onItemKeyRelease(ContentView *, QKeyEvent*)));
     connect(instance, SIGNAL(mouse(QPoint, QPoint)), this, SLOT(onMouseMoved(QPoint, QPoint)));
@@ -579,6 +581,7 @@ void CatalogView::setSubItemType(const QString &type)
 
 void CatalogView::setSubItemBkColor(Qt::GlobalColor color)
 {
+    bk_color_ = color;
     foreach(ContentView * view, visibleSubItems())
     {
         view->setBkColor(color);
@@ -733,8 +736,12 @@ ContentView* CatalogView::findShortestItem(CatalogView *view,
 {
     // visit all and check the shortest item.
     int tmp = INT_MAX;
-    ContentView *ret = view->sub_items_.first();
-    foreach(ContentView * item, view->sub_items_)
+    ContentView *ret = 0;
+    if (view->visibleSubItems().size() > 0)
+    {
+        ret = view->visibleSubItems().first();
+    }
+    foreach(ContentView * item, view->visibleSubItems())
     {
         int d = 0;
         QPoint target_center = ui::globalCenter(target);

@@ -11,6 +11,7 @@ static const QString TAG_COVER = "cover";
 static const QString TAG_TYPE = "type";
 static const QString TAG_TAGS = "tags";
 static const QString TAG_URL = "url";
+static const QString TAG_ID  = "id";
 
 static const QString TAG_BRANCH = "branch"; // for opds, it is identical to catalog
 static const QString TAG_ENTRY = "entry";

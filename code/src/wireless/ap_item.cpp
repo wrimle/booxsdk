@@ -1,5 +1,6 @@
 #include "onyx/wireless/ap_item.h"
 #include "onyx/screen/screen_update_watcher.h"
+#include "onyx/data/data_tags.h"
 
 namespace ui
 {
@@ -42,7 +43,6 @@ WifiTitleItem::WifiTitleItem(QWidget *parent)
 
 WifiTitleItem::~WifiTitleItem()
 {
-    clearDatas(datas_);
 }
 
 void WifiTitleItem::createLayout()
@@ -66,18 +66,20 @@ void WifiTitleItem::createLayout()
 
 void WifiTitleItem::createDashBoard()
 {
+    ODatas datas;
     OData * customize = new OData;
-    customize->insert("cover", QPixmap(":/images/customize.png"));
-    customize->insert("id", ID_CUSTOMIZE);
-    datas_.push_back(customize);
+    customize->insert(TAG_COVER, QPixmap(":/images/customize.png"));
+    customize->insert(TAG_ID, ID_CUSTOMIZE);
+    datas.push_back(customize);
 
     OData * refresh = new OData;
-    refresh->insert("cover", QPixmap(":/images/refresh.png"));
-    refresh->insert("id", ID_REFRESH);
-    datas_.push_back(refresh);
+    refresh->insert(TAG_COVER, QPixmap(":/images/refresh.png"));
+    refresh->insert(TAG_ID, ID_REFRESH);
 
-    dash_board_.setFixedGrid(1, 2);
-    dash_board_.setData(datas_);
+    datas.push_back(refresh);
+
+    dash_board_.setFixedGrid(1, datas.size());
+    dash_board_.setData(datas);
     dash_board_.setSubItemBkColor(Qt::transparent);
 }
 
@@ -93,7 +95,7 @@ void WifiTitleItem::onItemActivated(CatalogView *catalog, ContentView *item, int
         return;
     }
 
-    int id = item->data()->value("id").toInt();
+    int id = item->data()->value(TAG_ID).toInt();
     if (id == ID_CUSTOMIZE)
     {
         emit customizedClicked();
