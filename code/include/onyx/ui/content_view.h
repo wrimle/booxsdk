@@ -128,6 +128,8 @@ public:
     virtual void updateView();
 
 protected:
+    void paintEvent(QPaintEvent * event);
+
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent * event);
 
