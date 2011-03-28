@@ -733,8 +733,12 @@ ContentView* CatalogView::findShortestItem(CatalogView *view,
 {
     // visit all and check the shortest item.
     int tmp = INT_MAX;
-    ContentView *ret = view->sub_items_.first();
-    foreach(ContentView * item, view->sub_items_)
+    ContentView *ret = 0;
+    if (view->visibleSubItems().size() > 0)
+    {
+        ret = view->visibleSubItems().first();
+    }
+    foreach(ContentView * item, view->visibleSubItems())
     {
         int d = 0;
         QPoint target_center = ui::globalCenter(target);
