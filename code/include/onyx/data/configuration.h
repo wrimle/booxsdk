@@ -17,6 +17,7 @@ const char * const CONFIG_ENCODING      = "encoding";
 const char * const CONFIG_LAST_LOCATION = "last_location";
 const char * const CONFIG_FLASH_TYPE    = "flash_type";
 const char * const CONFIG_VIEW_PORT     = "view_port";
+const char * const CONFIG_PASSWORD      = "password";
 
 const char * const CONFIG_ZOOM_SETTING    = "zoom_setting";
 const char * const CONFIG_PAGE_LAYOUT     = "page_layout";
