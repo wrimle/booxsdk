@@ -162,6 +162,7 @@ private:
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;
     QString sub_item_type_;
+    Qt::GlobalColor bk_color_;
 };
 
 
