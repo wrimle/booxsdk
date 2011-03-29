@@ -406,6 +406,7 @@ void LineEditView::createLayout()
 {
     layout_.setContentsMargins(MARGIN, 0, MARGIN, 0);
     layout_.addWidget(&inner_edit_, 1);
+    layout_.addSpacing(10);
     connect(&inner_edit_, SIGNAL(outOfRange(QKeyEvent*)), this, SLOT(onEditOutOfRange(QKeyEvent*)));
 }
 
@@ -418,6 +419,42 @@ void LineEditView::updateView()
             QString text = data()->value(TAG_TITLE).toString();
             inner_edit_.setText(text);
         }
+    }
+}
+
+void LineEditView::paintEvent(QPaintEvent * event)
+{
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(rect(), bkColor());
+
+    if (data())
+    {
+        if (data()->contains(TAG_CHECKED))
+        {
+            setChecked(qVariantValue<bool> (data()->value(TAG_CHECKED)));
+        }
+        if (hasFocus())
+        {
+            QPen pen;
+            pen.setWidth(penWidth());
+            painter.setPen(pen);
+            painter.drawRoundedRect(rect().adjusted(0, 0, -penWidth() , -penWidth()), 5, 5);
+        }
+
+        QColor color;
+        if (isChecked())
+        {
+            color = Qt::black;
+        }
+        else
+        {
+            color = Qt::white;
+        }
+        painter.setPen(color);
+        QBrush brush(color);
+        painter.setBrush(brush);
+        painter.drawEllipse(rect().width()-10, (rect().height()-5)/2, 6, 6);
     }
 }
 
@@ -445,8 +482,26 @@ void LineEditView::onEditOutOfRange(QKeyEvent *ke)
 
 void LineEditView::keyPressEvent(QKeyEvent * src)
 {
-    QKeyEvent key(src->type(), src->key(), src->modifiers(), src->text());
-    QApplication::sendEvent(&inner_edit_, &key);
+    if (Qt::Key_Return == src->key() || Qt::Key_Enter == src->key())
+    {
+        if (data())
+        {
+            if (data()->contains(TAG_CHECKED))
+            {
+                data()->insert(TAG_CHECKED, !isChecked());
+            }
+        }
+        src->accept();
+        update();
+        onyx::screen::watcher().enqueue(this,
+                onyx::screen::ScreenProxy::DW,
+                onyx::screen::ScreenCommand::WAIT_NONE);
+    }
+    else
+    {
+        QKeyEvent key(src->type(), src->key(), src->modifiers(), src->text());
+        QApplication::sendEvent(&inner_edit_, &key);
+    }
 }
 
 void LineEditView::keyReleaseEvent(QKeyEvent * event)

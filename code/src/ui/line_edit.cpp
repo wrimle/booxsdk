@@ -85,6 +85,12 @@ void OnyxLineEdit::keyReleaseEvent(QKeyEvent *ke)
 
 void OnyxLineEdit::keyPressEvent(QKeyEvent * ke)
 {
+    if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return)
+    {
+        ke->ignore();
+        return;
+    }
+
     if ((ke->key() == Qt::Key_Left && cursorPosition() <= 0) ||
         (ke->key() == Qt::Key_Right && cursorPosition() >= text().size()))
     {
