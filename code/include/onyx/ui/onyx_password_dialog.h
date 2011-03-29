@@ -5,6 +5,7 @@
 #include "ui_global.h"
 #include "onyx_dialog.h"
 #include "onyx_keyboard.h"
+#include "line_edit_view_group.h"
 
 namespace ui
 {
@@ -29,9 +30,7 @@ protected Q_SLOTS:
 
 private:
     void appendDefaultPasswordEdit();
-    ContentView * getLastCheckedEdit();
-    bool focusWidgetIsLineEdit(scoped_ptr<LineEditView> & focus_line_edit);
-    void applyExclusiveChecked(scoped_ptr<LineEditView> & focus_line_edit);
+    void addLineEditsToGroup();
 
     void createLayout();
     void createLineEdits();
@@ -54,12 +53,13 @@ private:
     CatalogView sub_menu_;
     CatalogView show_plain_text_;
     QVector<CatalogView *> edit_view_list_;
+    LineEditViewGroup edit_view_group_;
 
     OnyxKeyboard keyboard_;
     QString title_;
     QString default_passwd_label_;
     ODatas edit_list_;
-    ContentView *last_checked_edit_;
+
 };
 
 }   // namespace ui

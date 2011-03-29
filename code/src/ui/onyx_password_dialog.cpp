@@ -26,7 +26,6 @@ OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
     , title_(title)
     , default_passwd_label_(default_passwd_label)
     , edit_list_(ds)
-    , last_checked_edit_(0)
 {
     appendDefaultPasswordEdit();
 
@@ -38,7 +37,6 @@ OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
     {
         updateTitle(title_);
     }
-    last_checked_edit_ = edit_view_list_.front()->visibleSubItems().front();
 }
 
 OnyxPasswordDialog::~OnyxPasswordDialog()
@@ -54,6 +52,15 @@ void OnyxPasswordDialog::appendDefaultPasswordEdit()
     edit_list_.append(dd);
 }
 
+void OnyxPasswordDialog::addLineEditsToGroup()
+{
+    foreach (CatalogView *edit_item, edit_view_list_)
+    {
+        LineEditView * line_edit = static_cast<LineEditView *>(
+                edit_item->visibleSubItems().front());
+        edit_view_group_.addEdit(line_edit);
+    }
+}
 
 bool OnyxPasswordDialog::popup()
 {
@@ -269,89 +276,22 @@ void OnyxPasswordDialog::showPlainTextClicked(bool target_value)
     }
 }
 
-ContentView * OnyxPasswordDialog::getLastCheckedEdit()
-{
-    ContentView * last_focus;
-
-    if (1 == edit_view_list_.size())
-    {
-        return edit_view_list_.front()->visibleSubItems().front();
-    }
-
-    foreach (CatalogView *edit_item, edit_view_list_)
-    {
-        LineEditView * line_edit = static_cast<LineEditView *>(
-                edit_item->visibleSubItems().front());
-        if (line_edit->isChecked())
-        {
-            last_focus = line_edit;
-            break;
-        }
-    }
-    return last_focus;
-}
-
-bool OnyxPasswordDialog::focusWidgetIsLineEdit(
-        scoped_ptr<LineEditView> & focus_line_edit)
-{
-    bool val = false;
-    QWidget *focus = focusWidget();
-    foreach (CatalogView *edit_item, edit_view_list_)
-    {
-        LineEditView * line_edit = static_cast<LineEditView *>(
-                edit_item->visibleSubItems().front());
-        if (line_edit->innerEdit() == focus)
-        {
-            val = true;
-            focus_line_edit.reset(line_edit);
-            break;
-        }
-    }
-    return val;
-}
-
-void OnyxPasswordDialog::applyExclusiveChecked(
-        scoped_ptr<LineEditView> & focus_line_edit)
-{
-    if (!focus_line_edit->isChecked())
-    {
-        foreach (CatalogView *edit_item, edit_view_list_)
-        {
-            LineEditView * line_edit = static_cast<LineEditView *>(
-                    edit_item->visibleSubItems().front());
-            if (line_edit != focus_line_edit.get())
-            {
-                line_edit->data()->insert(TAG_CHECKED, false);
-            }
-        }
-    }
-}
-
 void OnyxPasswordDialog::keyPressEvent(QKeyEvent *event)
 {
+    if (0 == edit_view_group_.editList().size())
+    {
+        addLineEditsToGroup();
+    }
+
     int key = event->key();
     if (Qt::Key_Up != key
             && Qt::Key_Down != key
             && Qt::Key_Left != key
-            && Qt::Key_Right != key)
+            && Qt::Key_Right != key
+            && Qt::Key_Return != key
+            && Qt::Key_Enter != key)
     {
-        if (Qt::Key_Return == key || Qt::Key_Enter == key)
-        {
-            scoped_ptr<LineEditView> focus_line_edit;
-            if(focusWidgetIsLineEdit(focus_line_edit))
-            {
-                QApplication::sendEvent(last_checked_edit_, event);
-                applyExclusiveChecked(focus_line_edit);
-            }
-            else
-            {
-                last_checked_edit_ = getLastCheckedEdit();
-            }
-        }
-        else
-        {
-            QApplication::sendEvent(last_checked_edit_, event);
-        }
+        QApplication::sendEvent(edit_view_group_.checkedEdit(), event);
     }
 }
 
@@ -376,7 +316,6 @@ void OnyxPasswordDialog::onItemActivated(CatalogView *catalog,
     }
     else if (catalog == &show_plain_text_)
     {
-        qDebug() << "plain text clicked.";
         bool checked = false;
         ContentView * checkbox = show_plain_text_.visibleSubItems().front();
         if (checkbox->data()->contains(TAG_CHECKED))

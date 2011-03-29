@@ -127,6 +127,9 @@ public:
 public:
     virtual void updateView();
 
+Q_SIGNALS:
+    void checkStateChanged(LineEditView *self);
+
 protected:
     void paintEvent(QPaintEvent * event);
 

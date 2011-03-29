@@ -484,13 +484,7 @@ void LineEditView::keyPressEvent(QKeyEvent * src)
 {
     if (Qt::Key_Return == src->key() || Qt::Key_Enter == src->key())
     {
-        if (data())
-        {
-            if (data()->contains(TAG_CHECKED))
-            {
-                data()->insert(TAG_CHECKED, !isChecked());
-            }
-        }
+        emit checkStateChanged(this);
         src->accept();
         update();
         onyx::screen::watcher().enqueue(this,
