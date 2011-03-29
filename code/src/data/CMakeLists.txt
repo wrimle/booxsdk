@@ -46,6 +46,7 @@ add_library(onyx_data
   handwriting_functions_model.cpp
   content.cpp
   data.cpp
+  search_context.cpp
   ${MOC_SRCS}
 )
 target_link_libraries(onyx_data onyx_cms onyx_sys)
