@@ -2,6 +2,7 @@
 #define ONYX_SEARCH_DIALOG_H_
 
 #include "onyx/base/base.h"
+#include "onyx/data/search_context.h"
 #include "ui_global.h"
 #include "catalog_view.h"
 #include "onyx_dialog.h"
@@ -9,49 +10,6 @@
 
 namespace ui
 {
-
-/// Define search context. Application may inherit this class
-/// to implement its own search context.
-class OnyxSearchContext
-{
-public:
-    OnyxSearchContext();
-    virtual ~OnyxSearchContext();
-
-public:
-    void reset();
-
-    const QString & pattern() const { return pattern_; }
-    void setPattern(const QString &pattern);
-
-    bool forward() const { return forward_; }
-    void setForward(bool forward = true);
-
-    bool case_sensitive() const { return case_sensitive_; }
-    void setCaseSensitive(bool sensitive = true);
-
-    bool match_whole_word() const { return match_whole_word_; }
-    void setMatchWholeWord(bool match = true);
-
-    bool &isStopped() { return stop_; }
-    void stop(bool s = true) { stop_ = s; }
-
-    int userData() const { return user_data_; }
-    int & userData() { return user_data_; }
-
-    bool searchAll() const { return search_all_; }
-    void setSearchAll(bool all = true) { search_all_ = all; }
-
-private:
-    QString pattern_;
-    bool forward_;
-    bool case_sensitive_;
-    bool match_whole_word_;
-    bool stop_;
-    int user_data_;
-    bool search_all_;
-};
-
 
 /// Search dialog to enable user to search the documents.
 // Dialog for getting input with soft keyboard support.

@@ -4,62 +4,14 @@
 #include "onyx/ui/onyx_keyboard_utils.h"
 #include "onyx/data/data_tags.h"
 
-namespace ui
-{
 
 static const int MODE_FULL      = 0;
 static const int MODE_NEXT_PREV = 1;
 static const int MODE_SEARCHING = 2;
 
-enum SearchNavigateType {
-    SEARCH_NAV_PREVIOUS = 11,
-    SEARCH_NAV_NEXT = 12,
-};
-
-OnyxSearchContext::OnyxSearchContext(void)
-    : pattern_()
-    , forward_(true)
-    , case_sensitive_(false)
-    , match_whole_word_(false)
-    , stop_(false)
-    , user_data_(0)
-    , search_all_(false)
+namespace ui
 {
-}
 
-OnyxSearchContext::~OnyxSearchContext(void)
-{
-}
-
-void OnyxSearchContext::reset()
-{
-    pattern_.clear();
-    forward_ = true;
-    case_sensitive_ = false;
-    match_whole_word_ = false;
-    stop_ = false;
-    search_all_ = false;
-}
-
-void OnyxSearchContext::setPattern(const QString &pattern)
-{
-    pattern_ = pattern;
-}
-
-void OnyxSearchContext::setForward(bool forward)
-{
-    forward_ = forward;
-}
-
-void OnyxSearchContext::setCaseSensitive(bool sensitive)
-{
-    case_sensitive_ = sensitive;
-}
-
-void OnyxSearchContext::setMatchWholeWord(bool whole)
-{
-    match_whole_word_ = whole;
-}
 
 OnyxSearchDialog::OnyxSearchDialog(QWidget *parent, OnyxSearchContext & ctx)
     : OnyxDialog(parent)
