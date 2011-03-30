@@ -15,6 +15,9 @@ namespace ui
 //  Password:
 //
 // needs an OData with TAG_TITLE/value ("User ID: ") inserted.
+// Insert TAG_IS_PASSWD/value (true) to specify password field.
+// Insert TAG_DEFAULT_VALUE/value ("123456") to specify default text for line edit.
+
 OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
         const QString &title, const QString &default_passwd_label)
     : OnyxDialog(parent)
@@ -141,6 +144,8 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
 
     ODatas ds;
     OData *dd = new OData;
+
+    // set the TAG_CHECKED property
     if (0 == index)
     {
         dd->insert(TAG_CHECKED, true);
@@ -149,6 +154,19 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
     {
         dd->insert(TAG_CHECKED, false);
     }
+
+    // copy the TAG_IS_PASSWD property
+    if (data->contains(TAG_IS_PASSWD))
+    {
+        dd->insert(TAG_IS_PASSWD, data->value(TAG_IS_PASSWD).toBool());
+    }
+
+    // copy the TAG_DEFAULT_VALUE property to TAG_TITLE
+    if (data->contains(TAG_DEFAULT_VALUE))
+    {
+        dd->insert(TAG_TITLE, data->value(TAG_DEFAULT_VALUE).toString());
+    }
+
     ds.push_back(dd);
 
     edit_item->setFixedGrid(1, 1);
@@ -255,10 +273,13 @@ void OnyxPasswordDialog::setEditEchoMode(QLineEdit::EchoMode mode)
                 edit_item->visibleSubItems().front());
         if (edit->data()->contains(TAG_IS_PASSWD))
         {
-            bool is_pass = qVariantValue<bool>(edit->data()->value(TAG_IS_PASSWD));
-            if (is_pass)
+            if (QLineEdit::Normal == mode)
             {
-                edit->innerEdit()->setEchoMode(mode);
+                edit->data()->insert(TAG_IS_PASSWD, false);
+            }
+            else
+            {
+                edit->data()->insert(TAG_IS_PASSWD, true);
             }
         }
     }
@@ -325,7 +346,7 @@ void OnyxPasswordDialog::onItemActivated(CatalogView *catalog,
         checkbox->data()->insert(TAG_CHECKED, !checked);
         showPlainTextClicked(!checked);
         update();
-        onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
+        onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
     }
 }
 

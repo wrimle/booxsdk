@@ -30,5 +30,6 @@ static const QString TAG_SPECIAL_KEY = "special_key";
 static const QString TAG_SPECIAL_KEY_TEXT = "special_key_text";
 
 static const QString TAG_IS_PASSWD = "is_password"; // denote the data is password or not.
+static const QString TAG_DEFAULT_VALUE = "default_value";
 
 #endif

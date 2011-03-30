@@ -434,6 +434,16 @@ void LineEditView::paintEvent(QPaintEvent * event)
         {
             setChecked(qVariantValue<bool> (data()->value(TAG_CHECKED)));
         }
+
+        if (data()->contains(TAG_IS_PASSWD))
+        {
+            qDebug() << "contains is_password tag, begin";
+            bool is_password = data()->value(TAG_IS_PASSWD).toBool();
+            innerEdit()->setEchoMode(
+                    (is_password? QLineEdit::Password : QLineEdit::Normal) );
+            qDebug() << "line edit view paint, after set echo mode.";
+        }
+
         if (hasFocus())
         {
             QPen pen;
