@@ -44,7 +44,7 @@ void OnyxSearchDialog::adjustSizeAndPosition()
     }
     else if (mode() == MODE_NEXT_PREV)
     {
-        setFixedSize(250, defaultItemHeight() * 2 + 2 *SPACING);
+        setFixedSize(parent_rect.width(), defaultItemHeight() * 2 + 2 *SPACING);
     }
     else if (mode() == MODE_SEARCHING)
     {
