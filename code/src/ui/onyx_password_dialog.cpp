@@ -282,6 +282,7 @@ void OnyxPasswordDialog::setEditEchoMode(QLineEdit::EchoMode mode)
                 edit->data()->insert(TAG_IS_PASSWD, true);
             }
         }
+        edit->repaint();
     }
 }
 
@@ -345,6 +346,7 @@ void OnyxPasswordDialog::onItemActivated(CatalogView *catalog,
         }
         checkbox->data()->insert(TAG_CHECKED, !checked);
         showPlainTextClicked(!checked);
+        checkbox->repaint();
         update();
         onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GC);
     }
