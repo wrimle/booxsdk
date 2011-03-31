@@ -150,14 +150,13 @@ void WpaConnectionManager::onConnectionChanged(WifiProfile profile,
         break;
     case WpaConnection::STATE_ACQUIRING_ADDRESS_ERROR:
         {
-            resetProfile(profile);
+            // resetProfile(profile);
             emit connectionChanged(profile, WpaConnection::STATE_ACQUIRING_ADDRESS_ERROR);
         }
         break;
 
     case WpaConnection::STATE_AUTHENTICATION_FAILED:
         {
-
             onNeedPassword(profile);
         }
         break;

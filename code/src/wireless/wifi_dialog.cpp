@@ -255,20 +255,6 @@ void WifiDialog::arrangeAPItems(WifiProfiles & profiles)
     showPaginationButtons(ap_view_.hasPrev(), ap_view_.hasNext());
 }
 
-int  WifiDialog::itemsPerPage()
-{
-    int h = big_box_.contentsRect().height();
-    h -= title_hbox_.contentsRect().height();
-    h -= (content_layout_.margin() * 2 + content_layout_.spacing() * 3);
-    h -= (state_widget_.height() + buttons_layout_.contentsRect().height() + hardware_address_.height());
-    int items = h / (AP_ITEM_HEIGHT + ap_layout_.spacing());
-    if (items <= 0)
-    {
-        return 3;
-    }
-    return items;
-}
-
 void WifiDialog::setupConnections()
 {
     QObject::connect(&proxy_, SIGNAL(connectionChanged(WifiProfile,WpaConnection::ConnectionState)),
@@ -319,7 +305,7 @@ bool WifiDialog::connectToBestAP()
     auto_connect_to_best_ap_ = false;
 
     sys::SystemConfig conf;
-    WifiProfiles & all = records(conf);
+    WifiProfiles all = records(conf);
     if (all.size() <= 0)
     {
         return false;
@@ -430,22 +416,15 @@ void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::Connect
     updateStateLable(state);
     if (state == WpaConnection::STATE_CONNECTED)
     {
-        storeAp(profile);
     }
     if (state == WpaConnection::STATE_COMPLETE)
     {
     }
     else if (state == WpaConnection::STATE_ACQUIRING_ADDRESS_ERROR)
     {
-        resetProfile(profile);
     }
     else if (state == WpaConnection::STATE_AUTHENTICATION_FAILED)
     {
-        // Could be ignored now.
-        if (!checkAuthentication(profile))
-        {
-            onNeedPassword(profile);
-        }
     }
     else if (state == WpaConnection::STATE_SCANNED)
     {
@@ -456,7 +435,6 @@ void WifiDialog::onConnectionChanged(WifiProfile profile, WpaConnection::Connect
         // Mark the item selected.
         qDebug("connecting to %s", qPrintable(profile.ssid()));
     }
-    //emit connectionChanged(profile, state);
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
 }
 
@@ -581,13 +559,6 @@ void WifiDialog::onAPConfig(WifiProfile &profile)
     }
 }
 
-void WifiDialog::resetProfile(WifiProfile & profile)
-{
-    setPassword(profile, "");
-    profile.setCount(-1);
-    storeAp(profile);
-}
-
 void WifiDialog::setPassword(WifiProfile & profile,
                              const QString & password)
 {
@@ -601,65 +572,14 @@ void WifiDialog::setPassword(WifiProfile & profile,
     }
 }
 
-
-/// Check the authentication data for the specified access point.
-bool WifiDialog::checkAuthentication(WifiProfile & profile)
-{
-    // Retry to use profiles that have been used.
-    sys::SystemConfig conf;
-    WifiProfiles & all = records(conf);
-    conf.close();
-
-    foreach(WifiProfile record, all)
-    {
-        // Use bssid instead of ssid.
-        if (profile.bssid() == record.bssid())
-        {
-            if (profile.retry() <= 2)
-            {
-                if (syncAuthentication(record, profile))
-                {
-                    profile.setCount(record.count());
-                    profile.setRetry(profile.retry() + 1);
-                    return (profile.retry() <= 2);
-                }
-            }
-        }
-    }
-    return false;
-}
-
-bool WifiDialog::syncAuthentication(WifiProfile & source,
-                                    WifiProfile & target)
-{
-    if (source.isWep() && target.isWep())
-    {
-        target.setWepKey1(source.wepKey1());
-        target.setAuthAlg(source.authAlg());
-        return true;
-    }
-
-    if ((source.isWpa() && target.isWpa()) ||
-        (source.isWpa2() && target.isWpa2()))
-    {
-        if (source.psk().isEmpty())
-        {
-            return false;
-        }
-        target.setPsk(source.psk());
-        return true;
-    }
-    return false;
-}
-
 /// Store access point that successfully connected.
 void WifiDialog::storeAp(WifiProfile & profile)
 {
     sys::SystemConfig conf;
-    WifiProfiles & all = records(conf);
+    WifiProfiles all = records(conf);
 
     profile.increaseCount();
-    for(int i = 0; i < records_->size(); ++i)
+    for(int i = 0; i < all.size(); ++i)
     {
         if (all[i].bssid() == profile.bssid())
         {
@@ -674,14 +594,11 @@ void WifiDialog::storeAp(WifiProfile & profile)
     conf.saveWifiProfiles(all);
 }
 
-WifiProfiles & WifiDialog::records(sys::SystemConfig &conf)
+WifiProfiles WifiDialog::records(sys::SystemConfig &conf)
 {
-    if (!records_)
-    {
-        records_.reset(new WifiProfiles);
-        conf.loadWifiProfiles(*records_);
-    }
-    return *records_;
+    WifiProfiles records;
+    conf.loadWifiProfiles(records);
+    return records;
 }
 
 void WifiDialog::updateHardwareAddress()
