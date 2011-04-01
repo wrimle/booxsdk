@@ -167,6 +167,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent * event);
+    void drawDigitalClock(QPainter &painter);
 };
 
 };
