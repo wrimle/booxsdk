@@ -89,6 +89,11 @@ void OnyxKeyboard::connectWithChildren()
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
     connect(&menu_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+
+    connect(&top_, SIGNAL(outOfUp(CatalogView *, int, int)),
+            this, SLOT(onOutOfUp(CatalogView *, int, int)));
+    connect(&menu_, SIGNAL(outOfDown(CatalogView *, int, int)),
+                this, SLOT(onOutOfDown(CatalogView *, int, int)));
 }
 
 void OnyxKeyboard::createTop()
@@ -211,6 +216,16 @@ void OnyxKeyboard::onItemActivated(CatalogView *catalog,
                 Qt::NoModifier, key_text);
         QApplication::sendEvent(parentWidget(), key_event);
     }
+}
+
+void OnyxKeyboard::onOutOfUp(CatalogView *child, int row, int col)
+{
+    emit outOfUp(child, row, col);
+}
+
+void OnyxKeyboard::onOutOfDown(CatalogView *child, int row, int col)
+{
+    emit outOfDown(child, row , col);
 }
 
 void OnyxKeyboard::menuItemActivated(ContentView *item, int user_data)

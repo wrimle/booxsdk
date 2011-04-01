@@ -111,10 +111,12 @@ Q_SIGNALS:
     void itemActivated(CatalogView *catalog, ContentView *item, int user_data);
     void keyRelease(CatalogView *view, QKeyEvent *key);
 
-    void outOfLeft(CatalogView*, int, int, bool &);
-    void outOfRight(CatalogView*, int, int, bool &);
-    void outOfUp(CatalogView*, int, int, bool &);
-    void outOfDown(CatalogView*, int, int, bool &);
+    // In some cases, the parent want to control the keyboard navigation
+    // when non-catalogview exist, the following four signals can be utilized.
+    void outOfLeft(CatalogView*, int, int);
+    void outOfRight(CatalogView*, int, int);
+    void outOfUp(CatalogView*, int, int);
+    void outOfDown(CatalogView*, int, int);
 
 private slots:
     QWidget * moveFocus(int index);

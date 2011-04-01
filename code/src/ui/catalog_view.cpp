@@ -207,6 +207,8 @@ int CatalogView::moveLeft(int current)
         {
             return current = paginator().last_visible();
         }
+        emit outOfLeft(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return --current;
 }
@@ -226,6 +228,8 @@ int CatalogView::moveRight(int current)
         {
             return current = paginator().first_visible();
         }
+        emit outOfRight(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return ++current;
 }
@@ -245,6 +249,8 @@ int CatalogView::moveUp(int current)
         {
             return current = paginator().last_visible();
         }
+        emit outOfUp(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return current - paginator().cols();
 }
@@ -264,6 +270,8 @@ int CatalogView::moveDown(int current)
         {
             return current = paginator().first_visible();
         }
+        emit outOfDown(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return current + paginator().cols();
 }

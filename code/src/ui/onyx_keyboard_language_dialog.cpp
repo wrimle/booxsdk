@@ -47,7 +47,7 @@ void OnyxKeyboardLanguageDialog::createLayout()
     content_widget_.setBackgroundRole(QPalette::Button);
 
     updateTitle(QApplication::tr("Switch Language"));
-    updateTitleIcon(QPixmap(":/images/locale.png"));
+    updateTitleIcon(QPixmap(":/images/locale_small.png"));
     layout_.setContentsMargins(SPACING, 0, SPACING, 0);
     createLanguageGroup();
     layout_.addWidget(&language_group_);
