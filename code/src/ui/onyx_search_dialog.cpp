@@ -352,6 +352,12 @@ void OnyxSearchDialog::updateChildrenWidgets(int mode)
 
 void OnyxSearchDialog::onSearchClicked()
 {
+    if (editor()->text().isEmpty())
+    {
+        onCloseClicked();
+        return;
+    }
+
     ctx_.setPattern(editor()->text());
     if (!ctx_.searchAll())
     {

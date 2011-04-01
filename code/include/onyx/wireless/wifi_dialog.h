@@ -60,20 +60,13 @@ private Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
     void onPositionChanged(const int, const int);
 
-Q_SIGNALS:
-    void connectionChanged(WifiProfile & profile, WpaConnection::ConnectionState state);
-
 private:
     void createLayout();
     void arrangeAPItems(WifiProfiles & list);
     void setupConnections();
-    int  itemsPerPage();
     void clear();
 
-    void resetProfile(WifiProfile & profile);
     void setPassword(WifiProfile & profile, const QString & password);
-    bool checkAuthentication(WifiProfile & profile);
-    bool syncAuthentication(WifiProfile & source, WifiProfile & target);
     void storeAp(WifiProfile & profile);
 
     void updateStateLable(WpaConnection::ConnectionState state);
@@ -82,7 +75,7 @@ private:
     bool allowAutoConnect() { return auto_connect_to_best_ap_; }
 
     void scanResults(WifiProfiles &);
-    WifiProfiles & records(sys::SystemConfig& conf);
+    WifiProfiles records(sys::SystemConfig& conf);
 
     void updateHardwareAddress();
     void showPaginationButtons(bool show_prev = false, bool show_next = false);
@@ -113,7 +106,6 @@ private:
 
     WifiProfiles scan_results_;
     ODatas datas_;
-    scoped_ptr<WifiProfiles> records_;  ///< All profiles that stored in database.
 };
 
 }
