@@ -27,8 +27,9 @@ OnyxNotesDialog::~OnyxNotesDialog()
 {
 }
 
-QString OnyxNotesDialog::popup()
+int OnyxNotesDialog::popup(const QString & text)
 {
+    notes_edit_.setText(text);
     if (isHidden())
     {
         show();
@@ -36,15 +37,7 @@ QString OnyxNotesDialog::popup()
     QWidget * widget = safeParentWidget(parentWidget());
     resize(widget->width(), height());
     move(widget->x(), widget->height() - height());
-    int is_accepted = exec();
-    if (QDialog::Accepted == is_accepted)
-    {
-        return inputText();
-    }
-    else
-    {
-        return QString();
-    }
+    return exec();
 }
 
 QString OnyxNotesDialog::inputText()
@@ -219,20 +212,21 @@ bool OnyxNotesDialog::eventFilter(QObject *obj, QEvent *event)
                         onyx::screen::ScreenCommand::WAIT_NONE);
             }
         }
-
-        if (key_event->key() == Qt::Key_Escape)
-        {
-            onCloseClicked();
-        }
     }
     else if (QEvent::KeyRelease == event->type())
     {
         if (to_focus_)
         {
             to_focus_->setFocus();
+            to_focus_ = 0;
+            return true;
         }
-        to_focus_ = 0;
-        return true;
+
+        QKeyEvent *key_event = static_cast<QKeyEvent *>(event);
+        if (key_event->key() == Qt::Key_Escape)
+        {
+            onCloseClicked();
+        }
     }
     to_focus_ = 0;
     return OnyxDialog::eventFilter(obj, event);

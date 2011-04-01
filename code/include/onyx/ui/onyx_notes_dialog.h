@@ -21,7 +21,7 @@ public:
     ~OnyxNotesDialog();
 
 public:
-    QString popup();
+    int popup(const QString & text);
     QString inputText();
 
 protected Q_SLOTS:
