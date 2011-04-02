@@ -41,6 +41,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     actions_.push_back(forward);
 
 
+/* for this action is still  not available.
     shared_ptr<QAction> home(new QAction(exclusiveGroup()));
     home->setText(QCoreApplication::tr("History"));
     home->setIcon(QIcon(QPixmap(":/images/home.png")));
@@ -49,6 +50,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     home->setCheckable(true);
     home->setChecked(false);
     actions_.push_back(home);
+*/
 
 
     shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
@@ -60,6 +62,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     clear->setChecked(false);
     actions_.push_back(clear);
 
+/* for this action is still  not available.
     shared_ptr<QAction> navigate_hyperlink(new QAction(exclusiveGroup()));
     QString text;
     if (!hyperlink_navigation_mode)
@@ -76,6 +79,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     navigate_hyperlink->setCheckable(true);
     navigate_hyperlink->setChecked(false);
     actions_.push_back(navigate_hyperlink);
+*/
 }
 
 /// Retrieve the selected action.
