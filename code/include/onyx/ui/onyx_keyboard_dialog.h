@@ -21,7 +21,7 @@ public:
 
 public:
     void setOKButtonText(const QString &button_text = tr("OK"));
-    QString popup();
+    QString popup(const QString &text);
     QString inputText();
 
 protected Q_SLOTS:

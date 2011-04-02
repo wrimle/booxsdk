@@ -32,7 +32,7 @@ void OnyxKeyboardDialog::setOKButtonText(const QString& button_text)
     ok_button_text_ = button_text;
 }
 
-QString OnyxKeyboardDialog::popup()
+QString OnyxKeyboardDialog::popup(const QString &text)
 {
     if (isHidden())
     {
@@ -41,6 +41,11 @@ QString OnyxKeyboardDialog::popup()
     QWidget * widget = safeParentWidget(parentWidget());
     resize(widget->width(), height());
     move(widget->x(), widget->height() - height());
+
+    LineEditView *input = static_cast<LineEditView *>(
+            line_edit_.visibleSubItems().front());
+    input->innerEdit()->setText(text);
+
     int is_accepted = exec();
     if (QDialog::Accepted == is_accepted)
     {
