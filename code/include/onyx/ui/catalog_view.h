@@ -81,6 +81,7 @@ public slots:
     void associateData(bool force = false);
     void associateEmptyData();
     void arrangeAll(bool force = false);
+    bool select(OData *data);
     void resetPaginator(bool sync_layout = false);
     void broadcastPositionSignal();
 

@@ -192,6 +192,23 @@ void CatalogView::arrangeAll(bool force)
     }
 }
 
+/// Select the content and broadcast position signal.
+bool CatalogView::select(OData *d)
+{
+    int pos = data().indexOf(d);
+    if (pos < 0)
+    {
+        return false;
+    }
+
+    int page = pos / paginator().items_per_page();
+    gotoPage(page + 1);
+    int offset = pos - page * paginator().items_per_page();
+    setFocusTo(offset / paginator().cols(), offset % paginator().cols());
+    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
+    return true;
+}
+
 int CatalogView::moveLeft(int current)
 {
     if (col(current) == 0)
