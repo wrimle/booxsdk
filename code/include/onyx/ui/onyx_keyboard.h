@@ -35,12 +35,19 @@ public:
     inline CatalogView * top() { return &top_; }
     inline CatalogView * menu() { return &menu_; }
 
+Q_SIGNALS:
+    void outOfUp(CatalogView *, int row, int col);
+    void outOfDown(CatalogView *, int row, int col);
+
 protected:
     void init(const QLocale & locale);
     bool event(QEvent * event);
 
 protected Q_SLOTS:
     void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
+
+    void onOutOfUp(CatalogView *, int row, int col);
+    void onOutOfDown(CatalogView *, int row, int col);
 
 private:
     void createLayout();

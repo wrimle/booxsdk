@@ -40,6 +40,7 @@ OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
     {
         updateTitle(title_);
     }
+    onyx::screen::watcher().addWatcher(this);
 }
 
 OnyxPasswordDialog::~OnyxPasswordDialog()

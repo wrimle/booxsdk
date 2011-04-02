@@ -537,6 +537,14 @@ void ClockView::updateView()
 {
 }
 
+void ClockView::drawDigitalClock(QPainter &painter)
+{
+    int size = ui::defaultFontPointSize();
+    QFont font("", size);
+    painter.setFont(font);
+    painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap , QDateTime::currentDateTime().toString());
+}
+
 void ClockView::paintEvent(QPaintEvent * event)
 {
     static const QPoint hourHand[3] = {
@@ -570,6 +578,9 @@ void ClockView::paintEvent(QPaintEvent * event)
          painter.setPen(pen);
          painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
+
+     drawDigitalClock(painter);
+     return;
 
      painter.translate(width() / 2, height() / 2);
      painter.scale(side / 200.0, side / 200.0);

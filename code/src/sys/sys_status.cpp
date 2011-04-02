@@ -678,7 +678,7 @@ void SysStatus::rotateScreen()
             setScreenTransformation(0);
         }
     }
-    else if (default_rotation == 90)
+    else if (default_rotation == 90 || default_rotation == 180)
     {
         degree = (degree + 90) % 360;
         setScreenTransformation(degree);
@@ -1761,7 +1761,7 @@ void SysStatus::onLowBatterySignal()
     emit lowBatterySignal();
 }
 
-void SysStatus::onMouseLongPress(int x, int y, int width, int height)    
+void SysStatus::onMouseLongPress(int x, int y, int width, int height)
 {
     emit mouseLongPress(QPoint(x, y), QSize(width, height));
 }

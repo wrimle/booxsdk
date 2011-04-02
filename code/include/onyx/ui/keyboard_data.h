@@ -10,6 +10,10 @@ namespace ui
 class KeyboardData
 {
 public:
+    static const QString BACKSPACE_TEXT;
+    static const QString ENTER_TEXT;
+
+public:
     KeyboardData();
     virtual ~KeyboardData();
 
@@ -47,6 +51,7 @@ protected:
 
     OData * createData(const QString & value);
     OData * createBackspaceData();
+    OData * createEnterData();
 
 protected:
     // Use these data for initialization.

@@ -89,14 +89,19 @@ void RussianKeyboardData::initBottomKeyCode()
         OData *dd = createData(QString(chs[i]));
         bottom_codes_.push_back(dd);
     }
+
     OData * dd = createBackspaceData();
     bottom_codes_.push_back(dd);
-    const QChar chs_next[] = {QChar(0x0436), QChar(0x044D), '\''};
-    for (int i=0; i<3; i++)
+
+    const QChar chs_next[] = {QChar(0x0436), QChar(0x044D)};
+    for (int i=0; i<2; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_codes_.push_back(dd);
     }
+
+    dd = createEnterData();
+    bottom_codes_.push_back(dd);
 }
 
 // for shift key
@@ -139,28 +144,33 @@ void RussianKeyboardData::initRightKeyShiftCode()
 
 void RussianKeyboardData::initBottomKeyShiftCode()
 {
-    const QChar chs[] = {';', '?', QChar(0x0437).toUpper(), QChar(0x0445).toUpper(),
+    const QChar chs[] = {';', '\'', QChar(0x0437).toUpper(), QChar(0x0445).toUpper(),
             QChar(0x0434).toUpper(), ' '};
     for (int i=0; i<6; i++)
     {
         OData *dd = createData(QString(chs[i]));
         bottom_shift_codes_.push_back(dd);
     }
+
     OData * dd = createBackspaceData();
     bottom_shift_codes_.push_back(dd);
-    const QChar chs_next[] = {QChar(0x0436).toUpper(), QChar(0x044D).toUpper(), ':'};
-    for (int i=0; i<3; i++)
+
+    const QChar chs_next[] = {QChar(0x0436).toUpper(), QChar(0x044D).toUpper()};
+    for (int i=0; i<2; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_shift_codes_.push_back(dd);
     }
+
+    dd = createEnterData();
+    bottom_shift_codes_.push_back(dd);
 }
 
 // for symbol key
 void RussianKeyboardData::initLeftKeySymbolCode()
 {
     const QChar chs[] = {'[', ']', '\\',
-                         QChar(0x00B5), QChar(0x00AC), QChar(0x00A2),
+                         QChar(0x00B5), '/', '`',
                          QChar(0x00AD), QChar(0x00AF), QChar(0x00B7), };
     for (int i = 0; i < 9; i++)
     {
@@ -171,9 +181,9 @@ void RussianKeyboardData::initLeftKeySymbolCode()
 
 void RussianKeyboardData::initMiddleKeySymbolCode()
 {
-    const QChar chs[] = {'/', '+', '-',
-                         '_', '"', '=',
-                         '`', '{', '}', };
+    const QChar chs[] = {'+', '-', '?',
+                         ':', '"', '=',
+                         '_', '{', '}', };
     for (int i = 0; i < 9; i++)
     {
         OData *dd = createData(QString(chs[i]));

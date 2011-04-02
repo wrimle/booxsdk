@@ -229,5 +229,7 @@
     <file>images/similar_words.png</file>
     <file>images/hyperlink_navigation_mode.png</file>
     <file>images/locale.png</file>
+    <file>images/locale_small.png</file>
+    <file>images/enter_key.png</file>
   </qresource>
 </RCC>

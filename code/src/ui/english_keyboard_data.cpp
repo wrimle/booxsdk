@@ -72,20 +72,27 @@ void EnglishKeyboardData::initRightKeyCode()
 
 void EnglishKeyboardData::initBottomKeyCode()
 {
-    const QChar chs[] = {'/', '+', '-', '_', ',', ' '};
+    const QChar chs[] = {'+', '-', '_', '"', ',', ' '};
     for (int i=0; i<6; i++)
     {
         OData *dd = createData(QString(chs[i]));
         bottom_codes_.push_back(dd);
     }
+
     OData * dd = createBackspaceData();
     bottom_codes_.push_back(dd);
-    const QChar chs_next[] = {'\'', '"', ';'};
-    for (int i=0; i<3; i++)
+
+
+
+    const QChar chs_next[] = {'\'', ';'};
+    for (int i=0; i<2; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_codes_.push_back(dd);
     }
+
+    dd = createEnterData();
+    bottom_codes_.push_back(dd);
 }
 
 void EnglishKeyboardData::initTopKeyShiftCode()
@@ -130,25 +137,30 @@ void EnglishKeyboardData::initRightKeyShiftCode()
 
 void EnglishKeyboardData::initBottomKeyShiftCode()
 {
-    const QChar chs[] = {'{', '}', '[', ']', '=', ' '};
+    const QChar chs[] = {'\\', '/', '[', ']', '=', ' '};
     for (int i=0; i<6; i++)
     {
         OData *dd = createData(QString(chs[i]));
         bottom_shift_codes_.push_back(dd);
     }
+
     OData * dd = createBackspaceData();
     bottom_shift_codes_.push_back(dd);
-    const QChar chs_next[] = {'?', ':', '\\'};
-    for (int i=0; i<3; i++)
+
+    const QChar chs_next[] = {'?', ':'};
+    for (int i=0; i<2; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_shift_codes_.push_back(dd);
     }
+
+    dd = createEnterData();
+    bottom_shift_codes_.push_back(dd);
 }
 
 void EnglishKeyboardData::initLeftKeySymbolCode()
 {
-    const QString chs[] = {"<-", "->", "...",
+    const QString chs[] = {"...", "{", "}",
                            "www.", ".com", QString(QChar(0x00A2)),
                            QString(QChar(0x00B9)), QString(QChar(0x00B2)),
                            QString(QChar(0x00B3)), };
