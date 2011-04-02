@@ -48,9 +48,9 @@ public slots:
     bool hasNext();
     bool hasPrev();
 
-    void goPrev();
-    void goNext();
-    void gotoPage(const int);
+    bool goPrev();
+    bool goNext();
+    bool gotoPage(const int);
 
     void setMargin(int m = 4);
     int margin() { return margin_; }

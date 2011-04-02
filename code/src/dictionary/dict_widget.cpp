@@ -110,7 +110,7 @@ void DictWidget::formatResult(QString &result)
 {
     if (result.isEmpty())
     {
-        result = "Not Found In Dictionary.";
+        result = tr("Not Found In Dictionary.");
     }
     if (!result.contains("<html>", Qt::CaseInsensitive))
     {

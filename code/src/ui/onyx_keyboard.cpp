@@ -94,6 +94,10 @@ void OnyxKeyboard::connectWithChildren()
             this, SLOT(onOutOfUp(CatalogView *, int, int)));
     connect(&menu_, SIGNAL(outOfDown(CatalogView *, int, int)),
                 this, SLOT(onOutOfDown(CatalogView *, int, int)));
+
+    connect(&left_, SIGNAL(keyRelease(CatalogView *, QKeyEvent *)), this, SLOT(onViewKeyRelease(CatalogView *, QKeyEvent *)));
+    connect(&middle_, SIGNAL(keyRelease(CatalogView *, QKeyEvent *)), this, SLOT(onViewKeyRelease(CatalogView *, QKeyEvent *)));
+    connect(&right_, SIGNAL(keyRelease(CatalogView *, QKeyEvent *)), this, SLOT(onViewKeyRelease(CatalogView *, QKeyEvent *)));
 }
 
 void OnyxKeyboard::createTop()
@@ -226,6 +230,40 @@ void OnyxKeyboard::onOutOfUp(CatalogView *child, int row, int col)
 void OnyxKeyboard::onOutOfDown(CatalogView *child, int row, int col)
 {
     emit outOfDown(child, row , col);
+}
+
+void OnyxKeyboard::onViewKeyRelease(CatalogView *view, QKeyEvent *key)
+{
+    if (key->key() == Qt::Key_PageDown)
+    {
+        if (view == &left_)
+        {
+            middle_.setFocusTo(1, 1);
+        }
+        else if (view == &middle_)
+        {
+            right_.setFocusTo(1, 1);
+        }
+        else if (view == &right_)
+        {
+            left_.setFocusTo(1, 1);
+        }
+    }
+    else if (key->key() == Qt::Key_PageUp)
+    {
+        if (view == &left_)
+        {
+            right_.setFocusTo(1, 1);
+        }
+        else if (view == &middle_)
+        {
+            left_.setFocusTo(1, 1);
+        }
+        else if (view == &right_)
+        {
+            middle_.setFocusTo(1, 1);
+        }
+    }
 }
 
 void OnyxKeyboard::menuItemActivated(ContentView *item, int user_data)

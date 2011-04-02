@@ -356,12 +356,14 @@ Paginator & CatalogView::paginator()
     return paginator_;
 }
 
-void CatalogView::gotoPage(const int p)
+bool CatalogView::gotoPage(const int p)
 {
     if (paginator().jump(p-1))
     {
         arrangeAll();
+        return true;
     }
+    return false;
 }
 
 void CatalogView::setData(const ODatas &list, bool force)
@@ -417,12 +419,14 @@ void CatalogView::setChecked(bool checked)
     }
 }
 
-void CatalogView::goNext()
+bool CatalogView::goNext()
 {
     if (paginator().next())
     {
         arrangeAll();
+        return true;
     }
+    return false;
 }
 
 bool CatalogView::hasNext()
@@ -435,33 +439,43 @@ bool CatalogView::hasPrev()
     return paginator().isPrevEnable();
 }
 
-void CatalogView::goPrev()
+bool CatalogView::goPrev()
 {
     if (paginator().prev())
     {
         arrangeAll();
+        return true;
     }
+    return false;
 }
 
 void CatalogView::keyReleaseEvent ( QKeyEvent *ke )
 {
-    ke->accept();
     switch ( ke->key())
     {
     case Qt::Key_PageDown:
         {
-            goNext();
+            if (!goNext())
+            {
+                emit keyRelease(this, ke);
+                return;
+            }
         }
         break;
     case Qt::Key_PageUp:
         {
-            goPrev();
+            if (!goPrev())
+            {
+                emit keyRelease(this, ke);
+                return;
+            }
         }
         break;
     default:
         QWidget::keyReleaseEvent(ke);
         break;
     }
+    ke->accept();
 }
 
 void CatalogView::keyPressEvent(QKeyEvent*e )

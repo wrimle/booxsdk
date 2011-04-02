@@ -49,6 +49,8 @@ protected Q_SLOTS:
     void onOutOfUp(CatalogView *, int row, int col);
     void onOutOfDown(CatalogView *, int row, int col);
 
+    void onViewKeyRelease(CatalogView *view, QKeyEvent *key);
+
 private:
     void createLayout();
     void connectWithChildren();
