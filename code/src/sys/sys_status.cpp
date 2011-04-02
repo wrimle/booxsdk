@@ -1761,7 +1761,7 @@ void SysStatus::onLowBatterySignal()
     emit lowBatterySignal();
 }
 
-void SysStatus::onMouseLongPress(int x, int y, int width, int height)    
+void SysStatus::onMouseLongPress(int x, int y, int width, int height)
 {
     emit mouseLongPress(QPoint(x, y), QSize(width, height));
 }
