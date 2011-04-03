@@ -451,6 +451,7 @@ bool CatalogView::goPrev()
 
 void CatalogView::keyReleaseEvent ( QKeyEvent *ke )
 {
+    ke->ignore();
     switch ( ke->key())
     {
     case Qt::Key_PageDown:
@@ -472,8 +473,7 @@ void CatalogView::keyReleaseEvent ( QKeyEvent *ke )
         }
         break;
     default:
-        QWidget::keyReleaseEvent(ke);
-        break;
+        return;
     }
     ke->accept();
 }
