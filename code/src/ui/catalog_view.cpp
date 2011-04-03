@@ -25,7 +25,10 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         : QWidget(parent)
         , layout_(this)
         , factory_(factory)
-        , margin_(0)
+        , left_margin_(0)
+        , top_margin_(0)
+        , right_margin_(0)
+        , bottom_margin_(0)
         , spacing_(0)
         , checked_(true)
         , policy_(NeighborFirst)
@@ -54,7 +57,7 @@ int CatalogView::searchPolicy()
 
 void CatalogView::createLayout()
 {
-    layout_.setContentsMargins(margin(), margin(), margin(), margin());
+    layout_.setContentsMargins(left_margin_, top_margin_, right_margin_, bottom_margin_);
     layout_.setSpacing(0);
     layout_.setVerticalSpacing(0);
 }
@@ -81,10 +84,36 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     }
 }
 
-void CatalogView::setMargin(int m)
+void CatalogView::setMargin(int left, int top, int right, int bottom)
 {
-    margin_ = m;
-    layout_.setContentsMargins(m, m, m, m);
+    left_margin_ = left;
+    top_margin_ = top;
+    right_margin_ = right;
+    bottom_margin_ = bottom;
+    layout_.setContentsMargins(left, top, right, bottom);
+}
+
+void CatalogView::margin(int *left, int *top, int *right, int *bottom)
+{
+    if (left)
+    {
+        *left = left_margin_;
+    }
+
+    if (top)
+    {
+        *top = top_margin_;
+    }
+
+    if (right)
+    {
+        *right = right_margin_;
+    }
+
+    if (bottom)
+    {
+        *bottom = bottom_margin_;
+    }
 }
 
 void CatalogView::setSpacing(int s)
@@ -530,7 +559,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
     QPainter painter(this);
     if (isChecked() && hasBorder())
     {
-        int pen_width = margin() - 2;
+        int pen_width = 2;
         QPen pen;
         pen.setWidth(pen_width);
         pen.setColor(Qt::black);

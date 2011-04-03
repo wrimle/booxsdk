@@ -52,8 +52,8 @@ public slots:
     bool goNext();
     bool gotoPage(const int);
 
-    void setMargin(int m = 4);
-    int margin() { return margin_; }
+    void setMargin(int left = 4, int top = 4, int right = 4, int bottom = 4);
+    void margin(int *left, int *top, int *right, int *bottom);
 
     void setSpacing(int s = 2);
     int spacing() { return spacing_; }
@@ -155,7 +155,10 @@ private:
     QVector<ContentView *> sub_items_;
     Factory * factory_;
     ODatas datas_;
-    int margin_;
+    int left_margin_;
+    int top_margin_;
+    int right_margin_;
+    int bottom_margin_;
     int spacing_;
     bool checked_;
     int policy_;
