@@ -48,6 +48,7 @@ bool ContentView::updateData(OData* data, bool force)
     {
         return false;
     }
+    checked_ = false;
     data_ = data;
     updateView();
     update();

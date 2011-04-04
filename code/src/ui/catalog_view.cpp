@@ -463,7 +463,7 @@ bool CatalogView::goNext()
 {
     if (paginator().next())
     {
-        arrangeAll();
+        arrangeAll(true);
         return true;
     }
     return false;
@@ -483,7 +483,7 @@ bool CatalogView::goPrev()
 {
     if (paginator().prev())
     {
-        arrangeAll();
+        arrangeAll(true);
         return true;
     }
     return false;
