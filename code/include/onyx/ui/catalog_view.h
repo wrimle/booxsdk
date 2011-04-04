@@ -58,6 +58,8 @@ public slots:
     void setSpacing(int s = 2);
     int spacing() { return spacing_; }
 
+    void setTitle(const QString &title);
+
     void showBorder(bool show = true) { show_border_ = show; }
     bool hasBorder() { return show_border_; }
 
@@ -160,6 +162,7 @@ private:
     int right_margin_;
     int bottom_margin_;
     int spacing_;
+    QString title_;
     bool checked_;
     int policy_;
     bool show_border_;
