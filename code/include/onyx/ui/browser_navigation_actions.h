@@ -30,6 +30,7 @@ public:
 public:
     /// Generate or re-generate the view type actions group.
     void generateActions(QWebHistory *history,
+            bool enable_hyperlink_navigation = false,
             bool hyperlink_navigation_mode = false);
 
     /// Retrieve the selected action.
