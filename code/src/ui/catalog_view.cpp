@@ -893,6 +893,11 @@ bool CatalogView::searchNeighbors(const QString &type)
 
     foreach(CatalogView *view, views)
     {
+        if (!view->isVisible())
+        {
+            continue;
+        }
+
         // Adjust offset if necessary.
         if (type == RECYCLE_LEFT)
         {
