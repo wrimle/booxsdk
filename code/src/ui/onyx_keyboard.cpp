@@ -108,7 +108,7 @@ void OnyxKeyboard::createTop()
     top_.setPreferItemSize(s_size);
     top_.setData(keyboard_data_->topCodes());
     top_.setFixedGrid(1, 10);
-    top_.setMargin(CATALOG_MARGIN);
+    top_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
     top_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     top_.setNeighbor(&left_, CatalogView::DOWN);
     top_.setNeighbor(&middle_, CatalogView::DOWN);
@@ -124,7 +124,7 @@ void OnyxKeyboard::createBottom()
     bottom_.setPreferItemSize(s_size);
     bottom_.setData(keyboard_data_->bottomCodes());
     bottom_.setFixedGrid(1, 10);
-    bottom_.setMargin(CATALOG_MARGIN);
+    bottom_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
     bottom_.setNeighbor(&menu_, CatalogView::DOWN);
 }
 
@@ -137,7 +137,7 @@ void OnyxKeyboard::createMenu()
     menu_.setPreferItemSize(s_size);
     menu_.setData(keyboard_data_->menuCodes());
     menu_.setFixedGrid(1, 4);
-    menu_.setMargin(CATALOG_MARGIN);
+    menu_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
 }
 
 void OnyxKeyboard::createLeft()
@@ -148,7 +148,7 @@ void OnyxKeyboard::createLeft()
     left_.setPreferItemSize(s_size);
     left_.setData(keyboard_data_->leftCodes());
     left_.setFixedGrid(3, 3);
-    left_.setMargin(CATALOG_MARGIN);
+    left_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
     left_.setNeighbor(&middle_, CatalogView::RIGHT);
     left_.setNeighbor(&right_, CatalogView::RECYCLE_RIGHT);
     left_.setNeighbor(&bottom_, CatalogView::DOWN);
@@ -162,7 +162,7 @@ void OnyxKeyboard::createMiddle()
     middle_.setPreferItemSize(s_size);
     middle_.setData(keyboard_data_->middleCodes());
     middle_.setFixedGrid(LETTER_ROWS, MIDDLE_COLS);
-    middle_.setMargin(CATALOG_MARGIN);
+    middle_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
     middle_.setNeighbor(&left_, CatalogView::LEFT);
     middle_.setNeighbor(&right_, CatalogView::RIGHT);
     middle_.setNeighbor(&bottom_, CatalogView::DOWN);
@@ -176,7 +176,7 @@ void OnyxKeyboard::createRight()
     right_.setPreferItemSize(s_size);
     right_.setData(keyboard_data_->rightCodes());
     right_.setFixedGrid(LETTER_ROWS, RIGHT_COLS);
-    right_.setMargin(CATALOG_MARGIN);
+    right_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
     right_.setNeighbor(&middle_, CatalogView::LEFT);
     right_.setNeighbor(&left_, CatalogView::RECYCLE_LEFT);
     right_.setNeighbor(&bottom_, CatalogView::DOWN);

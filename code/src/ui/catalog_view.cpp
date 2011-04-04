@@ -71,7 +71,7 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     }
     else
     {
-        rows = rect().height() / s.height();
+        rows = (rect().height() - top_margin_ - bottom_margin_) / s.height();
     }
 
     if (s.width() <= 0)
@@ -80,7 +80,7 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     }
     else
     {
-        cols = rect().width() / s.width();
+        cols = (rect().width() - left_margin_ - right_margin_) / s.width();
     }
 }
 

@@ -97,7 +97,7 @@ void OnyxKeyboardDialog::createSubMenu()
     ds.push_back(dd);
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
-    sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
+    sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN);
     sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
     sub_menu_.setFixedWidth(defaultItemHeight()*6);
     sub_menu_.setData(ds);

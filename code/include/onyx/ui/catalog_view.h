@@ -52,7 +52,7 @@ public slots:
     bool goNext();
     bool gotoPage(const int);
 
-    void setMargin(int left = 4, int top = 4, int right = 4, int bottom = 4);
+    void setMargin(int left = 1, int top = 1, int right = 1, int bottom = 1);
     void margin(int *left, int *top, int *right, int *bottom);
 
     void setSpacing(int s = 2);
