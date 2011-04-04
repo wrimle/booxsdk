@@ -15,6 +15,7 @@ BrowserNavigationActions::~BrowserNavigationActions(void)
 }
 
 void BrowserNavigationActions::generateActions(QWebHistory *history,
+        bool enable_hyperlink_navigation,
         bool hyperlink_navigation_mode)
 {
     category()->setText(QCoreApplication::tr("Navigation"));
@@ -62,24 +63,25 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     clear->setChecked(false);
     actions_.push_back(clear);
 
-/* for this action is still  not available.
-    shared_ptr<QAction> navigate_hyperlink(new QAction(exclusiveGroup()));
-    QString text;
-    if (!hyperlink_navigation_mode)
+    if (enable_hyperlink_navigation)
     {
-        text = QCoreApplication::tr("Hyperlink Navigation");
+        shared_ptr<QAction> navigate_hyperlink(new QAction(exclusiveGroup()));
+        QString text;
+        if (!hyperlink_navigation_mode)
+        {
+            text = QCoreApplication::tr("Hyperlink Navigation");
+        }
+        else {
+            text = QCoreApplication::tr("Exit Navigation");
+        }
+        navigate_hyperlink->setText(text);
+        navigate_hyperlink->setIcon(QIcon(QPixmap(":/images/hyperlink_navigation_mode.png")));
+        navigate_hyperlink->setData(NAVIGATE_HYPER_LINK_VIA_KEYBOARD);
+        navigate_hyperlink->setEnabled(true);
+        navigate_hyperlink->setCheckable(true);
+        navigate_hyperlink->setChecked(false);
+        actions_.push_back(navigate_hyperlink);
     }
-    else {
-        text = QCoreApplication::tr("Exit Navigation");
-    }
-    navigate_hyperlink->setText(text);
-    navigate_hyperlink->setIcon(QIcon(QPixmap(":/images/hyperlink_navigation_mode.png")));
-    navigate_hyperlink->setData(NAVIGATE_HYPER_LINK_VIA_KEYBOARD);
-    navigate_hyperlink->setEnabled(true);
-    navigate_hyperlink->setCheckable(true);
-    navigate_hyperlink->setChecked(false);
-    actions_.push_back(navigate_hyperlink);
-*/
 }
 
 /// Retrieve the selected action.
