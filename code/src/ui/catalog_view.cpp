@@ -19,6 +19,7 @@ const QString CatalogView::RECYCLE_UP   = "r-up";
 const QString CatalogView::RECYCLE_DOWN = "r-down";
 
 static const int FLAG_STOP = -2;
+static const int TITLE_BAR_HEIGHT = 30;
 
 
 CatalogView::CatalogView(Factory * factory, QWidget *parent)
@@ -118,9 +119,12 @@ void CatalogView::margin(int *left, int *top, int *right, int *bottom)
 
 void CatalogView::setTitle(const QString &title)
 {
-    setMargin(0, 30, 0, 0);
-    title_ = title;
-    update();
+    if (!title.isEmpty())
+    {
+        setMargin(0, TITLE_BAR_HEIGHT, 0, 0);
+        title_ = title;
+        update();
+    }
 }
 
 void CatalogView::setSpacing(int s)
@@ -576,7 +580,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
     if (!title_.isEmpty())
     {
         QPainterPath roundRectPath;
-        QRect rc = QRect(0, 0, width(), 30);//.adjusted(0, 0, -5, 0);
+        QRect rc = QRect(0, 0, width(), TITLE_BAR_HEIGHT);
         static const int radius = 20;
 
         roundRectPath.moveTo(rc.bottomRight());
@@ -594,6 +598,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
         painter.fillPath(roundRectPath, brush);
         painter.drawPath(roundRectPath);
         painter.setPen(Qt::white);
+        painter.setFont(QFont("", ui::defaultFontPointSize()));
         painter.drawText(rc.adjusted(10, 0, 0, 0), Qt::AlignLeft|Qt::AlignVCenter, title_);
     }
 }
