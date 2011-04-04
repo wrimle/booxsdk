@@ -116,6 +116,13 @@ void CatalogView::margin(int *left, int *top, int *right, int *bottom)
     }
 }
 
+void CatalogView::setTitle(const QString &title)
+{
+    setMargin(0, 30, 0, 0);
+    title_ = title;
+    update();
+}
+
 void CatalogView::setSpacing(int s)
 {
     spacing_ = s;
@@ -565,6 +572,29 @@ void CatalogView::paintEvent ( QPaintEvent * event )
         pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.drawRoundedRect(rect().adjusted(pen_width, pen_width, -pen_width , -pen_width), 5, 5);
+    }
+    if (!title_.isEmpty())
+    {
+        QPainterPath roundRectPath;
+        QRect rc = QRect(0, 0, width(), 30);//.adjusted(0, 0, -5, 0);
+        static const int radius = 20;
+
+        roundRectPath.moveTo(rc.bottomRight());
+        roundRectPath.lineTo(rc.right(), rc.top() + radius);
+        QRect r1(rc.right() - radius, rc.top(), radius, radius);
+        roundRectPath.arcTo(r1, 0, 90);
+        roundRectPath.lineTo(rc.left() + radius, rc.top());
+        QRect r2(rc.left(), rc.top(), radius, radius);
+        roundRectPath.arcTo(r2, 90, 90);
+        roundRectPath.lineTo(rc.bottomLeft());
+        roundRectPath.lineTo(rc.bottomRight());
+
+        QBrush brush(Qt::white);
+        brush.setColor(Qt::black);
+        painter.fillPath(roundRectPath, brush);
+        painter.drawPath(roundRectPath);
+        painter.setPen(Qt::white);
+        painter.drawText(rc.adjusted(10, 0, 0, 0), Qt::AlignLeft|Qt::AlignVCenter, title_);
     }
 }
 
