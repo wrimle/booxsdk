@@ -561,7 +561,6 @@ void CatalogView::changeEvent ( QEvent *event )
 void CatalogView::resizeEvent ( QResizeEvent * event )
 {
     QWidget::resizeEvent ( event );
-    arrangeSubWidgets();
     arrangeAll();
 }
 
