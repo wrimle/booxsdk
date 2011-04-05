@@ -661,7 +661,6 @@ void CatalogView::setPreferItemSize(const QSize &size)
     if (size_ != size)
     {
         size_ = size;
-        arrangeSubWidgets();
         arrangeAll();
     }
 }

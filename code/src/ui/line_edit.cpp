@@ -6,29 +6,29 @@
 const QString LINE_EDIT_STYLE = "       \
 QLineEdit                               \
 {                                       \
-    border: 1px solid dark;             \
+    border: 2px solid dark;             \
     background: white;                  \
     selection-background-color: black;  \
     selection-color: white;             \
     font: 24px bold;                    \
     color: black;                       \
-    border-width: 1px;                  \
+    border-width: 2px;                  \
     border-style: solid;                \
-    border-radius: 3;                   \
+    border-radius: 0;                   \
     padding: 0px;                       \
     min-height: 32px;                   \
 }                                       \
 QLineEdit:disabled                      \
 {                                       \
-    border: 1px solid dark;             \
+    border: 2px solid dark;             \
     background: white;                  \
     selection-background-color: black;  \
     selection-color: white;             \
     font: 24px bold;                    \
     color: dark;                       \
-    border-width: 1px;                  \
+    border-width: 2px;                  \
     border-style: solid;                \
-    border-radius: 3;                   \
+    border-radius: 0;                   \
     padding: 0px;                       \
     min-height: 32px;                   \
 }";
