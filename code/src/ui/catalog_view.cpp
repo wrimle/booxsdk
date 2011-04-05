@@ -597,7 +597,7 @@ void CatalogView::paintEvent ( QPaintEvent * event )
         painter.fillPath(roundRectPath, brush);
         painter.drawPath(roundRectPath);
         painter.setPen(Qt::white);
-        painter.setFont(QFont("", ui::defaultFontPointSize()));
+        painter.setFont(QFont("", ui::defaultFontPointSize() - 4));
         painter.drawText(rc.adjusted(10, 0, 0, 0), Qt::AlignLeft|Qt::AlignVCenter, title_);
     }
 }
