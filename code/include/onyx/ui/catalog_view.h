@@ -91,6 +91,7 @@ public slots:
     bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
     void setStretch(const QVector<int> &stretch);
+    void enableAutoFocus(bool enable = true);
 
 protected Q_SLOTS:
     virtual void onItemActivated(ContentView *item, int);
@@ -168,6 +169,7 @@ private:
     int policy_;
     bool show_border_;
     bool fixed_grid_;
+    bool auto_focus_;
     QSize size_;
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;
