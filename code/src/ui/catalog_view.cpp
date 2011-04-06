@@ -934,4 +934,13 @@ bool CatalogView::searchNeighbors(const QString &type)
     return true;
 }
 
+void CatalogView::setStretch(const QVector<int> &stretch)
+{
+    int min = std::min(layout_.columnCount(), stretch.size());
+    for(int i = 0; i < min; ++i)
+    {
+        layout_.setColumnStretch(i, stretch.at(i));
+    }
+}
+
 }

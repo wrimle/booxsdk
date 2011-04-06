@@ -90,6 +90,7 @@ public slots:
     void setNeighbor(CatalogView *neighbor, const QString& type);
     bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
+    void setStretch(const QVector<int> &stretch);
 
 protected Q_SLOTS:
     virtual void onItemActivated(ContentView *item, int);
