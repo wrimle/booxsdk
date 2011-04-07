@@ -142,6 +142,12 @@ bool ScreenUpdateWatcher::enqueue(UpdateItem & item,
     else
     {
         s = widget->size();
+
+        // Consider rotation
+        if (widget == qApp->desktop())
+        {
+            s =  qApp->desktop()->screenGeometry().size();
+        }
     }
     item.rc = QRect(pt, s);
     item.wait = wait;
