@@ -5,6 +5,7 @@
 
 static const QString TAG_NAME  = "name";
 static const QString TAG_TITLE = "title";
+static const QString TAG_SUB_TITLE = "sub_title";
 static const QString TAG_AUTHOR = "author";
 static const QString TAG_ISBN = "isbn";
 static const QString TAG_COVER = "cover";
