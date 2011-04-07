@@ -35,6 +35,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , policy_(NeighborFirst)
         , show_border_(false)
         , fixed_grid_(false)
+        , auto_focus_(false)
         , size_(200, 150)
         , bk_color_(Qt::white)
 {
@@ -223,7 +224,7 @@ void CatalogView::arrangeAll(bool force)
 
     if (isVisible())
     {
-        if (sub_items_.size() > 0 && sub_items_.front()->data())
+        if (sub_items_.size() > 0 && sub_items_.front()->data() && auto_focus_)
         {
             sub_items_.front()->setFocus();
         }
@@ -425,7 +426,10 @@ void CatalogView::setFocusTo(const int row, const int col)
     if (index >= 0 && index < sub_items_.size())
     {
         setChecked();
-        sub_items_.at(index)->setFocus();
+        if (sub_items_.at(index)->data())
+        {
+            sub_items_.at(index)->setFocus();
+        }
     }
 }
 
@@ -464,6 +468,7 @@ bool CatalogView::goNext()
     if (paginator().next())
     {
         arrangeAll(true);
+        setFocusTo(0, 0);
         return true;
     }
     return false;
@@ -484,6 +489,7 @@ bool CatalogView::goPrev()
     if (paginator().prev())
     {
         arrangeAll(true);
+        setFocusTo(0, 0);
         return true;
     }
     return false;
@@ -941,6 +947,11 @@ void CatalogView::setStretch(const QVector<int> &stretch)
     {
         layout_.setColumnStretch(i, stretch.at(i));
     }
+}
+
+void CatalogView::enableAutoFocus(bool enable)
+{
+    auto_focus_ = enable;
 }
 
 }
