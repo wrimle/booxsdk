@@ -1,5 +1,5 @@
 #include "onyx/ui/volume_control.h"
-#include "onyx/screen/screen_proxy.h"
+#include "onyx/screen/screen_update_watcher.h"
 #include "onyx/sys/sys.h"
 #include "math.h"
 
@@ -71,13 +71,12 @@ int VolumeControlDialog::ensureVisible()
     show();
     const QRect screen = QApplication::desktop()->screenGeometry();
     move( screen.center() - this->rect().center() );
-    
-    onyx::screen::instance().flush();
-    onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::GC, false, onyx::screen::ScreenCommand::WAIT_ALL);
-
+   
     resetTimer();
     sys::SysStatus::instance().enableIdle(false);
-    return exec();
+    onyx::screen::watcher().addWatcher(this);
+    int ret = exec();
+    onyx::screen::watcher().removeWatcher(this);
 }
 
 void VolumeControlDialog::moveEvent(QMoveEvent *e)
@@ -173,7 +172,7 @@ bool VolumeControlDialog::event(QEvent *e)
     int ret = QDialog::event(e);
     if (e->type() == QEvent::UpdateRequest && onyx::screen::instance().isUpdateEnabled())
     {
-        onyx::screen::instance().updateWidget(this, onyx::screen::ScreenProxy::DW);
+        onyx::screen::watcher().updateScreen();
     }
     return ret;
 }
@@ -202,15 +201,13 @@ void VolumeControlDialog::stopTimer()
 
 void VolumeControlDialog::setVolume(int volume, bool is_mute)
 {
-    static int count = 0;
     if (current_ == volume)
     {
         return;
     }
     current_ = volume;
     repaint();
-
-    qDebug("timeout %d value %d total %d", ++count, current_, max_);
+    onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW, onyx::screen::ScreenCommand::WAIT_NONE);
 }
 
 void VolumeControlDialog::onTimeout()
