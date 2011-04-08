@@ -82,6 +82,13 @@ QWidget * safeParentWidget(QWidget *parent_widget)
     return safe_ptr;
 }
 
+QSize bestDialogSize()
+{
+    int width = QApplication::desktop()->screenGeometry().width() * 2 / 3;
+    int height = QApplication::desktop()->screenGeometry().height() * 4 / 5;
+    return QSize(width, height);
+}
+
 }
 
 
