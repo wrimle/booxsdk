@@ -36,7 +36,10 @@ public:
     /// Retrieve the selected action.
     NavigationType selected();
 
+    void enableHistory(bool enable);
+
 private:
+    bool enable_history_ ;
 };
 
 };

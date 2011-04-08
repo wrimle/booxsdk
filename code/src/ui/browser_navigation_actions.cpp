@@ -7,11 +7,17 @@ BrowserNavigationActions::BrowserNavigationActions()
 : BaseActions()
 {
     category()->setIcon(QIcon(QPixmap(":/images/navigation.png")));
+    enable_history_ = true;
 }
 
 BrowserNavigationActions::~BrowserNavigationActions(void)
 {
     actions_.clear();
+}
+
+void BrowserNavigationActions::enableHistory(bool enable)
+{
+     this->enable_history_ = enable;
 }
 
 void BrowserNavigationActions::generateActions(QWebHistory *history,
@@ -53,15 +59,17 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     actions_.push_back(home);
 */
 
-
-    shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
-    clear->setText(QCoreApplication::tr("Clear History"));
-    clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
-    clear->setData(NAVIGATE_CLEAR_HISTORY);
-    clear->setEnabled(true);
-    clear->setCheckable(true);
-    clear->setChecked(false);
-    actions_.push_back(clear);
+    if(enable_history_)
+    {
+        shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
+        clear->setText(QCoreApplication::tr("Clear History"));
+        clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
+        clear->setData(NAVIGATE_CLEAR_HISTORY);
+        clear->setEnabled(true);
+        clear->setCheckable(true);
+        clear->setChecked(false);
+        actions_.push_back(clear);
+    }
 
     if (enable_hyperlink_navigation)
     {
