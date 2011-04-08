@@ -31,6 +31,9 @@ int checkBoxViewWidth();
 // If the parent_widget is null, return the desktop widget.
 QWidget * safeParentWidget(QWidget *parent_widget);
 
+// calculates the best size for dialog
+QSize bestDialogSize();
+
 };
 
 #endif  // ONYX_UI_UTILS_H_
