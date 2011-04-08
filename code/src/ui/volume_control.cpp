@@ -77,6 +77,7 @@ int VolumeControlDialog::ensureVisible()
     onyx::screen::watcher().addWatcher(this);
     int ret = exec();
     onyx::screen::watcher().removeWatcher(this);
+    return ret;
 }
 
 void VolumeControlDialog::moveEvent(QMoveEvent *e)
