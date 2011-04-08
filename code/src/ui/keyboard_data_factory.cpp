@@ -1,6 +1,7 @@
 #include "onyx/ui/keyboard_data_factory.h"
 #include "onyx/ui/english_keyboard_data.h"
 #include "onyx/ui/russian_keyboard_data.h"
+#include "onyx/ui/polish_keyboard_data.h"
 #include "onyx/ui/keyboard_data.h"
 
 namespace ui
@@ -10,6 +11,7 @@ KeyboardDataFactory::KeyboardDataFactory()
 {
     registerKeyboardData(QLocale::English, new EnglishKeyboardData());
     registerKeyboardData(QLocale::Russian, new RussianKeyboardData());
+    registerKeyboardData(QLocale::Polish, new PolishKeyboardData());
 }
 
 KeyboardDataFactory::~KeyboardDataFactory()
