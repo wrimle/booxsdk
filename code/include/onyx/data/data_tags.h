@@ -25,6 +25,7 @@ static const QString DIR_TAG = "dir";
 static const QString TAG_FONT_FAMILY = "fontfamily";
 static const QString TAG_FONT_SIZE = "fontsize";
 static const QString TAG_CHECKED = "checked";
+static const QString TAG_ALIGN = "align";
 
 static const QString TAG_MENU_TYPE = "menu_type"; // for keyboard
 static const QString TAG_SPECIAL_KEY = "special_key";

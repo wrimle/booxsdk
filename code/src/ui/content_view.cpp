@@ -213,6 +213,19 @@ void ContentView::drawTitle(QPainter &painter, QRect rect, int flags)
             size = ui::defaultFontPointSize();
         }
         QFont font(family, size);
+
+        int is_align_left = flags & Qt::AlignLeft;
+        if (is_align_left)
+        {
+            rect.adjust(10, 0, 0, 0);
+        }
+
+        int is_align_right = flags & Qt::AlignRight;
+        if (is_align_right)
+        {
+            rect.adjust(0, 0, -10, 0);
+        }
+
         painter.setFont(font);
         painter.drawText(rect, flags, data()->value(TAG_TITLE).toString());
     }
@@ -280,7 +293,17 @@ void CoverView::drawCover(QPainter & painter, QRect rect)
 
 void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
-    ContentView::drawTitle(painter, rect, Qt::AlignCenter);
+    int alignment = Qt::AlignCenter;
+    if (data()->contains(TAG_ALIGN))
+    {
+        bool ok;
+        int val = data()->value(TAG_ALIGN).toInt(&ok);
+        if (ok)
+        {
+            alignment = val;
+        }
+    }
+    ContentView::drawTitle(painter, rect, alignment);
 }
 
 
