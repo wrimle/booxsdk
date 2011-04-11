@@ -5,8 +5,10 @@
 #include <QImageReader>
 #include <QFileInfo>
 
+#include "onyx/sys/sys_utils.h"
 #include "onyx/cms/content_thumbnail.h"
 #include "onyx/cms/cms_utils.h"
+
 
 
 namespace cms
@@ -164,7 +166,7 @@ bool ContentThumbnail::storeThumbnail(const QString & file_name,
     // Have to store the image in the byte array with png format.
     // This function may be used by viewer to store their cover page,
     // so can not use suffix as format string.
-    if (isImage(info.suffix()))
+    if (sys::isImage(info.suffix()))
     {
         thumbnail.save(&buffer, info.suffix().toAscii());
     }
