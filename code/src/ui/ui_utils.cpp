@@ -82,6 +82,43 @@ QWidget * safeParentWidget(QWidget *parent_widget)
     return safe_ptr;
 }
 
+QSize bestDialogSize()
+{
+    int width = QApplication::desktop()->screenGeometry().width() * 2 / 3;
+    int height = QApplication::desktop()->screenGeometry().height() * 4 / 5;
+    return QSize(width, height);
+}
+
+QString sizeString(int size)
+{
+    QString string;
+    if (size > 1024 * 1024 * 1024)
+    {
+        QString tmp("%1.%2%3");
+        int gb = size >> 30;
+        int left = ((size - (gb << 30)) * 10) >> 30;
+        string = tmp.arg(gb).arg(left).arg(QApplication::tr("GB"));
+    }
+    else if (size > 1024 * 1024)
+    {
+        QString tmp("%1.%2%3");
+        int mb = size >> 20;
+        int left = ((size - (mb << 20)) * 10) >> 20;
+        string = tmp.arg(mb).arg(left).arg(QApplication::tr("MB"));
+    }
+    else if (size > 1024)
+    {
+        QString tmp("%1%2");
+        string = tmp.arg(size >> 10).arg(QApplication::tr("KB"));
+    }
+    else
+    {
+        QString tmp("%1%2");
+        string = tmp.arg(size).arg(QApplication::tr("Bytes"));
+    }
+    return string;
+}
+
 }
 
 

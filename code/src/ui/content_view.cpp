@@ -48,6 +48,7 @@ bool ContentView::updateData(OData* data, bool force)
     {
         return false;
     }
+    checked_ = false;
     data_ = data;
     updateView();
     update();
@@ -206,12 +207,30 @@ void ContentView::drawTitle(QPainter &painter, QRect rect, int flags)
     if (data() && data()->contains(TAG_TITLE))
     {
         QString family = data()->value(TAG_FONT_FAMILY).toString();
+        if (family.isEmpty())
+        {
+            family = QApplication::font().family();
+        }
+
         int size = data()->value(TAG_FONT_SIZE).toInt();
         if (size <= 0)
         {
             size = ui::defaultFontPointSize();
         }
         QFont font(family, size);
+
+        int is_align_left = flags & Qt::AlignLeft;
+        if (is_align_left)
+        {
+            rect.adjust(10, 0, 0, 0);
+        }
+
+        int is_align_right = flags & Qt::AlignRight;
+        if (is_align_right)
+        {
+            rect.adjust(0, 0, -10, 0);
+        }
+
         painter.setFont(font);
         painter.drawText(rect, flags, data()->value(TAG_TITLE).toString());
     }
@@ -279,7 +298,17 @@ void CoverView::drawCover(QPainter & painter, QRect rect)
 
 void CoverView::drawTitle(QPainter & painter, QRect rect)
 {
-    ContentView::drawTitle(painter, rect, Qt::AlignCenter);
+    int alignment = Qt::AlignCenter;
+    if (data()->contains(TAG_ALIGN))
+    {
+        bool ok;
+        int val = data()->value(TAG_ALIGN).toInt(&ok);
+        if (ok)
+        {
+            alignment = val;
+        }
+    }
+    ContentView::drawTitle(painter, rect, alignment);
 }
 
 
@@ -537,6 +566,15 @@ void ClockView::updateView()
 {
 }
 
+void ClockView::drawDigitalClock(QPainter &painter)
+{
+    int size = ui::defaultFontPointSize();
+    QFont font(QApplication::font());
+    font.setPointSize(size);
+    painter.setFont(font);
+    painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap , QDateTime::currentDateTime().toString());
+}
+
 void ClockView::paintEvent(QPaintEvent * event)
 {
     static const QPoint hourHand[3] = {
@@ -570,6 +608,9 @@ void ClockView::paintEvent(QPaintEvent * event)
          painter.setPen(pen);
          painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
+
+     drawDigitalClock(painter);
+     return;
 
      painter.translate(width() / 2, height() / 2);
      painter.scale(side / 200.0, side / 200.0);

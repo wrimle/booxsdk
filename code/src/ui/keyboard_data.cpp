@@ -4,6 +4,9 @@
 namespace ui
 {
 
+const QString KeyboardData::BACKSPACE_TEXT = "backspace";
+const QString KeyboardData::ENTER_TEXT = "enter";
+
 KeyboardData::KeyboardData()
 {
     initMenuKeyCode();
@@ -71,7 +74,17 @@ OData * KeyboardData::createBackspaceData()
     OData * dd = new OData;
     dd->insert(TAG_COVER, backspace_pixmap);
     dd->insert(TAG_SPECIAL_KEY, Qt::Key_Backspace);
-    dd->insert(TAG_SPECIAL_KEY_TEXT, "backspace");
+    dd->insert(TAG_SPECIAL_KEY_TEXT, BACKSPACE_TEXT);
+    return dd;
+}
+
+OData * KeyboardData::createEnterData()
+{
+    QPixmap enter_pixmap(":/images/enter_key.png");
+    OData * dd = new OData;
+    dd->insert(TAG_COVER, enter_pixmap);
+    dd->insert(TAG_SPECIAL_KEY, Qt::Key_Enter);
+    dd->insert(TAG_SPECIAL_KEY_TEXT, ENTER_TEXT);
     return dd;
 }
 

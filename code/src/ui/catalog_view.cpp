@@ -19,18 +19,23 @@ const QString CatalogView::RECYCLE_UP   = "r-up";
 const QString CatalogView::RECYCLE_DOWN = "r-down";
 
 static const int FLAG_STOP = -2;
+static const int TITLE_BAR_HEIGHT = 30;
 
 
 CatalogView::CatalogView(Factory * factory, QWidget *parent)
         : QWidget(parent)
         , layout_(this)
         , factory_(factory)
-        , margin_(0)
+        , left_margin_(0)
+        , top_margin_(0)
+        , right_margin_(0)
+        , bottom_margin_(0)
         , spacing_(0)
         , checked_(true)
         , policy_(NeighborFirst)
         , show_border_(false)
         , fixed_grid_(false)
+        , auto_focus_(false)
         , size_(200, 150)
         , bk_color_(Qt::white)
 {
@@ -54,7 +59,7 @@ int CatalogView::searchPolicy()
 
 void CatalogView::createLayout()
 {
-    layout_.setContentsMargins(margin(), margin(), margin(), margin());
+    layout_.setContentsMargins(left_margin_, top_margin_, right_margin_, bottom_margin_);
     layout_.setSpacing(0);
     layout_.setVerticalSpacing(0);
 }
@@ -68,7 +73,7 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     }
     else
     {
-        rows = rect().height() / s.height();
+        rows = (rect().height() - top_margin_ - bottom_margin_) / s.height();
     }
 
     if (s.width() <= 0)
@@ -77,14 +82,50 @@ void CatalogView::calculateLayout(int &rows, int &cols)
     }
     else
     {
-        cols = rect().width() / s.width();
+        cols = (rect().width() - left_margin_ - right_margin_) / s.width();
     }
 }
 
-void CatalogView::setMargin(int m)
+void CatalogView::setMargin(int left, int top, int right, int bottom)
 {
-    margin_ = m;
-    layout_.setContentsMargins(m, m, m, m);
+    left_margin_ = left;
+    top_margin_ = top;
+    right_margin_ = right;
+    bottom_margin_ = bottom;
+    layout_.setContentsMargins(left, top, right, bottom);
+}
+
+void CatalogView::margin(int *left, int *top, int *right, int *bottom)
+{
+    if (left)
+    {
+        *left = left_margin_;
+    }
+
+    if (top)
+    {
+        *top = top_margin_;
+    }
+
+    if (right)
+    {
+        *right = right_margin_;
+    }
+
+    if (bottom)
+    {
+        *bottom = bottom_margin_;
+    }
+}
+
+void CatalogView::setTitle(const QString &title)
+{
+    if (!title.isEmpty())
+    {
+        setMargin(0, TITLE_BAR_HEIGHT, 0, 0);
+        title_ = title;
+        update();
+    }
 }
 
 void CatalogView::setSpacing(int s)
@@ -183,13 +224,30 @@ void CatalogView::arrangeAll(bool force)
 
     if (isVisible())
     {
-        if (sub_items_.size() > 0 && sub_items_.front()->data())
+        if (sub_items_.size() > 0 && sub_items_.front()->data() && auto_focus_)
         {
             sub_items_.front()->setFocus();
         }
         broadcastPositionSignal();
         onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
     }
+}
+
+/// Select the content and broadcast position signal.
+bool CatalogView::select(OData *d)
+{
+    int pos = data().indexOf(d);
+    if (pos < 0)
+    {
+        return false;
+    }
+
+    int page = pos / paginator().items_per_page();
+    gotoPage(page + 1);
+    int offset = pos - page * paginator().items_per_page();
+    setFocusTo(offset / paginator().cols(), offset % paginator().cols());
+    onyx::screen::watcher().enqueue(parentWidget(), onyx::screen::ScreenProxy::GC);
+    return true;
 }
 
 int CatalogView::moveLeft(int current)
@@ -207,6 +265,8 @@ int CatalogView::moveLeft(int current)
         {
             return current = paginator().last_visible();
         }
+        emit outOfLeft(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return --current;
 }
@@ -226,6 +286,8 @@ int CatalogView::moveRight(int current)
         {
             return current = paginator().first_visible();
         }
+        emit outOfRight(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return ++current;
 }
@@ -245,6 +307,8 @@ int CatalogView::moveUp(int current)
         {
             return current = paginator().last_visible();
         }
+        emit outOfUp(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return current - paginator().cols();
 }
@@ -264,6 +328,8 @@ int CatalogView::moveDown(int current)
         {
             return current = paginator().first_visible();
         }
+        emit outOfDown(this, current / paginator().cols(),
+                current % paginator().cols());
     }
     return current + paginator().cols();
 }
@@ -331,12 +397,14 @@ Paginator & CatalogView::paginator()
     return paginator_;
 }
 
-void CatalogView::gotoPage(const int p)
+bool CatalogView::gotoPage(const int p)
 {
     if (paginator().jump(p-1))
     {
         arrangeAll();
+        return true;
     }
+    return false;
 }
 
 void CatalogView::setData(const ODatas &list, bool force)
@@ -358,7 +426,10 @@ void CatalogView::setFocusTo(const int row, const int col)
     if (index >= 0 && index < sub_items_.size())
     {
         setChecked();
-        sub_items_.at(index)->setFocus();
+        if (sub_items_.at(index)->data())
+        {
+            sub_items_.at(index)->setFocus();
+        }
     }
 }
 
@@ -392,12 +463,15 @@ void CatalogView::setChecked(bool checked)
     }
 }
 
-void CatalogView::goNext()
+bool CatalogView::goNext()
 {
     if (paginator().next())
     {
-        arrangeAll();
+        arrangeAll(true);
+        setFocusTo(0, 0);
+        return true;
     }
+    return false;
 }
 
 bool CatalogView::hasNext()
@@ -410,33 +484,44 @@ bool CatalogView::hasPrev()
     return paginator().isPrevEnable();
 }
 
-void CatalogView::goPrev()
+bool CatalogView::goPrev()
 {
     if (paginator().prev())
     {
-        arrangeAll();
+        arrangeAll(true);
+        setFocusTo(0, 0);
+        return true;
     }
+    return false;
 }
 
 void CatalogView::keyReleaseEvent ( QKeyEvent *ke )
 {
-    ke->accept();
+    ke->ignore();
     switch ( ke->key())
     {
     case Qt::Key_PageDown:
         {
-            goNext();
+            if (!goNext())
+            {
+                emit keyRelease(this, ke);
+                return;
+            }
         }
         break;
     case Qt::Key_PageUp:
         {
-            goPrev();
+            if (!goPrev())
+            {
+                emit keyRelease(this, ke);
+                return;
+            }
         }
         break;
     default:
-        QWidget::keyReleaseEvent(ke);
-        break;
+        return;
     }
+    ke->accept();
 }
 
 void CatalogView::keyPressEvent(QKeyEvent*e )
@@ -482,7 +567,6 @@ void CatalogView::changeEvent ( QEvent *event )
 void CatalogView::resizeEvent ( QResizeEvent * event )
 {
     QWidget::resizeEvent ( event );
-    arrangeSubWidgets();
     arrangeAll();
 }
 
@@ -491,12 +575,38 @@ void CatalogView::paintEvent ( QPaintEvent * event )
     QPainter painter(this);
     if (isChecked() && hasBorder())
     {
-        int pen_width = margin() - 2;
+        int pen_width = 2;
         QPen pen;
         pen.setWidth(pen_width);
         pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.drawRoundedRect(rect().adjusted(pen_width, pen_width, -pen_width , -pen_width), 5, 5);
+    }
+    if (!title_.isEmpty())
+    {
+        QPainterPath roundRectPath;
+        QRect rc = QRect(0, 0, width(), TITLE_BAR_HEIGHT);
+        static const int radius = 20;
+
+        roundRectPath.moveTo(rc.bottomRight());
+        roundRectPath.lineTo(rc.right(), rc.top() + radius);
+        QRect r1(rc.right() - radius, rc.top(), radius, radius);
+        roundRectPath.arcTo(r1, 0, 90);
+        roundRectPath.lineTo(rc.left() + radius, rc.top());
+        QRect r2(rc.left(), rc.top(), radius, radius);
+        roundRectPath.arcTo(r2, 90, 90);
+        roundRectPath.lineTo(rc.bottomLeft());
+        roundRectPath.lineTo(rc.bottomRight());
+
+        QBrush brush(Qt::white);
+        brush.setColor(Qt::black);
+        painter.fillPath(roundRectPath, brush);
+        painter.drawPath(roundRectPath);
+        painter.setPen(Qt::white);
+        QFont font(QApplication::font());
+        font.setPointSize(ui::defaultFontPointSize() - 4);
+        painter.setFont(font);
+        painter.drawText(rc.adjusted(10, 0, 0, 0), Qt::AlignLeft|Qt::AlignVCenter, title_);
     }
 }
 
@@ -559,7 +669,6 @@ void CatalogView::setPreferItemSize(const QSize &size)
     if (size_ != size)
     {
         size_ = size;
-        arrangeSubWidgets();
         arrangeAll();
     }
 }
@@ -795,6 +904,11 @@ bool CatalogView::searchNeighbors(const QString &type)
 
     foreach(CatalogView *view, views)
     {
+        if (!view->isVisible())
+        {
+            continue;
+        }
+
         // Adjust offset if necessary.
         if (type == RECYCLE_LEFT)
         {
@@ -826,6 +940,20 @@ bool CatalogView::searchNeighbors(const QString &type)
         ret->setFocus();
     }
     return true;
+}
+
+void CatalogView::setStretch(const QVector<int> &stretch)
+{
+    int min = std::min(layout_.columnCount(), stretch.size());
+    for(int i = 0; i < min; ++i)
+    {
+        layout_.setColumnStretch(i, stretch.at(i));
+    }
+}
+
+void CatalogView::enableAutoFocus(bool enable)
+{
+    auto_focus_ = enable;
 }
 
 }

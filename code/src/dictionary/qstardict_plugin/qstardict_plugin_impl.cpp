@@ -88,7 +88,14 @@ bool StarDictionaryImpl::translate(const QString &word, QString& result)
         return true;
     }
 
-    return false;
+    if (index == INVALID_INDEX)
+    {
+        return false;
+    }
+
+    // fuzzy match.
+    result = dict_impl_.data(index);
+    return true;
 }
 
 /// Find similar words in this dictionary.

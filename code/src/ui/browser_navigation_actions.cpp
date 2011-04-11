@@ -7,6 +7,7 @@ BrowserNavigationActions::BrowserNavigationActions()
 : BaseActions()
 {
     category()->setIcon(QIcon(QPixmap(":/images/navigation.png")));
+    enable_history_ = true;
 }
 
 BrowserNavigationActions::~BrowserNavigationActions(void)
@@ -14,7 +15,13 @@ BrowserNavigationActions::~BrowserNavigationActions(void)
     actions_.clear();
 }
 
+void BrowserNavigationActions::enableHistory(bool enable)
+{
+     this->enable_history_ = enable;
+}
+
 void BrowserNavigationActions::generateActions(QWebHistory *history,
+        bool enable_hyperlink_navigation,
         bool hyperlink_navigation_mode)
 {
     category()->setText(QCoreApplication::tr("Navigation"));
@@ -41,6 +48,7 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     actions_.push_back(forward);
 
 
+/* for this action is still  not available.
     shared_ptr<QAction> home(new QAction(exclusiveGroup()));
     home->setText(QCoreApplication::tr("History"));
     home->setIcon(QIcon(QPixmap(":/images/home.png")));
@@ -49,33 +57,39 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     home->setCheckable(true);
     home->setChecked(false);
     actions_.push_back(home);
+*/
 
-
-    shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
-    clear->setText(QCoreApplication::tr("Clear History"));
-    clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
-    clear->setData(NAVIGATE_CLEAR_HISTORY);
-    clear->setEnabled(true);
-    clear->setCheckable(true);
-    clear->setChecked(false);
-    actions_.push_back(clear);
-
-    shared_ptr<QAction> navigate_hyperlink(new QAction(exclusiveGroup()));
-    QString text;
-    if (!hyperlink_navigation_mode)
+    if(enable_history_)
     {
-        text = QCoreApplication::tr("Hyperlink Navigation");
+        shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
+        clear->setText(QCoreApplication::tr("Clear History"));
+        clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
+        clear->setData(NAVIGATE_CLEAR_HISTORY);
+        clear->setEnabled(true);
+        clear->setCheckable(true);
+        clear->setChecked(false);
+        actions_.push_back(clear);
     }
-    else {
-        text = QCoreApplication::tr("Exit Navigation");
+
+    if (enable_hyperlink_navigation)
+    {
+        shared_ptr<QAction> navigate_hyperlink(new QAction(exclusiveGroup()));
+        QString text;
+        if (!hyperlink_navigation_mode)
+        {
+            text = QCoreApplication::tr("Hyperlink Navigation");
+        }
+        else {
+            text = QCoreApplication::tr("Exit Navigation");
+        }
+        navigate_hyperlink->setText(text);
+        navigate_hyperlink->setIcon(QIcon(QPixmap(":/images/hyperlink_navigation_mode.png")));
+        navigate_hyperlink->setData(NAVIGATE_HYPER_LINK_VIA_KEYBOARD);
+        navigate_hyperlink->setEnabled(true);
+        navigate_hyperlink->setCheckable(true);
+        navigate_hyperlink->setChecked(false);
+        actions_.push_back(navigate_hyperlink);
     }
-    navigate_hyperlink->setText(text);
-    navigate_hyperlink->setIcon(QIcon(QPixmap(":/images/hyperlink_navigation_mode.png")));
-    navigate_hyperlink->setData(NAVIGATE_HYPER_LINK_VIA_KEYBOARD);
-    navigate_hyperlink->setEnabled(true);
-    navigate_hyperlink->setCheckable(true);
-    navigate_hyperlink->setChecked(false);
-    actions_.push_back(navigate_hyperlink);
 }
 
 /// Retrieve the selected action.

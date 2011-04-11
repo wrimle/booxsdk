@@ -48,15 +48,17 @@ public slots:
     bool hasNext();
     bool hasPrev();
 
-    void goPrev();
-    void goNext();
-    void gotoPage(const int);
+    bool goPrev();
+    bool goNext();
+    bool gotoPage(const int);
 
-    void setMargin(int m = 4);
-    int margin() { return margin_; }
+    void setMargin(int left = 1, int top = 1, int right = 1, int bottom = 1);
+    void margin(int *left, int *top, int *right, int *bottom);
 
     void setSpacing(int s = 2);
     int spacing() { return spacing_; }
+
+    void setTitle(const QString &title);
 
     void showBorder(bool show = true) { show_border_ = show; }
     bool hasBorder() { return show_border_; }
@@ -81,12 +83,15 @@ public slots:
     void associateData(bool force = false);
     void associateEmptyData();
     void arrangeAll(bool force = false);
+    bool select(OData *data);
     void resetPaginator(bool sync_layout = false);
     void broadcastPositionSignal();
 
     void setNeighbor(CatalogView *neighbor, const QString& type);
     bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
+    void setStretch(const QVector<int> &stretch);
+    void enableAutoFocus(bool enable = true);
 
 protected Q_SLOTS:
     virtual void onItemActivated(ContentView *item, int);
@@ -111,10 +116,12 @@ Q_SIGNALS:
     void itemActivated(CatalogView *catalog, ContentView *item, int user_data);
     void keyRelease(CatalogView *view, QKeyEvent *key);
 
-    void outOfLeft(CatalogView*, int, int, bool &);
-    void outOfRight(CatalogView*, int, int, bool &);
-    void outOfUp(CatalogView*, int, int, bool &);
-    void outOfDown(CatalogView*, int, int, bool &);
+    // In some cases, the parent want to control the keyboard navigation
+    // when non-catalogview exist, the following four signals can be utilized.
+    void outOfLeft(CatalogView*, int, int);
+    void outOfRight(CatalogView*, int, int);
+    void outOfUp(CatalogView*, int, int);
+    void outOfDown(CatalogView*, int, int);
 
 private slots:
     QWidget * moveFocus(int index);
@@ -152,12 +159,17 @@ private:
     QVector<ContentView *> sub_items_;
     Factory * factory_;
     ODatas datas_;
-    int margin_;
+    int left_margin_;
+    int top_margin_;
+    int right_margin_;
+    int bottom_margin_;
     int spacing_;
+    QString title_;
     bool checked_;
     int policy_;
     bool show_border_;
     bool fixed_grid_;
+    bool auto_focus_;
     QSize size_;
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;

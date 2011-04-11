@@ -142,6 +142,12 @@ bool ScreenUpdateWatcher::enqueue(UpdateItem & item,
     else
     {
         s = widget->size();
+
+        // Consider rotation
+        if (widget == qApp->desktop())
+        {
+            s =  qApp->desktop()->screenGeometry().size();
+        }
     }
     item.rc = QRect(pt, s);
     item.wait = wait;
@@ -225,7 +231,7 @@ void ScreenUpdateWatcher::updateScreenInternal(bool automatic,
     if (!rc.isEmpty())
     {
         qDebug() << "update screen " << rc << "Waveform " << w << "wait " << wait;
-        onyx::screen::instance().updateWidgetRegion(0, rc, w, wait);
+        onyx::screen::instance().updateWidgetRegion(0, rc, w, false, wait);
     }
 }
 

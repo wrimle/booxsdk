@@ -1,12 +1,24 @@
 #include "onyx/base/base.h"
 #include "onyx/sys/sys.h"
-#include "onyx/ui/english_keyboard_data.h"
+#include "onyx/ui/polish_keyboard_data.h"
 #include "onyx/ui/onyx_keyboard_utils.h"
 
 namespace ui
 {
 
-EnglishKeyboardData::EnglishKeyboardData()
+static const QChar Polish_Character[9][2]={
+  {QChar(0x0104), QChar(0x0105)},
+  {QChar(0x0106), QChar(0x0107)},
+  {QChar(0x0118), QChar(0x0119)},
+  {QChar(0x0143), QChar(0x0144)},
+  {QChar(0x015A), QChar(0x015B)},
+  {QChar(0x0179), QChar(0x017A)},
+  {QChar(0x017B), QChar(0x017C)},
+  {QChar(0x0141), QChar(0x0142)},
+  {QChar(0x00D3), QChar(0x00F3)}
+};
+
+PolishKeyboardData::PolishKeyboardData()
     : KeyboardData()
 {
     initTopKeyCode();
@@ -26,11 +38,11 @@ EnglishKeyboardData::EnglishKeyboardData()
     initRightKeySymbolCode();
 }
 
-EnglishKeyboardData::~EnglishKeyboardData()
+PolishKeyboardData::~PolishKeyboardData()
 {
 }
 
-void EnglishKeyboardData::initTopKeyCode()
+void PolishKeyboardData::initTopKeyCode()
 {
     const QChar chs[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
     for (int i = 0; i < 10; i++)
@@ -40,7 +52,7 @@ void EnglishKeyboardData::initTopKeyCode()
     }
 }
 
-void EnglishKeyboardData::initLeftKeyCode()
+void PolishKeyboardData::initLeftKeyCode()
 {
     const QChar chs[] = { 'q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c' };
     for (int i = 0; i < 9; i++)
@@ -50,7 +62,7 @@ void EnglishKeyboardData::initLeftKeyCode()
     }
 }
 
-void EnglishKeyboardData::initMiddleKeyCode()
+void PolishKeyboardData::initMiddleKeyCode()
 {
     const QChar chs[] = {'r', 't', 'y', 'f', 'g', 'h', 'v', 'b', 'n'};
     for (int i=0; i<9; i++)
@@ -60,9 +72,9 @@ void EnglishKeyboardData::initMiddleKeyCode()
     }
 }
 
-void EnglishKeyboardData::initRightKeyCode()
+void PolishKeyboardData::initRightKeyCode()
 {
-    const QChar chs[] = {'u', 'i', 'o', 'j', 'k', 'l', 'm', 'p', '.'};
+    const QChar chs[] = {'u', 'i', 'o', 'j', 'k', 'l', 'm', 'p', Polish_Character[0][1]};//};
     for (int i=0; i<9; i++)
     {
         OData *dd = createData(QString(chs[i]));
@@ -70,9 +82,9 @@ void EnglishKeyboardData::initRightKeyCode()
     }
 }
 
-void EnglishKeyboardData::initBottomKeyCode()
+void PolishKeyboardData::initBottomKeyCode()
 {
-    const QChar chs[] = {'+', '-', '_', '"', ',', ' '};
+    const QChar chs[] = {Polish_Character[1][1], Polish_Character[2][1], Polish_Character[3][1], Polish_Character[4][1], Polish_Character[5][1], ' '};//{'+', '-', '_', '"', ',', };
     for (int i=0; i<6; i++)
     {
         OData *dd = createData(QString(chs[i]));
@@ -84,18 +96,18 @@ void EnglishKeyboardData::initBottomKeyCode()
 
 
 
-    const QChar chs_next[] = {'\'', ';'};
-    for (int i=0; i<2; i++)
+    const QChar chs_next[] = {Polish_Character[7][1], Polish_Character[8][1], Polish_Character[6][1]}; //{};
+    for (int i=0; i<3; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_codes_.push_back(dd);
     }
 
-    dd = createEnterData();
-    bottom_codes_.push_back(dd);
+    //dd = createEnterData();
+    //bottom_codes_.push_back(dd);
 }
 
-void EnglishKeyboardData::initTopKeyShiftCode()
+void PolishKeyboardData::initTopKeyShiftCode()
 {
     const QChar chs[] = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
     for (int i = 0; i < 10; i++)
@@ -105,7 +117,7 @@ void EnglishKeyboardData::initTopKeyShiftCode()
     }
 }
 
-void EnglishKeyboardData::initLeftKeyShiftCode()
+void PolishKeyboardData::initLeftKeyShiftCode()
 {
     const QChar chs[] = { 'Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C' };
     for (int i = 0; i < 9; i++)
@@ -115,7 +127,7 @@ void EnglishKeyboardData::initLeftKeyShiftCode()
     }
 }
 
-void EnglishKeyboardData::initMiddleKeyShiftCode()
+void PolishKeyboardData::initMiddleKeyShiftCode()
 {
     const QChar chs[] = {'R', 'T', 'Y', 'F', 'G', 'H', 'V', 'B', 'N'};
     for (int i=0; i<9; i++)
@@ -125,9 +137,9 @@ void EnglishKeyboardData::initMiddleKeyShiftCode()
     }
 }
 
-void EnglishKeyboardData::initRightKeyShiftCode()
+void PolishKeyboardData::initRightKeyShiftCode()
 {
-    const QChar chs[] = { 'U', 'I', 'O', 'J', 'K', 'L', 'M', 'P', ',' };
+    const QChar chs[] = { 'U', 'I', 'O', 'J', 'K', 'L', 'M', 'P', Polish_Character[0][1]};//',' };
     for (int i=0; i<9; i++)
     {
         OData *dd = createData(QString(chs[i]));
@@ -135,9 +147,9 @@ void EnglishKeyboardData::initRightKeyShiftCode()
     }
 }
 
-void EnglishKeyboardData::initBottomKeyShiftCode()
+void PolishKeyboardData::initBottomKeyShiftCode()
 {
-    const QChar chs[] = {'\\', '/', '[', ']', '=', ' '};
+    const QChar chs[] = {Polish_Character[1][0], Polish_Character[2][0], Polish_Character[3][0], Polish_Character[4][0], Polish_Character[5][0], ' '};//{'\\', '/', '[', ']', '=', };
     for (int i=0; i<6; i++)
     {
         OData *dd = createData(QString(chs[i]));
@@ -147,18 +159,19 @@ void EnglishKeyboardData::initBottomKeyShiftCode()
     OData * dd = createBackspaceData();
     bottom_shift_codes_.push_back(dd);
 
-    const QChar chs_next[] = {'?', ':'};
-    for (int i=0; i<2; i++)
+    const QChar chs_next[] = {Polish_Character[7][0], Polish_Character[8][0], Polish_Character[6][0]};//{'?', ':'};
+    for (int i=0; i<3; i++)
     {
         OData *dd = createData(QString(chs_next[i]));
         bottom_shift_codes_.push_back(dd);
     }
 
-    dd = createEnterData();
-    bottom_shift_codes_.push_back(dd);
+    
+    //dd = createEnterData();
+    //bottom_shift_codes_.push_back(dd);
 }
 
-void EnglishKeyboardData::initLeftKeySymbolCode()
+void PolishKeyboardData::initLeftKeySymbolCode()
 {
     const QString chs[] = {"...", "{", "}",
                            "www.", ".com", QString(QChar(0x00A2)),
@@ -173,13 +186,14 @@ void EnglishKeyboardData::initLeftKeySymbolCode()
         }
         left_symbol_codes_.push_back(dd);
     }
+
 }
 
-void EnglishKeyboardData::initMiddleKeySymbolCode()
+void PolishKeyboardData::initMiddleKeySymbolCode()
 {
     const QChar chs[] = {'~', '<', '>',
-                         '|', '`', QChar(0x00A3),
-                         QChar(0x00A5), QChar(0x00A7), QChar(0x00A9), };
+                         '|', '`', QChar(0x20AC),
+                         '.', '+', '-', };
     for (int i = 0; i < 9; i++)
     {
         OData *dd = createData(QString(chs[i]));
@@ -187,16 +201,18 @@ void EnglishKeyboardData::initMiddleKeySymbolCode()
     }
 }
 
-void EnglishKeyboardData::initRightKeySymbolCode()
+void PolishKeyboardData::initRightKeySymbolCode()
 {
-    const QChar chs[] = {QChar(0x00B1), QChar(0x00B5), QChar(0x00AC),
-                         QChar(0x00AD), QChar(0x00AF), QChar(0x00B7),
-                         QChar(0x00AB), QChar(0x00BB), QChar(0x00AE), };
-    for (int i = 0; i < 9; i++)
+    const QChar chs[] = {'_', '"', ',',
+                         QChar(0x00AD), '\'', ';',
+                         QChar(0x00AB), QChar(0x00BB)};
+    for (int i = 0; i < 8; i++)
     {
         OData *dd = createData(QString(chs[i]));
         right_symbol_codes_.push_back(dd);
     }
+    OData *dd = createEnterData();
+    right_symbol_codes_.push_back(dd);
 }
 
 }

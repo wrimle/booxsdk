@@ -66,6 +66,7 @@ public:
     {
         INVALID = 0,    ///< For initial value.
         DW,             ///< Direct waveform.
+        A2,             ///< DW for pearl screen.
         GU,             ///< Gray update waveform.
         GC,             ///< Gray clear update waveform depends on system configuration.
         GC4,            ///< 4 Gray scale update waveform.
