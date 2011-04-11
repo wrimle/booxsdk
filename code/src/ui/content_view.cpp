@@ -207,6 +207,11 @@ void ContentView::drawTitle(QPainter &painter, QRect rect, int flags)
     if (data() && data()->contains(TAG_TITLE))
     {
         QString family = data()->value(TAG_FONT_FAMILY).toString();
+        if (family.isEmpty())
+        {
+            family = QApplication::font().family();
+        }
+
         int size = data()->value(TAG_FONT_SIZE).toInt();
         if (size <= 0)
         {
@@ -564,7 +569,8 @@ void ClockView::updateView()
 void ClockView::drawDigitalClock(QPainter &painter)
 {
     int size = ui::defaultFontPointSize();
-    QFont font("", size);
+    QFont font(QApplication::font());
+    font.setPointSize(size);
     painter.setFont(font);
     painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap , QDateTime::currentDateTime().toString());
 }
