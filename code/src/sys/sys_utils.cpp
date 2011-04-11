@@ -142,14 +142,23 @@ QStringList zipFileList(const QString &path, const int ms)
     QByteArray data = script.readAllStandardOutput();
     QTextStream stream(&data);
 
-    // Ignore the first two title lines.
+    // Ignore the first three title lines.
     stream.readLine();
+    QString tmp = stream.readLine();
     stream.readLine();
-    QString length, date, time, name;
+
+    int pos = tmp.lastIndexOf("Name", -1, Qt::CaseInsensitive);
+    QString name;
     while (!stream.atEnd())
     {
-        stream >> length >> date >> time >> name;
+        tmp = stream.readLine();
+        name = tmp.mid(pos);
         ret << name;
+    }
+    if (ret.size() > 2)
+    {
+        ret.removeLast();
+        ret.removeLast();
     }
     return ret;
 }
