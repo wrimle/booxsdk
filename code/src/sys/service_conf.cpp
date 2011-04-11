@@ -294,6 +294,7 @@ void ServiceConfig::loadDefaultServices()
         comic_reader.mutable_extensions().push_back("7z");
         comic_reader.mutable_extensions().push_back("cb7");
         comic_reader.mutable_extensions().push_back("cbz");
+        comic_reader.mutable_extensions().push_back("zip");
         DEFAULT_SERVICES.push_back(comic_reader);
     }
 }
