@@ -110,7 +110,7 @@ void DictWidget::formatResult(QString &result)
 {
     if (result.isEmpty())
     {
-        result = tr("Not Found In Dictionary.");
+        result = tr("No dictionary found. Please put dictionary in SD card dicts folder.");
     }
     if (!result.contains("<html>", Qt::CaseInsensitive))
     {
