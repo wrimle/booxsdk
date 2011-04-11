@@ -117,4 +117,41 @@ bool needReleaseMemory()
     return systemFreeMemory() <= safeMemoryLimit();
 }
 
+QStringList zipFileList(const QString &path, const int ms)
+{
+    QProcess script;
+    script.setEnvironment(QProcess::systemEnvironment());
+
+    QStringList ret;
+    QString command("unzip");
+    QStringList parameters;
+    parameters << "-l";
+    parameters << path;
+    script.start(command, parameters);
+    if (!script.waitForStarted())
+    {
+        qDebug("Could not start %s", qPrintable(command));
+        return ret;
+    }
+
+    if (!script.waitForFinished(ms))
+    {
+        qDebug("Failed");
+    }
+
+    QByteArray data = script.readAllStandardOutput();
+    QTextStream stream(&data);
+
+    // Ignore the first two title lines.
+    stream.readLine();
+    stream.readLine();
+    QString length, date, time, name;
+    while (!stream.atEnd())
+    {
+        stream >> length >> date >> time >> name;
+        ret << name;
+    }
+    return ret;
+}
+
 }

@@ -30,6 +30,8 @@ unsigned long systemFreeMemory();
 unsigned long safeMemoryLimit();
 
 bool needReleaseMemory();
+
+QStringList zipFileList(const QString &path, const int ms = 5000);
 }
 
 #endif  // SYSTEM_CONF_H__
