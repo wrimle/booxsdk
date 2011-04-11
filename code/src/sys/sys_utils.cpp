@@ -8,6 +8,8 @@
 #include <sys/vfs.h>
 #endif
 
+#include <QImageReader>
+
 #include "onyx/sys/sys_utils.h"
 
 namespace sys
@@ -142,16 +144,74 @@ QStringList zipFileList(const QString &path, const int ms)
     QByteArray data = script.readAllStandardOutput();
     QTextStream stream(&data);
 
-    // Ignore the first two title lines.
+    // Ignore the first three title lines.
     stream.readLine();
+    QString tmp = stream.readLine();
     stream.readLine();
-    QString length, date, time, name;
+
+    int pos = tmp.lastIndexOf("Name", -1, Qt::CaseInsensitive);
+    QString name;
     while (!stream.atEnd())
     {
-        stream >> length >> date >> time >> name;
+        tmp = stream.readLine();
+        name = tmp.mid(pos);
         ret << name;
     }
+    if (ret.size() > 2)
+    {
+        ret.removeLast();
+        ret.removeLast();
+    }
     return ret;
+}
+
+
+/// Check the suffix is a image suffix or not.
+bool isImage(const QString& suffix)
+{
+    static QList<QString> supported_formats;
+    if (supported_formats.size() <= 0)
+    {
+        QList<QByteArray> list = QImageReader::supportedImageFormats();
+        for(QList<QByteArray>::iterator it = list.begin(); it != list.end(); ++it)
+        {
+            QString ext(*it);
+            ext = ext.toLower();
+            supported_formats.push_back(ext);
+        }
+    }
+    return supported_formats.contains(suffix.toLower());
+}
+
+
+bool isImageZip(const QString &path, const int threshold)
+{
+    QStringList lst = zipFileList(path, 10 * 1000);
+    if (lst.size() <= 0)
+    {
+        return false;
+    }
+
+    int count = 0;
+    foreach(QString i, lst)
+    {
+        int pos = i.lastIndexOf(".");
+        if (pos > 0)
+        {
+            QString suffix = i.mid(pos);
+            if (isImage(suffix))
+            {
+                ++count;
+            }
+        }
+    }
+
+    if (count * 100 / lst.size() >= threshold)
+    {
+        return true;
+    }
+    return false;
+
 }
 
 }
