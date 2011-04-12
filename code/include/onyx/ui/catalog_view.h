@@ -90,7 +90,8 @@ public slots:
     void setNeighbor(CatalogView *neighbor, const QString& type);
     bool removeNeighbor(CatalogView *neighbor, const QString& type);
 
-    void setStretch(const QVector<int> &stretch);
+    void setColumnStretch(int col, int stretch);
+    void setRowStretch(int row, int stretch);
     void enableAutoFocus(bool enable = true);
 
 protected Q_SLOTS:

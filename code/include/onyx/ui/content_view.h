@@ -21,6 +21,7 @@ public:
 public:
     bool updateData(OData* data, bool force_update = false);
     OData * data();
+    OData * data() const;
     virtual void updateView() = 0;
 
     void activate(int user_data = 0);

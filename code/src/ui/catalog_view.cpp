@@ -409,6 +409,7 @@ bool CatalogView::gotoPage(const int p)
 
 void CatalogView::setData(const ODatas &list, bool force)
 {
+    //clearDatas(datas_);
     datas_ = list;
     resetPaginator(true);
     arrangeAll(force);
@@ -942,13 +943,14 @@ bool CatalogView::searchNeighbors(const QString &type)
     return true;
 }
 
-void CatalogView::setStretch(const QVector<int> &stretch)
+void CatalogView::setColumnStretch(int col, int stretch)
 {
-    int min = std::min(layout_.columnCount(), stretch.size());
-    for(int i = 0; i < min; ++i)
-    {
-        layout_.setColumnStretch(i, stretch.at(i));
-    }
+    layout_.setColumnStretch(col, stretch);
+}
+
+void CatalogView::setRowStretch(int row, int stretch)
+{
+    layout_.setRowStretch(row, stretch);
 }
 
 void CatalogView::enableAutoFocus(bool enable)

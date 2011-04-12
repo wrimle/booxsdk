@@ -60,6 +60,11 @@ OData * ContentView::data()
     return data_;
 }
 
+OData * ContentView::data() const
+{
+    return data_;
+}
+
 bool ContentView::isPressed()
 {
     return pressed_;
