@@ -48,19 +48,18 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
     actions_.push_back(forward);
 
 
-/* for this action is still  not available.
-    shared_ptr<QAction> home(new QAction(exclusiveGroup()));
-    home->setText(QCoreApplication::tr("History"));
-    home->setIcon(QIcon(QPixmap(":/images/home.png")));
-    home->setData(NAVIGATE_SHOW_HISTORY);
-    home->setEnabled(true);
-    home->setCheckable(true);
-    home->setChecked(false);
-    actions_.push_back(home);
-*/
-
     if(enable_history_)
     {
+        shared_ptr<QAction> home(new QAction(exclusiveGroup()));
+        home->setText(QCoreApplication::tr("History"));
+        home->setIcon(QIcon(QPixmap(":/images/home.png")));
+        home->setData(NAVIGATE_SHOW_HISTORY);
+        home->setEnabled(true);
+        home->setCheckable(true);
+        home->setChecked(false);
+        actions_.push_back(home);
+
+
         shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
         clear->setText(QCoreApplication::tr("Clear History"));
         clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
