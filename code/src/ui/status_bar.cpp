@@ -177,6 +177,12 @@ bool StatusBar::setProgress(const int value,
         StatusBarItemMessage *wnd = static_cast<StatusBarItemMessage*>(ptr);
         wnd->setMessage(value, total);
     }
+
+    ptr = item(CLOCK, false);
+    if (ptr)
+    {
+        ptr->update();
+    }
     return true;
 }
 
