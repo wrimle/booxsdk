@@ -35,7 +35,7 @@ OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
     createLayout();
     connectWithChildren();
 
-    updateTitle(tr("Password"));
+    updateTitle(tr("Password "));
     if (!title_.isEmpty())
     {
         updateTitle(title_);
