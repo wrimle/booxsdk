@@ -128,6 +128,9 @@ public:
 public:
     virtual void updateView();
 
+public Q_SLOTS:
+    void checkEditByMouse();
+
 Q_SIGNALS:
     void checkStateChanged(LineEditView *self);
 

@@ -106,6 +106,7 @@ void OnyxLineEdit::mouseReleaseEvent(QMouseEvent * event)
 {
     event->accept();
     emit getFocus(this);
+    emit setCheckByMouse(this);
 }
 
 }

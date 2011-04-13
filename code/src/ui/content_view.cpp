@@ -436,12 +436,21 @@ const QString LineEditView::type()
     return "LineEditView";
 }
 
+void LineEditView::checkEditByMouse()
+{
+    QKeyEvent * key_event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return,
+            Qt::NoModifier, "virtual");
+    QApplication::sendEvent(this, key_event);
+}
+
 void LineEditView::createLayout()
 {
     layout_.setContentsMargins(MARGIN, 0, MARGIN, 0);
     layout_.addWidget(&inner_edit_, 1);
     layout_.addSpacing(10);
     connect(&inner_edit_, SIGNAL(outOfRange(QKeyEvent*)), this, SLOT(onEditOutOfRange(QKeyEvent*)));
+    connect(&inner_edit_, SIGNAL(setCheckByMouse(OnyxLineEdit *)),
+            this, SLOT(checkEditByMouse()));
 }
 
 void LineEditView::updateView()
@@ -471,11 +480,9 @@ void LineEditView::paintEvent(QPaintEvent * event)
 
         if (data()->contains(TAG_IS_PASSWD))
         {
-            qDebug() << "contains is_password tag, begin";
             bool is_password = data()->value(TAG_IS_PASSWD).toBool();
             innerEdit()->setEchoMode(
                     (is_password? QLineEdit::Password : QLineEdit::Normal) );
-            qDebug() << "line edit view paint, after set echo mode.";
         }
 
         if (hasFocus())
