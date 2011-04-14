@@ -21,7 +21,7 @@ public:
     ~OnyxPasswordDialog();
 
 public:
-    bool popup();
+    bool popup(const QString &password);
     QString value(OData * d_index = 0);
 
 protected Q_SLOTS:

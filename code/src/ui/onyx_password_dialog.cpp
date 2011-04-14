@@ -66,8 +66,19 @@ void OnyxPasswordDialog::addLineEditsToGroup()
     }
 }
 
-bool OnyxPasswordDialog::popup()
+bool OnyxPasswordDialog::popup(const QString &password)
 {
+    // set given password
+    QVector<ContentView *> sub_items = edit_view_list_.back()->visibleSubItems();
+    if (sub_items.size() > 0)
+    {
+        OData * data = sub_items.front()->data();
+        if (data)
+        {
+            data->insert(TAG_TITLE, password);
+        }
+    }
+
     if (isHidden())
     {
         show();
@@ -75,6 +86,7 @@ bool OnyxPasswordDialog::popup()
     QWidget * widget = safeParentWidget(parentWidget());
     resize(widget->width(), height());
     move(widget->x(), widget->height() - height());
+
     return exec();
 }
 
