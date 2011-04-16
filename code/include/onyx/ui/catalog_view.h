@@ -69,6 +69,8 @@ public slots:
     void setFocusTo(const int row, const int col);
     ContentView *focusItem();
 
+    void setCheckedTo(const int row, const int col);
+
     void setFixedGrid(int rows, int cols);
     bool isFixedGrid();
     QSize preferItemSize();
@@ -93,6 +95,9 @@ public slots:
     void setColumnStretch(int col, int stretch);
     void setRowStretch(int row, int stretch);
     void enableAutoFocus(bool enable = true);
+
+    // sub_item_checked_exclusive_ will set to true on default.
+    void setSubItemCheckedExclusive(bool value);
 
 protected Q_SLOTS:
     virtual void onItemActivated(ContentView *item, int);
@@ -171,6 +176,7 @@ private:
     bool show_border_;
     bool fixed_grid_;
     bool auto_focus_;
+    bool sub_item_checked_exclusive_;
     QSize size_;
     Paginator paginator_;
     QMap<QString, CatalogViews> neighbors_;

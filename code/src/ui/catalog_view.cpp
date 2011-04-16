@@ -36,6 +36,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , show_border_(false)
         , fixed_grid_(false)
         , auto_focus_(false)
+        , sub_item_checked_exclusive_(true)
         , size_(200, 150)
         , bk_color_(Qt::white)
 {
@@ -445,6 +446,32 @@ ContentView* CatalogView::focusItem()
         }
     }
     return 0;
+}
+
+void CatalogView::setCheckedTo(const int row, const int col)
+{
+    int index = row * paginator().cols() + col;
+    if (index >= 0 && index < sub_items_.size())
+    {
+        setChecked();
+        ContentView * item_to_check = sub_items_.at(index);
+        if (item_to_check->data())
+        {
+            item_to_check->setChecked(true);
+        }
+
+        // set others to unchecked if exclusive.
+        if (sub_item_checked_exclusive_)
+        {
+            foreach(ContentView *item, sub_items_)
+            {
+                if (item != item_to_check && item->data())
+                {
+                    item->setChecked(false);
+                }
+            }
+        }
+    }
 }
 
 void CatalogView::mousePressEvent ( QMouseEvent *event )
@@ -956,6 +983,11 @@ void CatalogView::setRowStretch(int row, int stretch)
 void CatalogView::enableAutoFocus(bool enable)
 {
     auto_focus_ = enable;
+}
+
+void CatalogView::setSubItemCheckedExclusive(bool value)
+{
+    sub_item_checked_exclusive_ = value;
 }
 
 }
