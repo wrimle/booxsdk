@@ -1,11 +1,12 @@
 // Author: John
 
+#include "onyx/cms/cms_utils.h"
 #include "onyx/cms/content_node.h"
 
 namespace cms
 {
 // TODO: Move to global header file.
-const QString DATE_FORMAT  = "yyyy-MM-dd hh:mm:ss";
+
 
 ContentNode::ContentNode(void)
 : id_(CMS_INVALID_ID)
@@ -73,7 +74,7 @@ ContentNode::~ContentNode(void)
 /// Use current time as the the last access time.
 const QString & ContentNode::updateLastAccess()
 {
-    mutable_last_access() = QDateTime::currentDateTime().toString(DATE_FORMAT);
+    mutable_last_access() = QDateTime::currentDateTime().toString(dateFormat());
     return last_access();
 }
 
