@@ -28,25 +28,31 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
 
     actions_.clear();
 
-    shared_ptr<QAction> backward(new QAction(exclusiveGroup()));
-    backward->setText(QCoreApplication::tr("Backward"));
-    backward->setIcon(QIcon(QPixmap(":/images/backward.png")));
-    backward->setData(NAVIGATE_BACKWARD);
-    backward->setEnabled(history->canGoBack());
-    backward->setCheckable(true);
-    backward->setChecked(false);
-    actions_.push_back(backward);
+    bool can_go_back = history->canGoBack();
+    if (can_go_back)
+    {
+        shared_ptr<QAction> backward(new QAction(exclusiveGroup()));
+        backward->setText(QCoreApplication::tr("Backward"));
+        backward->setIcon(QIcon(QPixmap(":/images/backward.png")));
+        backward->setData(NAVIGATE_BACKWARD);
+        backward->setEnabled(can_go_back);
+        backward->setCheckable(true);
+        backward->setChecked(false);
+        actions_.push_back(backward);
+    }
 
-
-    shared_ptr<QAction> forward(new QAction(exclusiveGroup()));
-    forward->setText(QCoreApplication::tr("Forward"));
-    forward->setIcon(QIcon(QPixmap(":/images/forward.png")));
-    forward->setData(NAVIGATE_FORWARD);
-    forward->setEnabled(history->canGoForward());
-    forward->setCheckable(true);
-    forward->setChecked(false);
-    actions_.push_back(forward);
-
+    bool can_go_forward = history->canGoForward();
+    if (can_go_forward)
+    {
+        shared_ptr<QAction> forward(new QAction(exclusiveGroup()));
+        forward->setText(QCoreApplication::tr("Forward"));
+        forward->setIcon(QIcon(QPixmap(":/images/forward.png")));
+        forward->setData(NAVIGATE_FORWARD);
+        forward->setEnabled(can_go_forward);
+        forward->setCheckable(true);
+        forward->setChecked(false);
+        actions_.push_back(forward);
+    }
 
     if(enable_history_)
     {
@@ -58,17 +64,16 @@ void BrowserNavigationActions::generateActions(QWebHistory *history,
         home->setCheckable(true);
         home->setChecked(false);
         actions_.push_back(home);
-
-
-        shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
-        clear->setText(QCoreApplication::tr("Clear History"));
-        clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
-        clear->setData(NAVIGATE_CLEAR_HISTORY);
-        clear->setEnabled(true);
-        clear->setCheckable(true);
-        clear->setChecked(false);
-        actions_.push_back(clear);
     }
+
+    shared_ptr<QAction> clear(new QAction(exclusiveGroup()));
+    clear->setText(QCoreApplication::tr("Clear History"));
+    clear->setIcon(QIcon(QPixmap(":/images/clear_history.png")));
+    clear->setData(NAVIGATE_CLEAR_HISTORY);
+    clear->setEnabled(true);
+    clear->setCheckable(true);
+    clear->setChecked(false);
+    actions_.push_back(clear);
 
     if (enable_hyperlink_navigation)
     {
