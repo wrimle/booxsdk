@@ -164,25 +164,25 @@ void OnyxDictFrame::createDictionaryMenu()
     ODatas ds;
 
     OData *dd = new OData;
-    dd->insert(TAG_TITLE, tr("Dictionaries"));
+    dd->insert(TAG_COVER, QPixmap(":/images/dictionary_list.png"));
     dd->insert(TAG_MENU_TYPE, MENU_DICTIONARIES);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
     ds.push_back(dd);
 
     dd = new OData;
-    dd->insert(TAG_TITLE, tr("Similar Words"));
+    dd->insert(TAG_COVER, QPixmap(":/images/similar_words.png"));
     dd->insert(TAG_MENU_TYPE, MENU_SIMILAR_WORDS);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
     ds.push_back(dd);
 
     dd = new OData;
-    dd->insert(TAG_TITLE, tr("Explanation"));
+    dd->insert(TAG_COVER, QPixmap(":/images/explanation.png"));
     dd->insert(TAG_MENU_TYPE, MENU_EXPLANATION);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
     ds.push_back(dd);
 
     dd = new OData;
-    dd->insert(TAG_TITLE, tr("Lookup"));
+    dd->insert(TAG_COVER, QPixmap(":/images/lookup.png"));
     dd->insert(TAG_MENU_TYPE, MENU_LOOKUP);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
     ds.push_back(dd);
