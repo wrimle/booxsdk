@@ -317,7 +317,7 @@ void OnyxDictFrame::formatResult(QString &result)
 {
     if (result.isEmpty())
     {
-        result = "No dictionary found. Please put dictionary in SD card dicts folder.";
+        result = tr("Not Found In Dictionary.");
     }
     if (!result.contains("<html>", Qt::CaseInsensitive))
     {
