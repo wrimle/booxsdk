@@ -259,7 +259,7 @@ bool makeThumbnail(const QString & path,
             return false;
         }
 
-        thumbnail = thumbnail.scaled(thumbnailSize(THUMBNAIL_LARGE), Qt::KeepAspectRatio);
+        thumbnail = thumbnail.scaled(thumbnailSize(THUMBNAIL_LARGE), Qt::IgnoreAspectRatio);
         db.storeThumbnail(info.fileName(), THUMBNAIL_LARGE, thumbnail);
 
         // Return true even the thumbnail can not be stored.
