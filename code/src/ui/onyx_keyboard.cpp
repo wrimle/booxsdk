@@ -135,8 +135,11 @@ void OnyxKeyboard::createMenu()
     menu_.setFixedHeight(keyboardKeyHeight());
     menu_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     menu_.setPreferItemSize(s_size);
-    menu_.setData(keyboard_data_->menuCodes());
-    menu_.setFixedGrid(1, 4);
+
+    ODatas menu_datas = keyboard_data_->menuCodes();
+    menu_.setData(menu_datas);
+    menu_.setFixedGrid(1, menu_datas.size());
+
     menu_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
 }
 
