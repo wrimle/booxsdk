@@ -435,6 +435,18 @@ void CatalogView::setFocusTo(const int row, const int col)
     }
 }
 
+void CatalogView::setFocusToLast()
+{
+    for(int index = sub_items_.size() - 1; index >= 0; --index)
+    {
+        if (sub_items_.at(index)->data())
+        {
+            sub_items_.at(index)->setFocus();
+            return;
+        }
+    }
+}
+
 ContentView* CatalogView::focusItem()
 {
     QWidget *wnd = focusWidget();
@@ -517,7 +529,7 @@ bool CatalogView::goPrev()
     if (paginator().prev())
     {
         arrangeAll(true);
-        setFocusTo(0, 0);
+        setFocusToLast();
         return true;
     }
     return false;

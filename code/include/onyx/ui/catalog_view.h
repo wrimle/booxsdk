@@ -67,6 +67,7 @@ public slots:
     ODatas & data();
 
     void setFocusTo(const int row, const int col);
+    void setFocusToLast();
     ContentView *focusItem();
 
     void setCheckedTo(const int row, const int col);
