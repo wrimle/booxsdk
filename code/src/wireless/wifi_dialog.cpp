@@ -248,7 +248,7 @@ void WifiDialog::arrangeAPItems(WifiProfiles & profiles)
     clearDatas(datas_);
     foreach(WifiProfile profile, profiles)
     {
-        OData * d = new OData(profile);
+        ODataPtr d (new OData(profile));
         datas_.push_back(d);
     }
     ap_view_.setData(datas_, true);

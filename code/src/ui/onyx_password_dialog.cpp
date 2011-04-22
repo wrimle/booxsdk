@@ -50,7 +50,7 @@ OnyxPasswordDialog::~OnyxPasswordDialog()
 
 void OnyxPasswordDialog::appendDefaultPasswordEdit()
 {
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, default_passwd_label_);
     dd->insert(TAG_IS_PASSWD, true);
     edit_list_.append(dd);
@@ -95,7 +95,7 @@ QString OnyxPasswordDialog::value(OData * d_index)
     CatalogView *target = edit_view_list_.back();
     if (0 != d_index)
     {
-        int index = edit_list_.indexOf(d_index);
+        int index = edit_list_.indexOf(ODataPtr(d_index));
         target = edit_view_list_.at(index);
     }
 
@@ -119,7 +119,7 @@ void OnyxPasswordDialog::createLayout()
     int size = edit_list_.size();
     for (int i=0; i<size; i++)
     {
-        OData *data = edit_list_.at(i);
+        ODataPtr data = edit_list_.at(i);
         QString label_text = data->value(TAG_TITLE).toString();
         OnyxLabel *label = new OnyxLabel(label_text);
         QFont font;
@@ -156,7 +156,7 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
     edit_item->setPreferItemSize(QSize(height, height));
 
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
 
     // set the TAG_CHECKED property
     if (0 == index)
@@ -194,7 +194,7 @@ void OnyxPasswordDialog::createLineEdits()
     int size = edit_list_.size();
     for (int i=0; i<size; i++)
     {
-        OData *data = edit_list_.at(i);
+        ODataPtr data = edit_list_.at(i);
         CatalogView * edit_item = createEditItem(data, i);
         if (!edit_view_list_.isEmpty())
         {
@@ -219,15 +219,15 @@ void OnyxPasswordDialog::createSubMenu()
     sub_menu_.setPreferItemSize(QSize(height, height));
 
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("OK"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
 
-    dd = new OData;
-    dd->insert(TAG_TITLE, tr("Clear"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
+    ODataPtr b(new OData);
+    b->insert(TAG_TITLE, tr("Clear"));
+    b->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
+    ds.push_back(b);
 
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
@@ -247,7 +247,7 @@ void OnyxPasswordDialog::createShowPlainText()
     show_plain_text_.setPreferItemSize(QSize(height, height));
 
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("Show Plain Text"));
     dd->insert(TAG_CHECKED, false);
     ds.push_back(dd);

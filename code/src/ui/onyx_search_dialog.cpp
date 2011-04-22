@@ -125,7 +125,7 @@ void OnyxSearchDialog::createLineEdit()
     line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
 
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, "");
     ds.push_back(dd);
 
@@ -145,15 +145,15 @@ void OnyxSearchDialog::createSubMenu()
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
-    OData *dd = new OData;
+    ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, tr("Search"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
 
-    dd = new OData;
-    dd->insert(TAG_TITLE, tr("Clear"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
+    ODataPtr d( new OData);
+    d->insert(TAG_TITLE, tr("Clear"));
+    d->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
+    ds.push_back(d);
 
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
@@ -172,15 +172,15 @@ void OnyxSearchDialog::createNavigateMenu()
     next_prev_.setPreferItemSize(QSize(height, height));
     ODatas ds;
 
-    OData *dd = new OData;
+    ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, tr("Previous"));
     dd->insert(TAG_MENU_TYPE, SEARCH_NAV_PREVIOUS);
     ds.push_back(dd);
 
-    dd = new OData;
-    dd->insert(TAG_TITLE, tr("Next"));
-    dd->insert(TAG_MENU_TYPE, SEARCH_NAV_NEXT);
-    ds.push_back(dd);
+    ODataPtr b( new OData);
+    b->insert(TAG_TITLE, tr("Next"));
+    b->insert(TAG_MENU_TYPE, SEARCH_NAV_NEXT);
+    ds.push_back(b);
 
     next_prev_.setSpacing(2);
     next_prev_.setFixedGrid(1, 2);

@@ -67,12 +67,12 @@ void WifiTitleItem::createLayout()
 void WifiTitleItem::createDashBoard()
 {
     ODatas datas;
-    OData * customize = new OData;
+    ODataPtr customize (new OData);
     customize->insert(TAG_COVER, QPixmap(":/images/customize.png"));
     customize->insert(TAG_ID, ID_CUSTOMIZE);
     datas.push_back(customize);
 
-    OData * refresh = new OData;
+    ODataPtr refresh (new OData);
     refresh->insert(TAG_COVER, QPixmap(":/images/refresh.png"));
     refresh->insert(TAG_ID, ID_REFRESH);
 

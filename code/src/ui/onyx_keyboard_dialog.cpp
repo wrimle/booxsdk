@@ -69,7 +69,7 @@ void OnyxKeyboardDialog::createLineEdit()
     line_edit_.setSubItemType(LineEditView::type());
     line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, "");
     ds.push_back(dd);
     line_edit_.setFixedGrid(1, 1);
@@ -87,14 +87,16 @@ void OnyxKeyboardDialog::createSubMenu()
     const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, ok_button_text_);
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
-    dd = new OData;
-    dd->insert(TAG_TITLE, tr("Clear"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
+
+    ODataPtr b(new OData);
+    b->insert(TAG_TITLE, tr("Clear"));
+    b->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
+    ds.push_back(b);
+
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN, OnyxKeyboard::CATALOG_MARGIN);

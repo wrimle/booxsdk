@@ -66,7 +66,7 @@ void OnyxKeyboardLanguageDialog::createLanguageGroup()
     ODatas ds;
     for (int i=0; i<LANGUAGE_COUNT; i++)
     {
-        OData *dd = new OData;
+        ODataPtr dd(new OData);
         dd->insert(TAG_TITLE, LANGUAGES[i].text);
         if (LANGUAGES[i].locale.name() == language_.name())
         {

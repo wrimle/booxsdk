@@ -91,23 +91,26 @@ OData * KeyboardData::createEnterData()
 
 void KeyboardData::initMenuKeyCode()
 {
-    OData *dd = createData(QApplication::tr("Shift"));
+    ODataPtr dd(createData(QApplication::tr("Shift")));
     static const int MENU_FONT_SIZE = 20;
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SHIFT);
     dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
-    dd = createData(QApplication::tr("Symbol"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SYMBOL);
-    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
-    menu_codes_.push_back(dd);
-    dd = createData(QApplication::tr("Language"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_LANGUAGE);
-    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
-    menu_codes_.push_back(dd);
+
+    ODataPtr s(createData(QApplication::tr("Symbol")));
+    s->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_SYMBOL);
+    s->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
+    menu_codes_.push_back(s);
+
+
+    ODataPtr l(createData(QApplication::tr("Language")));
+    l->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_LANGUAGE);
+    l->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
+    menu_codes_.push_back(l);
 
     if (SysStatus::instance().hasTouchScreen())
     {
-        dd = createData(QApplication::tr("Write"));
+        ODataPtr dd(createData(QApplication::tr("Write")));
         dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_WRITE);
         dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
         menu_codes_.push_back(dd);

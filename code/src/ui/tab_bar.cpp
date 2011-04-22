@@ -19,7 +19,7 @@ bool TabBar::addButton(const int id,
                        const QPixmap & pixmap)
 {
     setFixedGrid(1, data().size() + 1);
-    OData * d = new OData;
+    ODataPtr d(new OData);
     d->insert("id", id);
     d->insert("title", title);
     d->insert("cover", pixmap);

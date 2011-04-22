@@ -152,6 +152,7 @@ bool ScreenUpdateWatcher::enqueue(UpdateItem & item,
     item.rc = QRect(pt, s);
     item.wait = wait;
     item.waveform = w;
+    qDebug() << "add new request " << item.rc;
     return true;
 }
 

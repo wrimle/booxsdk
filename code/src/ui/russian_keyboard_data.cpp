@@ -48,7 +48,7 @@ void RussianKeyboardData::initTopKeyCode()
     const QChar chs[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
     for (int i = 0; i < 10; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd(createData(QString(chs[i])));
         top_codes_.push_back(dd);
     }
 }
@@ -57,7 +57,7 @@ void RussianKeyboardData::initLeftKeyCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_LEFT[i]));
+        ODataPtr dd(createData(QString(RUSSIAN_LEFT[i])));
         left_codes_.push_back(dd);
     }
 }
@@ -66,7 +66,7 @@ void RussianKeyboardData::initMiddleKeyCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_MIDDLE[i]));
+        ODataPtr dd(createData(QString(RUSSIAN_MIDDLE[i])));
         middle_codes_.push_back(dd);
     }
 }
@@ -75,7 +75,7 @@ void RussianKeyboardData::initRightKeyCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_RIGHT[i]));
+        ODataPtr dd(createData(QString(RUSSIAN_RIGHT[i])));
         right_codes_.push_back(dd);
     }
 }
@@ -86,22 +86,21 @@ void RussianKeyboardData::initBottomKeyCode()
             QChar(0x0434), ' '};
     for (int i=0; i<6; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd(createData(QString(chs[i])));
         bottom_codes_.push_back(dd);
     }
 
-    OData * dd = createBackspaceData();
+    ODataPtr dd(createBackspaceData());
     bottom_codes_.push_back(dd);
 
     const QChar chs_next[] = {QChar(0x0436), QChar(0x044D)};
     for (int i=0; i<2; i++)
     {
-        OData *dd = createData(QString(chs_next[i]));
+        ODataPtr dd(createData(QString(chs_next[i])));
         bottom_codes_.push_back(dd);
     }
 
-    dd = createEnterData();
-    bottom_codes_.push_back(dd);
+    bottom_codes_.push_back(ODataPtr(createEnterData()));
 }
 
 // for shift key
@@ -110,7 +109,7 @@ void RussianKeyboardData::initTopKeyShiftCode()
     const QChar chs[] = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
     for (int i = 0; i < 10; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd(createData(QString(chs[i])));
         top_shift_codes_.push_back(dd);
     }
 }
@@ -119,7 +118,7 @@ void RussianKeyboardData::initLeftKeyShiftCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_LEFT[i].toUpper()));
+        ODataPtr dd (createData(QString(RUSSIAN_LEFT[i].toUpper())));
         left_shift_codes_.push_back(dd);
     }
 }
@@ -128,7 +127,7 @@ void RussianKeyboardData::initMiddleKeyShiftCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_MIDDLE[i].toUpper()));
+        ODataPtr dd (createData(QString(RUSSIAN_MIDDLE[i].toUpper())));
         middle_shift_codes_.push_back(dd);
     }
 }
@@ -137,7 +136,7 @@ void RussianKeyboardData::initRightKeyShiftCode()
 {
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(RUSSIAN_RIGHT[i].toUpper()));
+        ODataPtr dd(createData(QString(RUSSIAN_RIGHT[i].toUpper())));
         right_shift_codes_.push_back(dd);
     }
 }
@@ -148,22 +147,21 @@ void RussianKeyboardData::initBottomKeyShiftCode()
             QChar(0x0434).toUpper(), ' '};
     for (int i=0; i<6; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd(createData(QString(chs[i])));
         bottom_shift_codes_.push_back(dd);
     }
 
-    OData * dd = createBackspaceData();
+    ODataPtr dd(createBackspaceData());
     bottom_shift_codes_.push_back(dd);
 
     const QChar chs_next[] = {QChar(0x0436).toUpper(), QChar(0x044D).toUpper()};
     for (int i=0; i<2; i++)
     {
-        OData *dd = createData(QString(chs_next[i]));
+        ODataPtr dd (createData(QString(chs_next[i])));
         bottom_shift_codes_.push_back(dd);
     }
 
-    dd = createEnterData();
-    bottom_shift_codes_.push_back(dd);
+    bottom_shift_codes_.push_back(ODataPtr(createEnterData()));
 }
 
 // for symbol key
@@ -174,7 +172,7 @@ void RussianKeyboardData::initLeftKeySymbolCode()
                          QChar(0x00AD), QChar(0x00AF), QChar(0x00B7), };
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd(createData(QString(chs[i])));
         left_symbol_codes_.push_back(dd);
     }
 }
@@ -186,7 +184,7 @@ void RussianKeyboardData::initMiddleKeySymbolCode()
                          '_', '{', '}', };
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd (createData(QString(chs[i])));
         middle_symbol_codes_.push_back(dd);
     }
 }
@@ -198,7 +196,7 @@ void RussianKeyboardData::initRightKeySymbolCode()
                          QChar(0x00A7), QChar(0x00A9), QChar(0x00B1), };
     for (int i = 0; i < 9; i++)
     {
-        OData *dd = createData(QString(chs[i]));
+        ODataPtr dd( createData(QString(chs[i])));
         right_symbol_codes_.push_back(dd);
     }
 }

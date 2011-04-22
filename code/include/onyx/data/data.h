@@ -3,6 +3,7 @@
 #define ONYX_DATA_INTERFACE_H_
 
 #include <QVariantMap>
+#include <QSharedPointer>
 
 /// Onyx content. It can be an ebook or a catalog.
 class OData : public QVariantMap
@@ -16,7 +17,8 @@ public:
 
 };
 
-typedef QVector<OData *> ODatas;
+typedef OData * ODataPtr;
+typedef QVector<ODataPtr> ODatas;
 
 void clearDatas(ODatas & datas);
 

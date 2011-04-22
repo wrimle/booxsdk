@@ -57,15 +57,15 @@ void OnyxNotesDialog::createSubMenu()
     sub_menu_.setPreferItemSize(QSize(height, height));
 
     ODatas ds;
-    OData *dd = new OData;
+    ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("OK"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
     ds.push_back(dd);
 
-    dd = new OData;
-    dd->insert(TAG_TITLE, tr("Clear"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
+    ODataPtr b(new OData);
+    b->insert(TAG_TITLE, tr("Clear"));
+    b->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
+    ds.push_back(b);
 
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);

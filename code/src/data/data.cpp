@@ -28,7 +28,7 @@ void OData::debugDump() const
 
 void clearDatas(ODatas & datas)
 {
-    foreach(OData *d, datas)
+    foreach(ODataPtr d, datas)
     {
         delete d;
     }
