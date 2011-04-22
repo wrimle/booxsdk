@@ -17,6 +17,7 @@ OnyxKeyboardDialog::OnyxKeyboardDialog(QWidget *parent,
     , keyboard_(this)
     , title_(title)
     , ok_button_text_(tr("OK"))
+    , input_text_("")
 {
     createLayout();
     connectWithChildren();
@@ -49,7 +50,7 @@ QString OnyxKeyboardDialog::popup(const QString &text)
     int is_accepted = exec();
     if (QDialog::Accepted == is_accepted)
     {
-        return inputText();
+        return getText();
     }
     else
     {
@@ -57,11 +58,16 @@ QString OnyxKeyboardDialog::popup(const QString &text)
     }
 }
 
-QString OnyxKeyboardDialog::inputText()
+QString OnyxKeyboardDialog::getText()
 {
     LineEditView *input = static_cast<LineEditView *>(
                         line_edit_.visibleSubItems().front());
     return input->innerEdit()->text();
+}
+
+QString OnyxKeyboardDialog::inputText()
+{
+    return input_text_;
 }
 
 void OnyxKeyboardDialog::createLineEdit()
@@ -137,10 +143,12 @@ void OnyxKeyboardDialog::onItemActivated(CatalogView *catalog,
         int menu_type = item->data()->value(TAG_MENU_TYPE).toInt();
         if(OnyxKeyboard::KEYBOARD_MENU_OK == menu_type)
         {
+            input_text_ = getText();
             accept();
         }
         else if(OnyxKeyboard::KEYBOARD_MENU_CLEAR == menu_type)
         {
+            input_text_ = "";
             clearClicked();
             update();
             onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
