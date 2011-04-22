@@ -39,6 +39,8 @@ private:
     // handling key press event
     void keyPressEvent(QKeyEvent *event);
 
+    QString getText();
+
 private:
     QVBoxLayout big_layout_;
     QHBoxLayout line_edit_layout_;
@@ -49,6 +51,8 @@ private:
     OnyxKeyboard keyboard_;
     QString title_;
     QString ok_button_text_;
+
+    QString input_text_;
 };
 
 }   // namespace ui
