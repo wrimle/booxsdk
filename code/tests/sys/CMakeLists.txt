@@ -13,3 +13,5 @@ ADD_EXECUTABLE(generate_default_peers generate_default_peers.cpp)
 TARGET_LINK_LIBRARIES(generate_default_peers onyx_cms onyx_data onyx_sys onyx_data ${QT_LIBRARIES})
 
 
+ADD_EXECUTABLE(unzip_test unzip_test.cpp)
+TARGET_LINK_LIBRARIES(unzip_test onyx_cms onyx_data onyx_sys onyx_data ${QT_LIBRARIES})

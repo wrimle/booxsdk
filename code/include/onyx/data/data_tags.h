@@ -15,6 +15,8 @@ static const QString TAG_URL = "url";
 static const QString TAG_ID  = "id";
 static const QString TAG_FS_NAME_FILTERS = "fs_n_filter";
 static const QString TAG_FS_SIZE = "fs_size";
+static const QString TAG_LAST_ACCESS = "l_access";
+static const QString TAG_READ_COUNT = "r_count";
 
 static const QString TAG_BRANCH = "branch"; // for opds, it is identical to catalog
 static const QString TAG_ENTRY = "entry";

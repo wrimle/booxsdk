@@ -30,6 +30,13 @@ unsigned long systemFreeMemory();
 unsigned long safeMemoryLimit();
 
 bool needReleaseMemory();
+
+QStringList zipFileList(const QString &path, const int ms = 5000);
+
+bool isImage(const QString& suffix);
+
+bool isImageZip(const QString &path, int threshold = 80);
+
 }
 
 #endif  // SYSTEM_CONF_H__

@@ -17,8 +17,6 @@ enum ThumbnailType
     THUMBNAIL_HUGE
 };
 
-bool isImage(const QString& suffix);
-
 QSize thumbnailSize(ThumbnailType type = THUMBNAIL_LARGE);
 
 bool makeThumbnail(const QString & path, ThumbnailType type = THUMBNAIL_LARGE);

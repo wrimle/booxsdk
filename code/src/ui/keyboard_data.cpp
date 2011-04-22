@@ -1,5 +1,6 @@
 #include "onyx/ui/keyboard_data.h"
 #include "onyx/ui/onyx_keyboard.h"
+#include "onyx/sys/sys.h"
 
 namespace ui
 {
@@ -103,10 +104,14 @@ void KeyboardData::initMenuKeyCode()
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_LANGUAGE);
     dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
     menu_codes_.push_back(dd);
-    dd = createData(QApplication::tr("Write"));
-    dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_WRITE);
-    dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
-    menu_codes_.push_back(dd);
+
+    if (SysStatus::instance().hasTouchScreen())
+    {
+        dd = createData(QApplication::tr("Write"));
+        dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_WRITE);
+        dd->insert(TAG_FONT_SIZE, MENU_FONT_SIZE);
+        menu_codes_.push_back(dd);
+    }
 }
 
 

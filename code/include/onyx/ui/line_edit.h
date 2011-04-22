@@ -20,6 +20,7 @@ protected:
 
 Q_SIGNALS:
     void getFocus(OnyxLineEdit *object);
+    void setCheckByMouse(OnyxLineEdit *object);
     void outOfRange(QKeyEvent *ke);
 
 protected:

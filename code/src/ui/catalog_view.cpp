@@ -36,6 +36,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , show_border_(false)
         , fixed_grid_(false)
         , auto_focus_(false)
+        , sub_item_checked_exclusive_(true)
         , size_(200, 150)
         , bk_color_(Qt::white)
 {
@@ -409,6 +410,7 @@ bool CatalogView::gotoPage(const int p)
 
 void CatalogView::setData(const ODatas &list, bool force)
 {
+    //clearDatas(datas_);
     datas_ = list;
     resetPaginator(true);
     arrangeAll(force);
@@ -433,6 +435,18 @@ void CatalogView::setFocusTo(const int row, const int col)
     }
 }
 
+void CatalogView::setFocusToLast()
+{
+    for(int index = sub_items_.size() - 1; index >= 0; --index)
+    {
+        if (sub_items_.at(index)->data())
+        {
+            sub_items_.at(index)->setFocus();
+            return;
+        }
+    }
+}
+
 ContentView* CatalogView::focusItem()
 {
     QWidget *wnd = focusWidget();
@@ -444,6 +458,32 @@ ContentView* CatalogView::focusItem()
         }
     }
     return 0;
+}
+
+void CatalogView::setCheckedTo(const int row, const int col)
+{
+    int index = row * paginator().cols() + col;
+    if (index >= 0 && index < sub_items_.size())
+    {
+        setChecked();
+        ContentView * item_to_check = sub_items_.at(index);
+        if (item_to_check->data())
+        {
+            item_to_check->setChecked(true);
+        }
+
+        // set others to unchecked if exclusive.
+        if (sub_item_checked_exclusive_)
+        {
+            foreach(ContentView *item, sub_items_)
+            {
+                if (item != item_to_check && item->data())
+                {
+                    item->setChecked(false);
+                }
+            }
+        }
+    }
 }
 
 void CatalogView::mousePressEvent ( QMouseEvent *event )
@@ -489,7 +529,7 @@ bool CatalogView::goPrev()
     if (paginator().prev())
     {
         arrangeAll(true);
-        setFocusTo(0, 0);
+        setFocusToLast();
         return true;
     }
     return false;
@@ -942,18 +982,24 @@ bool CatalogView::searchNeighbors(const QString &type)
     return true;
 }
 
-void CatalogView::setStretch(const QVector<int> &stretch)
+void CatalogView::setColumnStretch(int col, int stretch)
 {
-    int min = std::min(layout_.columnCount(), stretch.size());
-    for(int i = 0; i < min; ++i)
-    {
-        layout_.setColumnStretch(i, stretch.at(i));
-    }
+    layout_.setColumnStretch(col, stretch);
+}
+
+void CatalogView::setRowStretch(int row, int stretch)
+{
+    layout_.setRowStretch(row, stretch);
 }
 
 void CatalogView::enableAutoFocus(bool enable)
 {
     auto_focus_ = enable;
+}
+
+void CatalogView::setSubItemCheckedExclusive(bool value)
+{
+    sub_item_checked_exclusive_ = value;
 }
 
 }

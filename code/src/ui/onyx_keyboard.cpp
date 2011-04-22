@@ -135,8 +135,11 @@ void OnyxKeyboard::createMenu()
     menu_.setFixedHeight(keyboardKeyHeight());
     menu_.setSearchPolicy(CatalogView::NeighborFirst|CatalogView::AutoHorRecycle);
     menu_.setPreferItemSize(s_size);
-    menu_.setData(keyboard_data_->menuCodes());
-    menu_.setFixedGrid(1, 4);
+
+    ODatas menu_datas = keyboard_data_->menuCodes();
+    menu_.setData(menu_datas);
+    menu_.setFixedGrid(1, menu_datas.size());
+
     menu_.setMargin(CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN, CATALOG_MARGIN);
 }
 
@@ -180,6 +183,15 @@ void OnyxKeyboard::createRight()
     right_.setNeighbor(&middle_, CatalogView::LEFT);
     right_.setNeighbor(&left_, CatalogView::RECYCLE_LEFT);
     right_.setNeighbor(&bottom_, CatalogView::DOWN);
+}
+
+void OnyxKeyboard::initFocus()
+{
+    if (middle_.visibleSubItems().size() > 0)
+    {
+        // set focus to central key of middle zone.
+        middle_.setFocusTo(1, 1);
+    }
 }
 
 bool OnyxKeyboard::event(QEvent * event)

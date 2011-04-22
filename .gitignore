@@ -1,3 +1,5 @@
 build/
 CMakeFiles
 MakeFile
+.project
+.cproject

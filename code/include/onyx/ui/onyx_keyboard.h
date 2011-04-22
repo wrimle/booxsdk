@@ -35,6 +35,8 @@ public:
     inline CatalogView * top() { return &top_; }
     inline CatalogView * menu() { return &menu_; }
 
+    void initFocus();
+
 Q_SIGNALS:
     void outOfUp(CatalogView *, int row, int col);
     void outOfDown(CatalogView *, int row, int col);
