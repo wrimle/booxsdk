@@ -71,6 +71,7 @@ private:
     void updateDictionaryListModel();
     void updateDictionaryList();
 
+    void showWidgetWhenInputIsEmpty();
     QWidget * getVisibleWidget();
     void dictionariesClicked();
     void similarWordsClicked();
@@ -88,8 +89,11 @@ private:
 
     CatalogView line_edit_;
     CatalogView sub_menu_;
+
     OnyxTextBrowser explanation_;       ///< The lookup result.
     OnyxTreeView list_widget_;          ///< Storing words and dictionary list.
+    OnyxTextEdit help_widget_;          ///< Remind user to put dictionaries into SD Card
+
     CatalogView dictionary_menu_;
     CatalogView tts_button_view_;
 

@@ -202,6 +202,7 @@ void ScreenProxy::updateWidget(const QWidget *widget,
                                bool update_whole,
                                ScreenCommand::WaitMode wait)
 {
+#ifndef BUILD_FOR_FB
     if (!isUpdateEnabled() && waveform != onyx::screen::ScreenProxy::DW)
     {
         return;
@@ -229,6 +230,7 @@ void ScreenProxy::updateWidget(const QWidget *widget,
         command_.update_flags = ScreenCommand::PARTIAL_UPDATE;
     }
     sendCommand(command_, wait);
+#endif
 }
 
 /// Update the specified region of the widget.

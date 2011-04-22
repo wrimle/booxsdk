@@ -185,6 +185,15 @@ void OnyxKeyboard::createRight()
     right_.setNeighbor(&bottom_, CatalogView::DOWN);
 }
 
+void OnyxKeyboard::initFocus()
+{
+    if (middle_.visibleSubItems().size() > 0)
+    {
+        // set focus to central key of middle zone.
+        middle_.setFocusTo(1, 1);
+    }
+}
+
 bool OnyxKeyboard::event(QEvent * event)
 {
     bool ret = QWidget::event(event);
