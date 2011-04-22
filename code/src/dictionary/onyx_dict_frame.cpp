@@ -28,6 +28,7 @@ OnyxDictFrame::OnyxDictFrame(QWidget *parent, DictionaryManager & dict,
     , line_edit_(0, this)
     , explanation_(0)
     , list_widget_(0, 0)
+    , help_widget_(tr("No dictionary found. Please put dictionaries in SD Card dicts folder."), this)
     , dictionary_menu_(0, this)
     , tts_button_view_(0, this)
     , keyboard_(this)
@@ -91,7 +92,14 @@ void OnyxDictFrame::onItemClicked(const QModelIndex & index)
     else
     {
         dict_mgr_.select(dict_list_model_.itemFromIndex(index)->text());
-        lookup(word_);
+        if (!word_.isEmpty())
+        {
+            lookup(word_);
+        }
+        else
+        {
+            showWidgetWhenInputIsEmpty();
+        }
     }
     onyx::screen::instance().enableUpdate(true);
     onyx::screen::instance().flush(this, onyx::screen::ScreenProxy::GU);
@@ -245,7 +253,10 @@ void OnyxDictFrame::createLayout()
     // for explanation and similar words list
     big_layout_.addWidget(&explanation_);
     big_layout_.addWidget(&list_widget_);
+    big_layout_.addWidget(&help_widget_);
     list_widget_.setVisible(false);
+    help_widget_.setVisible(false);
+    help_widget_.setReadOnly(true);
 
     dict_menu_layout_.setContentsMargins(0, 2, 0, 0);
     dict_menu_layout_.setSpacing(2);
@@ -352,8 +363,7 @@ bool OnyxDictFrame::lookup(const QString &word)
 
 void OnyxDictFrame::setDefaultFocus()
 {
-    // TODO default item not determined
-    keyboard_.top()->visibleSubItems().front()->setFocus();
+    keyboard_.initFocus();
 }
 
 void OnyxDictFrame::resizeEvent(QResizeEvent *e)
@@ -372,6 +382,12 @@ void OnyxDictFrame::updateSimilarWordsModel(int count)
 {
     // Pick up similar words from current dictionary.
     similar_words_.clear();
+
+    if (word_.isEmpty() && !editor()->text().isEmpty())
+    {
+        word_ = editor()->text().isEmpty();
+    }
+
     dict_mgr_.similarWords(word_, similar_words_, similar_words_offset_, count);
     similar_words_model_.clear();
     QStandardItem *parentItem = similar_words_model_.invisibleRootItem();
@@ -395,9 +411,6 @@ void OnyxDictFrame::updateSimilarWordsModel(int count)
 void OnyxDictFrame::updateSimilarWords()
 {
     similar_words_checked_ = true;
-    list_widget_.clear();
-    list_widget_.setFocus();
-    list_widget_.show();
     updateSimilarWordsModel(list_widget_.itemsPerPage());
 
     // Update the list.
@@ -426,9 +439,6 @@ void OnyxDictFrame::updateDictionaryList()
     updateDictionaryListModel();
     list_widget_.clear();
     list_widget_.setModel(&dict_list_model_);
-    list_widget_.show();
-    list_widget_.select(dict_mgr_.selected());
-    list_widget_.setFocus();
 }
 
 void OnyxDictFrame::onItemActivated(CatalogView *catalog, ContentView *item,
@@ -441,6 +451,8 @@ void OnyxDictFrame::onItemActivated(CatalogView *catalog, ContentView *item,
         if(OnyxKeyboard::KEYBOARD_MENU_CLEAR == menu_type)
         {
             editor()->clear();
+            word_ = "";
+            doc_.setHtml("");
             update();
             onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::DW);
         }
@@ -472,6 +484,22 @@ void OnyxDictFrame::dictionariesClicked()
     onyx::screen::instance().enableUpdate(false);
     explanation_.hide();
     updateDictionaryList();
+
+    int rows = dict_list_model_.rowCount(dict_list_model_.invisibleRootItem()->index());
+    if (rows > 0)
+    {
+        help_widget_.hide();
+        list_widget_.show();
+        list_widget_.select(dict_mgr_.selected());
+        list_widget_.setFocus();
+    }
+    else
+    {
+        list_widget_.hide();
+        help_widget_.show();
+        setDefaultFocus();
+    }
+
     onyx::screen::instance().enableUpdate(true);
     update();
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
@@ -481,7 +509,32 @@ void OnyxDictFrame::similarWordsClicked()
 {
     onyx::screen::instance().enableUpdate(false);
     explanation_.hide();
-    updateSimilarWords();
+
+    updateDictionaryListModel();
+    int rows = dict_list_model_.rowCount(dict_list_model_.invisibleRootItem()->index());
+    if (rows > 0)
+    {
+        if (word_.isEmpty() && editor()->text().isEmpty())
+        {
+            showWidgetWhenInputIsEmpty();
+        }
+        else
+        {
+            help_widget_.hide();
+            list_widget_.clear();
+            list_widget_.show();
+            list_widget_.setFocus();
+
+            updateSimilarWords();
+        }
+    }
+    else
+    {
+        list_widget_.hide();
+        help_widget_.show();
+        setDefaultFocus();
+    }
+
     onyx::screen::instance().enableUpdate(true);
     update();
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
@@ -489,9 +542,23 @@ void OnyxDictFrame::similarWordsClicked()
 
 void OnyxDictFrame::explanationClicked()
 {
-    explanation_.show();
-    explanation_.setFocus();
-    list_widget_.hide();
+    updateDictionaryListModel();
+    int rows = dict_list_model_.rowCount(dict_list_model_.invisibleRootItem()->index());
+    if (rows > 0)
+    {
+        list_widget_.hide();
+        help_widget_.hide();
+        explanation_.show();
+        explanation_.setFocus();
+    }
+    else
+    {
+        explanation_.hide();
+        list_widget_.hide();
+        help_widget_.show();
+        setDefaultFocus();
+    }
+
     update();
     onyx::screen::watcher().enqueue(this, onyx::screen::ScreenProxy::GU);
 }
@@ -508,6 +575,14 @@ void OnyxDictFrame::ttsClicked()
     {
         tts_engine_->speak(text);
     }
+}
+
+void OnyxDictFrame::showWidgetWhenInputIsEmpty()
+{
+    list_widget_.hide();
+    help_widget_.hide();
+    explanation_.show();
+    setDefaultFocus();
 }
 
 QWidget * OnyxDictFrame::getVisibleWidget()
