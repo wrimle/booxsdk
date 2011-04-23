@@ -45,7 +45,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
 
 CatalogView::~CatalogView()
 {
-    clearDatas(data());
+    // clearDatas(data());
 }
 
 void CatalogView::setSearchPolicy(int policy)
@@ -408,9 +408,9 @@ bool CatalogView::gotoPage(const int p)
     return false;
 }
 
+/// Set data. It's caller's responsibility to maintain data.
 void CatalogView::setData(const ODatas &list, bool force)
 {
-    //clearDatas(datas_);
     datas_ = list;
     resetPaginator(true);
     arrangeAll(force);
