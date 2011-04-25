@@ -97,6 +97,11 @@ private:
     CatalogView dictionary_menu_;
     CatalogView tts_button_view_;
 
+    ODatas line_edit_datas_;
+    ODatas sub_menu_datas_;
+    ODatas dictionary_menu_datas_;
+    ODatas tts_button_datas_;
+
     OnyxKeyboard keyboard_;
     StatusBar status_bar_;              ///< Status Bar
 

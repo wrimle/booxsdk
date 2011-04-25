@@ -129,15 +129,14 @@ void OnyxDictFrame::createLineEdit()
     line_edit_.setSubItemType(LineEditView::type());
     line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
 
-    ODatas ds;
     OData *dd = new OData;
     dd->insert(TAG_TITLE, "");
-    ds.push_back(dd);
+    line_edit_datas_.push_back(dd);
 
     line_edit_.setFixedGrid(1, 1);
     line_edit_.setFixedHeight(defaultItemHeight()+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    line_edit_.setData(ds);
+    line_edit_.setData(line_edit_datas_);
     line_edit_.setNeighbor(&dictionary_menu_, CatalogView::DOWN);
     line_edit_.setNeighbor(keyboard_.menu(), CatalogView::RECYCLE_DOWN);
     line_edit_.setNeighbor(&sub_menu_, CatalogView::RIGHT);
@@ -148,18 +147,17 @@ void OnyxDictFrame::createSubMenu()
 {
     const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
-    ODatas ds;
 
     OData *dd = new OData;
     dd->insert(TAG_TITLE, tr("Clear"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(dd);
+    sub_menu_datas_.push_back(dd);
 
     sub_menu_.setFixedGrid(1, 1);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
     sub_menu_.setFixedWidth(defaultItemHeight()*3);
-    sub_menu_.setData(ds);
+    sub_menu_.setData(sub_menu_datas_);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
     sub_menu_.setNeighbor(&dictionary_menu_, CatalogView::DOWN);
     sub_menu_.setNeighbor(keyboard_.menu(), CatalogView::RECYCLE_DOWN);
@@ -169,36 +167,35 @@ void OnyxDictFrame::createDictionaryMenu()
 {
     const int height = defaultItemHeight();
     dictionary_menu_.setPreferItemSize(QSize(height, height));
-    ODatas ds;
 
     OData *dd = new OData;
     dd->insert(TAG_COVER, QPixmap(":/images/dictionary_list.png"));
     dd->insert(TAG_MENU_TYPE, MENU_DICTIONARIES);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
-    ds.push_back(dd);
+    dictionary_menu_datas_.push_back(dd);
 
     dd = new OData;
     dd->insert(TAG_COVER, QPixmap(":/images/similar_words.png"));
     dd->insert(TAG_MENU_TYPE, MENU_SIMILAR_WORDS);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
-    ds.push_back(dd);
+    dictionary_menu_datas_.push_back(dd);
 
     dd = new OData;
     dd->insert(TAG_COVER, QPixmap(":/images/explanation.png"));
     dd->insert(TAG_MENU_TYPE, MENU_EXPLANATION);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
-    ds.push_back(dd);
+    dictionary_menu_datas_.push_back(dd);
 
     dd = new OData;
     dd->insert(TAG_COVER, QPixmap(":/images/lookup.png"));
     dd->insert(TAG_MENU_TYPE, MENU_LOOKUP);
     dd->insert(TAG_FONT_SIZE, DICT_MENU_FONT_SIZE);
-    ds.push_back(dd);
+    dictionary_menu_datas_.push_back(dd);
 
     dictionary_menu_.setFixedGrid(1, 4);
     dictionary_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     dictionary_menu_.setFixedHeight(defaultItemHeight()+5*SPACING);
-    dictionary_menu_.setData(ds);
+    dictionary_menu_.setData(dictionary_menu_datas_);
     dictionary_menu_.setNeighbor(&line_edit_, CatalogView::UP);
     dictionary_menu_.setNeighbor(&sub_menu_, CatalogView::UP);
     dictionary_menu_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
@@ -210,19 +207,18 @@ void OnyxDictFrame::createTtsButtonView()
 {
     const int height = defaultItemHeight();
     tts_button_view_.setPreferItemSize(QSize(height, height));
-    ODatas ds;
 
     OData *dd = new OData;
     QPixmap tts_pixmap(":/images/tts_menu.png");
     dd->insert(TAG_COVER, tts_pixmap);
     dd->insert(TAG_MENU_TYPE, MENU_TTS);
-    ds.push_back(dd);
+    tts_button_datas_.push_back(dd);
 
     tts_button_view_.setFixedGrid(1, 1);
     tts_button_view_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     tts_button_view_.setFixedHeight(defaultItemHeight()+5*SPACING);
     tts_button_view_.setFixedWidth(defaultItemHeight()+7*SPACING);
-    tts_button_view_.setData(ds);
+    tts_button_view_.setData(tts_button_datas_);
     tts_button_view_.setNeighbor(&sub_menu_, CatalogView::UP);
     tts_button_view_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
     tts_button_view_.setNeighbor(&dictionary_menu_, CatalogView::LEFT);
