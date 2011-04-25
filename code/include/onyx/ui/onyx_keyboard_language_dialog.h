@@ -30,6 +30,7 @@ private:
 private:
     QVBoxLayout layout_;
     CatalogView language_group_;
+    ODatas language_group_datas_;
     QLocale language_;
 };
 

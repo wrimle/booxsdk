@@ -38,7 +38,7 @@ private:
     void createShowPlainText();
     void connectWithChildren();
 
-    CatalogView * createEditItem(OData *data, int index);
+    CatalogView * createEditItem(OData *data, int index, ODatas *edit_datas);
 
     void clearClicked();
     void setEditEchoMode(QLineEdit::EchoMode mode);
@@ -54,6 +54,10 @@ private:
     CatalogView show_plain_text_;
     QVector<CatalogView *> edit_view_list_;
     LineEditViewGroup edit_view_group_;
+
+    ODatas sub_menu_datas_;
+    ODatas show_plain_text_datas_;
+    QVector<ODatas *> all_line_edit_datas_;
 
     OnyxKeyboard keyboard_;
     QString title_;

@@ -40,6 +40,7 @@ OnyxKeyboardLanguageDialog::OnyxKeyboardLanguageDialog(QLocale language,
 
 OnyxKeyboardLanguageDialog::~OnyxKeyboardLanguageDialog()
 {
+    clearDatas(language_group_datas_);
 }
 
 void OnyxKeyboardLanguageDialog::createLayout()
@@ -63,7 +64,6 @@ void OnyxKeyboardLanguageDialog::createLanguageGroup()
     language_group_.setSubItemType(CheckBoxView::type());
     language_group_.setPreferItemSize(QSize(120, defaultItemHeight()));
 
-    ODatas ds;
     for (int i=0; i<LANGUAGE_COUNT; i++)
     {
         ODataPtr dd(new OData);
@@ -72,9 +72,9 @@ void OnyxKeyboardLanguageDialog::createLanguageGroup()
         {
             dd->insert(TAG_CHECKED, true);
         }
-        ds.push_back(dd);
+        language_group_datas_.push_back(dd);
     }
-    language_group_.setData(ds);
+    language_group_.setData(language_group_datas_);
 
     language_group_.setFixedGrid(LANGUAGE_COUNT, 1);
     language_group_.setSearchPolicy(CatalogView::AutoVerRecycle);

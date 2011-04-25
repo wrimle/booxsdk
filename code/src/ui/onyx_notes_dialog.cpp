@@ -25,6 +25,7 @@ OnyxNotesDialog::OnyxNotesDialog(const QString & text, QWidget *parent)
 
 OnyxNotesDialog::~OnyxNotesDialog()
 {
+    clearDatas(sub_menu_datas_);
 }
 
 int OnyxNotesDialog::popup(const QString & text)
@@ -56,23 +57,22 @@ void OnyxNotesDialog::createSubMenu()
     const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
 
-    ODatas ds;
     ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("OK"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
-    ds.push_back(dd);
+    sub_menu_datas_.push_back(dd);
 
     ODataPtr b(new OData);
     b->insert(TAG_TITLE, tr("Clear"));
     b->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(b);
+    sub_menu_datas_.push_back(b);
 
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
+    sub_menu_.setData(sub_menu_datas_);
     sub_menu_.setFixedWidth(defaultItemHeight()*4);
     sub_menu_.setFixedHeight(defaultItemHeight()+4*SPACING);
-    sub_menu_.setData(ds);
 }
 
 void OnyxNotesDialog::createLayout()

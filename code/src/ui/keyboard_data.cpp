@@ -15,6 +15,22 @@ KeyboardData::KeyboardData()
 
 KeyboardData::~KeyboardData()
 {
+    clearDatas(top_codes_);
+    clearDatas(left_codes_);
+    clearDatas(middle_codes_);
+    clearDatas(right_codes_);
+    clearDatas(bottom_codes_);
+    clearDatas(menu_codes_);
+
+    clearDatas(top_shift_codes_);
+    clearDatas(left_shift_codes_);
+    clearDatas(middle_shift_codes_);
+    clearDatas(right_shift_codes_);
+    clearDatas(bottom_shift_codes_);
+
+    clearDatas(left_symbol_codes_);
+    clearDatas(middle_symbol_codes_);
+    clearDatas(right_symbol_codes_);
 }
 
 ODatas & KeyboardData::topCodes(bool shift)

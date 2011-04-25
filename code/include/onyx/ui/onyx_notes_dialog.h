@@ -50,6 +50,8 @@ private:
     // contains OK and Clear menu items
     CatalogView sub_menu_;
 
+    ODatas sub_menu_datas_;
+
     OnyxKeyboard keyboard_;
     QString title_;
     QWidget *to_focus_;

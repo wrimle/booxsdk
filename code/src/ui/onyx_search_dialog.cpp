@@ -30,6 +30,9 @@ OnyxSearchDialog::OnyxSearchDialog(QWidget *parent, OnyxSearchContext & ctx)
 
 OnyxSearchDialog::~OnyxSearchDialog()
 {
+    clearDatas(line_edit_datas_);
+    clearDatas(sub_menu_datas_);
+    clearDatas(next_prev_datas_);
 }
 
 void OnyxSearchDialog::adjustSizeAndPosition()
@@ -124,15 +127,14 @@ void OnyxSearchDialog::createLineEdit()
     line_edit_.setSubItemType(LineEditView::type());
     line_edit_.setPreferItemSize(QSize(rect().width(), defaultItemHeight()));
 
-    ODatas ds;
     ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, "");
-    ds.push_back(dd);
+    line_edit_datas_.push_back(dd);
 
     line_edit_.setFixedGrid(1, 1);
     line_edit_.setFixedHeight(defaultItemHeight()+2*SPACING);
     line_edit_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
-    line_edit_.setData(ds);
+    line_edit_.setData(line_edit_datas_);
     line_edit_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
     line_edit_.setNeighbor(keyboard_.menu(), CatalogView::RECYCLE_DOWN);
     line_edit_.setNeighbor(&sub_menu_, CatalogView::RIGHT);
@@ -143,24 +145,23 @@ void OnyxSearchDialog::createSubMenu()
 {
     const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
-    ODatas ds;
 
     ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, tr("Search"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
-    ds.push_back(dd);
+    sub_menu_datas_.push_back(dd);
 
     ODataPtr d( new OData);
     d->insert(TAG_TITLE, tr("Clear"));
     d->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(d);
+    sub_menu_datas_.push_back(d);
 
     sub_menu_.setSpacing(2);
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
     sub_menu_.setFixedWidth(defaultItemHeight()*6);
-    sub_menu_.setData(ds);
+    sub_menu_.setData(sub_menu_datas_);
     sub_menu_.setNeighbor(&line_edit_, CatalogView::RECYCLE_LEFT);
     sub_menu_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
     sub_menu_.setNeighbor(keyboard_.menu(), CatalogView::RECYCLE_DOWN);
@@ -170,24 +171,23 @@ void OnyxSearchDialog::createNavigateMenu()
 {
     const int height = defaultItemHeight();
     next_prev_.setPreferItemSize(QSize(height, height));
-    ODatas ds;
 
     ODataPtr dd( new OData);
     dd->insert(TAG_TITLE, tr("Previous"));
     dd->insert(TAG_MENU_TYPE, SEARCH_NAV_PREVIOUS);
-    ds.push_back(dd);
+    next_prev_datas_.push_back(dd);
 
     ODataPtr b( new OData);
     b->insert(TAG_TITLE, tr("Next"));
     b->insert(TAG_MENU_TYPE, SEARCH_NAV_NEXT);
-    ds.push_back(b);
+    next_prev_datas_.push_back(b);
 
     next_prev_.setSpacing(2);
     next_prev_.setFixedGrid(1, 2);
     next_prev_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     next_prev_.setFixedHeight(defaultItemHeight()+2*SPACING);
     next_prev_.setFixedWidth(defaultItemHeight()*7);
-    next_prev_.setData(ds);
+    next_prev_.setData(next_prev_datas_);
     next_prev_.setSearchPolicy(CatalogView::NeighborFirst
             | CatalogView::AutoHorRecycle);
 }

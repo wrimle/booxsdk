@@ -84,6 +84,10 @@ private:
     OnyxKeyboard keyboard_;
     CatalogView next_prev_;
 
+    ODatas line_edit_datas_;
+    ODatas sub_menu_datas_;
+    ODatas next_prev_datas_;
+
     OnyxSearchContext & ctx_;
 
     int mode_;

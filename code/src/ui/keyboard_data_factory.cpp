@@ -16,7 +16,11 @@ KeyboardDataFactory::KeyboardDataFactory()
 
 KeyboardDataFactory::~KeyboardDataFactory()
 {
-
+    foreach (KeyboardData *kdata, data_map_)
+    {
+        delete kdata;
+    }
+    data_map_.clear();
 }
 
 bool KeyboardDataFactory::registerKeyboardData(const QLocale & locale,

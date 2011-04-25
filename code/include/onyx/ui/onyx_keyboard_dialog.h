@@ -48,6 +48,9 @@ private:
     // contains OK and Clear menu items
     CatalogView sub_menu_;
 
+    ODatas line_edit_datas_;
+    ODatas sub_menu_datas_;
+
     OnyxKeyboard keyboard_;
     QString title_;
     QString ok_button_text_;

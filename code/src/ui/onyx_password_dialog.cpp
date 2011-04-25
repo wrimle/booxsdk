@@ -45,7 +45,13 @@ OnyxPasswordDialog::OnyxPasswordDialog(QWidget *parent, const ODatas &ds,
 
 OnyxPasswordDialog::~OnyxPasswordDialog()
 {
-    // TODO delete the pointers in edit view list
+    foreach (ODatas *edit_datas, all_line_edit_datas_)
+    {
+        clearDatas(*edit_datas);
+        delete edit_datas;
+    }
+    clearDatas(sub_menu_datas_);
+    clearDatas(show_plain_text_datas_);
 }
 
 void OnyxPasswordDialog::appendDefaultPasswordEdit()
@@ -149,14 +155,14 @@ void OnyxPasswordDialog::createLayout()
     big_layout_.addWidget(&keyboard_);
 }
 
-CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
+CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index,
+        ODatas *edit_datas)
 {
     const int height = defaultItemHeight();
     CatalogView * edit_item = new CatalogView(0, this);
     edit_item->setSubItemType(LineEditView::type());
     edit_item->setPreferItemSize(QSize(height, height));
 
-    ODatas ds;
     ODataPtr dd(new OData);
 
     // copy the TAG_IS_PASSWD property
@@ -177,12 +183,12 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
         dd->insert(TAG_DISABLED, data->value(TAG_DISABLED).toBool());
     }
 
-    ds.push_back(dd);
+    edit_datas->push_back(dd);
 
     edit_item->setFixedGrid(1, 1);
     edit_item->setMargin(OnyxKeyboard::CATALOG_MARGIN);
     edit_item->setFixedHeight(defaultItemHeight()+2*SPACING);
-    edit_item->setData(ds);
+    edit_item->setData(*edit_datas);
     return edit_item;
 }
 
@@ -193,7 +199,10 @@ void OnyxPasswordDialog::createLineEdits()
     for (int i=0; i<size; i++)
     {
         ODataPtr data = edit_list_.at(i);
-        CatalogView * edit_item = createEditItem(data, i);
+
+        ODatas * edit_datas = new ODatas;
+        CatalogView * edit_item = createEditItem(data, i, edit_datas);
+        all_line_edit_datas_.push_back(edit_datas);
 
         // set default checked edit item
         if (default_checked == i)
@@ -236,22 +245,21 @@ void OnyxPasswordDialog::createSubMenu()
     const int height = defaultItemHeight();
     sub_menu_.setPreferItemSize(QSize(height, height));
 
-    ODatas ds;
     ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("OK"));
     dd->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_OK);
-    ds.push_back(dd);
+    sub_menu_datas_.push_back(dd);
 
     ODataPtr b(new OData);
     b->insert(TAG_TITLE, tr("Clear"));
     b->insert(TAG_MENU_TYPE, OnyxKeyboard::KEYBOARD_MENU_CLEAR);
-    ds.push_back(b);
+    sub_menu_datas_.push_back(b);
 
     sub_menu_.setFixedGrid(1, 2);
     sub_menu_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     sub_menu_.setFixedHeight(defaultItemHeight()+2*SPACING);
     sub_menu_.setFixedWidth(defaultItemHeight()*5);
-    sub_menu_.setData(ds);
+    sub_menu_.setData(sub_menu_datas_);
     sub_menu_.setNeighbor(edit_view_list_.front(), CatalogView::LEFT);
     sub_menu_.setNeighbor(edit_view_list_.front(), CatalogView::RECYCLE_LEFT);
     sub_menu_.setNeighbor(&show_plain_text_, CatalogView::DOWN);
@@ -264,16 +272,15 @@ void OnyxPasswordDialog::createShowPlainText()
     show_plain_text_.setSubItemType(CheckBoxView::type());
     show_plain_text_.setPreferItemSize(QSize(height, height));
 
-    ODatas ds;
     ODataPtr dd(new OData);
     dd->insert(TAG_TITLE, tr("Show Plain Text"));
     dd->insert(TAG_CHECKED, false);
-    ds.push_back(dd);
+    show_plain_text_datas_.push_back(dd);
 
     show_plain_text_.setFixedGrid(1, 1);
     show_plain_text_.setMargin(OnyxKeyboard::CATALOG_MARGIN);
     show_plain_text_.setFixedHeight(defaultItemHeight()+2*SPACING);
-    show_plain_text_.setData(ds);
+    show_plain_text_.setData(show_plain_text_datas_);
     show_plain_text_.setNeighbor(edit_view_list_.back(), CatalogView::UP);
     show_plain_text_.setNeighbor(keyboard_.top(), CatalogView::DOWN);
 }
