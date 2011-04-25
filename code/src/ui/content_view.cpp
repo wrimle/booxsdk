@@ -486,6 +486,19 @@ void LineEditView::paintEvent(QPaintEvent * event)
                     (is_password? QLineEdit::Password : QLineEdit::Normal) );
         }
 
+        // set disable property
+        if (data()->contains(TAG_DISABLED))
+        {
+            bool disabled = data()->value(TAG_DISABLED).toBool();
+            innerEdit()->setEnabled(!disabled);
+            setEnabled(!disabled);
+            if (disabled)
+            {
+                // no more paint since it is disabled.
+                return;
+            }
+        }
+
         if (hasFocus())
         {
             QPen pen;

@@ -77,6 +77,7 @@ bool OnyxPasswordDialog::popup(const QString &password)
         {
             data->insert(TAG_TITLE, password);
         }
+        sub_items.front()->updateData(data, true);
     }
 
     if (isHidden())
@@ -158,16 +159,6 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
     ODatas ds;
     ODataPtr dd(new OData);
 
-    // set the TAG_CHECKED property
-    if (0 == index)
-    {
-        dd->insert(TAG_CHECKED, true);
-    }
-    else
-    {
-        dd->insert(TAG_CHECKED, false);
-    }
-
     // copy the TAG_IS_PASSWD property
     if (data->contains(TAG_IS_PASSWD))
     {
@@ -178,6 +169,12 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
     if (data->contains(TAG_DEFAULT_VALUE))
     {
         dd->insert(TAG_TITLE, data->value(TAG_DEFAULT_VALUE).toString());
+    }
+
+    // copy the TAG_DISABLED property
+    if (data->contains(TAG_DISABLED))
+    {
+        dd->insert(TAG_DISABLED, data->value(TAG_DISABLED).toBool());
     }
 
     ds.push_back(dd);
@@ -192,10 +189,31 @@ CatalogView * OnyxPasswordDialog::createEditItem(OData *data, int index)
 void OnyxPasswordDialog::createLineEdits()
 {
     int size = edit_list_.size();
+    int default_checked = 0;
     for (int i=0; i<size; i++)
     {
         ODataPtr data = edit_list_.at(i);
         CatalogView * edit_item = createEditItem(data, i);
+
+        // set default checked edit item
+        if (default_checked == i)
+        {
+            ODataPtr td = edit_item->data().front();
+            if (td)
+            {
+                if (!td->contains(TAG_DISABLED) || !td->value(TAG_DISABLED).toBool())
+                {
+                    // set the TAG_CHECKED property
+                    td->insert(TAG_CHECKED, true);
+                    default_checked = -1;
+                }
+                else
+                {
+                    default_checked++;
+                }
+            }
+        }
+
         if (!edit_view_list_.isEmpty())
         {
             edit_item->setNeighbor(edit_view_list_.back(), CatalogView::UP);
