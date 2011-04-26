@@ -663,7 +663,7 @@ ContentView* CatalogView::createSubItem()
         instance = factory_->createView(this, sub_item_type_);
     }
     instance->setBkColor(bk_color_);
-    connect(instance, SIGNAL(activated(ContentView*,int)), this, SLOT(onItemActivated(ContentView *,int)), Qt::QueuedConnection);
+    connect(instance, SIGNAL(activated(ContentView*,int)), this, SLOT(onItemActivated(ContentView *,int)));
     connect(instance, SIGNAL(keyRelease(ContentView*, QKeyEvent*)), this, SLOT(onItemKeyRelease(ContentView *, QKeyEvent*)));
     connect(instance, SIGNAL(mouse(QPoint, QPoint)), this, SLOT(onMouseMoved(QPoint, QPoint)));
     sub_items_.push_back(instance);
