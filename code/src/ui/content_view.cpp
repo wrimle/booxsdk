@@ -654,11 +654,6 @@ void ClockView::paintEvent(QPaintEvent * event)
 
      painter.setPen(hourColor);
 
-     for (int i = 0; i < 12; ++i) {
-         painter.drawLine(88, 0, 98, 0);
-         painter.rotate(30.0);
-     }
-
      QFont font;
      font.setPointSize(12);
      painter.setFont(font);
@@ -673,9 +668,14 @@ void ClockView::paintEvent(QPaintEvent * event)
              d = 12;
          }
          s = QString::number(d);
-         painter.drawText(QPoint(x - fm.width(s) / 2, y + fm.height() / 2), s);
+         QRect rc(x - fm.width(s) / 2, y - fm.height() / 2, fm.width(s), fm.height());
+         painter.drawText(rc, Qt::AlignCenter, s);
      }
 
+     for (int i = 0; i < 12; ++i) {
+         painter.drawLine(88, 0, 98, 0);
+         painter.rotate(30.0);
+     }
 
      painter.setPen(Qt::NoPen);
      painter.setBrush(minuteColor);
