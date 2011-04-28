@@ -603,6 +603,9 @@ void ClockView::drawDigitalClock(QPainter &painter)
 
 void ClockView::paintEvent(QPaintEvent * event)
 {
+     const double PI = 3.14159265;
+     const double LEN = 75;
+
     static const QPoint hourHand[3] = {
          QPoint(3, 4),
          QPoint(-4, 4),
@@ -635,8 +638,8 @@ void ClockView::paintEvent(QPaintEvent * event)
          painter.drawRoundedRect(rect().adjusted(penWidth(), penWidth(), -penWidth() , -penWidth()), 5, 5);
      }
 
-     drawDigitalClock(painter);
-     return;
+     // drawDigitalClock(painter);
+     // return;
 
      painter.translate(width() / 2, height() / 2);
      painter.scale(side / 200.0, side / 200.0);
@@ -650,6 +653,26 @@ void ClockView::paintEvent(QPaintEvent * event)
      painter.restore();
 
      painter.setPen(hourColor);
+
+     QFont font;
+     font.setPointSize(14);
+     font.setBold(true);
+     painter.setFont(font);
+     QFontMetrics fm = painter.fontMetrics();
+     QString s;
+     for (int i = 0; i < 12; ++i) {
+         double x = cos(i * 30.0 * PI / 180.0) * LEN;
+         double y = sin(i * 30.0 * PI / 180.0) * LEN;
+         int d = (i + 3) % 12;
+         if (d <= 0)
+         {
+             d = 12;
+         }
+         s = QString::number(d);
+         QRect rc = fm.boundingRect(s);
+         rc.moveCenter(QPoint(x, y));
+         painter.drawText(rc, Qt::AlignCenter, s);
+     }
 
      for (int i = 0; i < 12; ++i) {
          painter.drawLine(88, 0, 98, 0);
