@@ -232,5 +232,9 @@
     <file>images/locale.png</file>
     <file>images/locale_small.png</file>
     <file>images/enter_key.png</file>
+
+    <file>images/lock_home_and_back.png</file>
+    <file>images/lock_page_turning.png</file>
+
   </qresource>
 </RCC>
