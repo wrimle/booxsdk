@@ -136,6 +136,8 @@ class SysStatus : public QObject
     void startSingleShotHardwareTimer(const int seconds);
     void setDefaultHardwareTimerInterval();
 
+    void configKeyboard(unsigned int keys);
+
     // The following signals must be the same with system manager.
     // Need a better way to sync them.
   signals:
@@ -188,6 +190,8 @@ class SysStatus : public QObject
     void multiTouchPressDetected(QRect, QRect);
     void multiTouchReleaseDetected(QRect, QRect);
 
+    void configKeyboard();
+
   private slots:
     void onBatteryChanged(int, int);
     void onMountTreeChanged(bool mounted, const QString &mount_point);
@@ -227,6 +231,8 @@ class SysStatus : public QObject
     void onMouseLongPress(int, int, int, int);    
     void onMultiTouchPressDetected(int, int, int, int, int, int, int, int);
     void onMultiTouchReleaseDetected(int, int, int, int, int, int, int, int);
+
+    void onConfigKeyboard();
 
   private:
     SysStatus();
