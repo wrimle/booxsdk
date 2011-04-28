@@ -655,7 +655,8 @@ void ClockView::paintEvent(QPaintEvent * event)
      painter.setPen(hourColor);
 
      QFont font;
-     font.setPointSize(12);
+     font.setPointSize(14);
+     font.setBold(true);
      painter.setFont(font);
      QFontMetrics fm = painter.fontMetrics();
      QString s;
@@ -668,7 +669,8 @@ void ClockView::paintEvent(QPaintEvent * event)
              d = 12;
          }
          s = QString::number(d);
-         QRect rc(x - fm.width(s) / 2, y - fm.height() / 2, fm.width(s), fm.height());
+         QRect rc = fm.boundingRect(s);
+         rc.moveCenter(QPoint(x, y));
          painter.drawText(rc, Qt::AlignCenter, s);
      }
 
