@@ -364,7 +364,7 @@ void CheckBoxView::paintEvent(QPaintEvent * event)
 
         QRect check_box_r = drawCheckBox(painter, rect());
 
-        int icon_x = check_box_r.right() + MARGIN;
+        int icon_x = check_box_r.right() + MARGIN+4;
         QRect icon_r = drawCover(painter, QRect(icon_x, rect().y(),
                 rect().width()-icon_x, rect().height()));
 
@@ -405,8 +405,9 @@ QRect CheckBoxView::drawCover(QPainter & painter, QRect rect)
     if (data() && data()->contains(TAG_COVER))
     {
         QPixmap pixmap(qVariantValue<QPixmap>(data()->value(TAG_COVER)));
-        painter.drawPixmap(MARGIN, (rect.height() - pixmap.height()) / 2, pixmap);
-        icon_rect.setRight(pixmap.width());
+        painter.drawPixmap(rect.left(), (rect.height() - pixmap.height()) / 2,
+                pixmap);
+        icon_rect.setRight(rect.left()+pixmap.width());
     }
     return icon_rect;
 }
