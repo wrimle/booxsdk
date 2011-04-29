@@ -674,21 +674,21 @@ ContentView* CatalogView::createSubItem()
     {
         if (fixed_size_)
         {
-            instance->setFixedWidth(s.width());
+            // instance->setFixedWidth(s.width());
         }
     }
     else if (s.width() <= 0)
     {
         if (fixed_size_)
         {
-            instance->setFixedHeight(s.height());
+            // instance->setFixedHeight(s.height());
         }
     }
     else
     {
         if (fixed_size_)
         {
-            instance->setFixedSize(s);
+            // instance->setFixedSize(s);
         }
     }
     return instance;
