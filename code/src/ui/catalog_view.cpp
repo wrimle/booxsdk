@@ -39,6 +39,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , sub_item_checked_exclusive_(true)
         , size_(200, 150)
         , bk_color_(Qt::white)
+        , fixed_size_(true)
 {
     createLayout();
 }
@@ -671,15 +672,24 @@ ContentView* CatalogView::createSubItem()
     QSize s = preferItemSize();
     if (s.height() <= 0)
     {
-        // instance->setFixedWidth(s.width());
+        if (fixed_size_)
+        {
+            instance->setFixedWidth(s.width());
+        }
     }
     else if (s.width() <= 0)
     {
-        // instance->setFixedHeight(s.height());
+        if (fixed_size_)
+        {
+            instance->setFixedHeight(s.height());
+        }
     }
     else
     {
-        // instance->setFixedSize(s);
+        if (fixed_size_)
+        {
+            instance->setFixedSize(s);
+        }
     }
     return instance;
 }
@@ -704,8 +714,9 @@ QSize CatalogView::preferItemSize()
     return size_;
 }
 
-void CatalogView::setPreferItemSize(const QSize &size)
+void CatalogView::setPreferItemSize(const QSize &size, bool fixed)
 {
+    fixed_size_ = fixed;
     if (size_ != size)
     {
         size_ = size;
