@@ -16,7 +16,11 @@ class KeyboardConfigDialog: public OnyxDialog
     Q_OBJECT
 
 public:
-    KeyboardConfigDialog(QWidget *parent);
+    static const QString KEY_FOR_MISC_CONF;
+
+public:
+    KeyboardConfigDialog(bool home_and_back_locked, bool page_turning_locked,
+            QWidget *parent);
     ~KeyboardConfigDialog();
 
     int popup();
@@ -24,16 +28,23 @@ public:
     bool homeAndBackLocked();
     bool pageTurningLocked();
 
+private Q_SLOTS:
+    void onItemActivated(CatalogView *catalog, ContentView *item,
+            int user_data);
+
 private:
     void createLayout();
     void createConfigGroup();
     void createButtonView();
+    void connectWithChildren();
 
-    void onItemActivated(CatalogView *catalog, ContentView *item, int user_data);
+    void setKeyboardConfig();
 
 private:
     QVBoxLayout big_layout_;
     QHBoxLayout button_layout_;
+
+    OnyxLabel description_;
 
     CatalogView config_group_;
     ODatas config_group_datas_;

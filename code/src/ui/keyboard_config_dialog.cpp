@@ -7,19 +7,24 @@ namespace ui
 
 enum ButtonType
 {
-    BUTTON_TYPE_OK,
-    BUTTON_TYPE_CANCEL,
+    BUTTON_TYPE_OK = 11,
+    BUTTON_TYPE_CANCEL = 12,
 };
 
-KeyboardConfigDialog::KeyboardConfigDialog(QWidget *parent)
+const QString KeyboardConfigDialog::KEY_FOR_MISC_CONF = "keyboard_config";
+
+KeyboardConfigDialog::KeyboardConfigDialog(bool home_and_back_locked,
+        bool page_turning_locked,QWidget *parent)
     : OnyxDialog(parent)
     , big_layout_(&content_widget_)
     , button_layout_(0)
     , config_group_(0, this)
-    , home_and_back_locked_(true)
-    , page_turning_locked_(false)
+    , home_and_back_locked_(home_and_back_locked)
+    , page_turning_locked_(page_turning_locked)
 {
     createLayout();
+    connectWithChildren();
+    updateTitle(tr("Lock Keyboard"));
 }
 
 KeyboardConfigDialog::~KeyboardConfigDialog()
@@ -35,13 +40,13 @@ void KeyboardConfigDialog::createConfigGroup()
     ODataPtr first(new OData);
     QPixmap home_and_back(":/images/lock_home_and_back.png");
     first->insert(TAG_COVER, home_and_back);
-    first->insert(TAG_CHECKED, true);
+    first->insert(TAG_CHECKED, home_and_back_locked_);
     config_group_datas_.push_back(first);
 
     ODataPtr second(new OData);
     QPixmap page_turning(":/images/lock_page_turning.png");
     second->insert(TAG_COVER, page_turning);
-    second->insert(TAG_CHECKED, false);
+    second->insert(TAG_CHECKED, page_turning_locked_);
     config_group_datas_.push_back(second);
 
     config_group_.setData(config_group_datas_);
@@ -74,16 +79,49 @@ void KeyboardConfigDialog::createButtonView()
     button_view_.setData(button_view_datas_);
 }
 
+void KeyboardConfigDialog::connectWithChildren()
+{
+    connect(&config_group_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+    connect(&button_view_, SIGNAL(itemActivated(CatalogView *, ContentView *, int)),
+            this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
+}
+
+void KeyboardConfigDialog::setKeyboardConfig()
+{
+    ContentView *front = config_group_.visibleSubItems().front();
+    home_and_back_locked_ = false;
+    if (front->data() && front->data()->contains(TAG_CHECKED))
+    {
+        home_and_back_locked_ = front->data()->value(TAG_CHECKED).toBool();
+    }
+
+    ContentView *back = config_group_.visibleSubItems().back();
+    page_turning_locked_ = false;
+    if (back->data() && back->data()->contains(TAG_CHECKED))
+    {
+        page_turning_locked_ = back->data()->value(TAG_CHECKED).toBool();
+    }
+
+    qDebug() << "home and back lock? " << home_and_back_locked_;
+    qDebug() << "page turning lock? " << page_turning_locked_;
+}
+
 void KeyboardConfigDialog::createLayout()
 {
     vbox_.setSpacing(0);
     content_widget_.setBackgroundRole(QPalette::Button);
     content_widget_.setContentsMargins(0, 0, 0, 0);
 
+    description_.setText(tr("Choose keyboard to lock:"));
+    description_.setAlignment(Qt::AlignLeft);
+    description_.setFixedHeight(defaultItemHeight());
+
     createConfigGroup();
     createButtonView();
 
-    big_layout_.addWidget(&config_group_, 0, Qt::AlignTop);
+    big_layout_.addWidget(&description_, 0, Qt::AlignTop);
+    big_layout_.addWidget(&config_group_, 1, Qt::AlignTop);
 
     button_layout_.addWidget(&button_view_, 0, Qt::AlignRight);
 
@@ -96,7 +134,7 @@ int KeyboardConfigDialog::popup()
     {
         show();
     }
-    resize(300, 300);
+    resize(360, 300);
 
     onyx::screen::watcher().addWatcher(this);
     int ret = this->exec();
@@ -124,12 +162,25 @@ void KeyboardConfigDialog::onItemActivated(CatalogView *catalog,
         int menu_type = item->data()->value(TAG_MENU_TYPE).toInt();
         if(BUTTON_TYPE_OK == menu_type)
         {
-            // TODO
+            setKeyboardConfig();
+            accept();
         }
         else if(BUTTON_TYPE_CANCEL == menu_type)
         {
             onCloseClicked();
         }
+    }
+    else if (catalog == &config_group_)
+    {
+        bool checked = false;
+        if (item->data()->contains(TAG_CHECKED))
+        {
+            checked = item->data()->value(TAG_CHECKED).toBool();
+        }
+        item->data()->insert(TAG_CHECKED, !checked);
+        item->repaint();
+        update();
+        onyx::screen::watcher().enqueue(item, onyx::screen::ScreenProxy::GU);
     }
 }
 

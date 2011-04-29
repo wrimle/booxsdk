@@ -80,6 +80,7 @@ private Q_SLOTS:
     void onConnectToPC(bool);
     void onVolumeButtonsPressed();
     void onHideVolumeDialog();
+    void onConfigKeyboard();
 
 private:
     virtual void mouseMoveEvent(QMouseEvent *me);
