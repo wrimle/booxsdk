@@ -137,6 +137,7 @@ class SysStatus : public QObject
     void setDefaultHardwareTimerInterval();
 
     void configKeyboard(unsigned int keys);
+    unsigned int keyboardConfiguration();
 
     // The following signals must be the same with system manager.
     // Need a better way to sync them.

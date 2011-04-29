@@ -1625,6 +1625,29 @@ void SysStatus::configKeyboard(unsigned int keys)
     }
 }
 
+unsigned int SysStatus::keyboardConfiguration()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "keyboardConfiguration"      // method.
+    );
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
+        if (reply.arguments().size() > 0)
+        {
+            return reply.arguments().front().toUInt();
+        }
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return 0;
+}
+
 void SysStatus::dump()
 {
     int left;
