@@ -75,7 +75,7 @@ public slots:
     void setFixedGrid(int rows, int cols);
     bool isFixedGrid();
     QSize preferItemSize();
-    void setPreferItemSize(const QSize &size);
+    void setPreferItemSize(const QSize &size, bool fixed = true);
     int rows();
     int cols();
 
@@ -183,6 +183,7 @@ private:
     QMap<QString, CatalogViews> neighbors_;
     QString sub_item_type_;
     Qt::GlobalColor bk_color_;
+    bool fixed_size_;
 };
 
 
