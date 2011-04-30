@@ -413,6 +413,9 @@ void StatusBar::onConfigKeyboard()
         qDebug() << "new value: " << new_value;
         sys_status.configKeyboard(new_value);
     }
+    onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GC,
+            false, onyx::screen::ScreenCommand::WAIT_COMMAND_FINISH);
+
 }
 
 void StatusBar::onVolumeClicked()
