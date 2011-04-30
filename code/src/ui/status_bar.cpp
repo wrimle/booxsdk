@@ -378,9 +378,9 @@ void StatusBar::onHideVolumeDialog()
 
 void StatusBar::onConfigKeyboard()
 {
-    if (!isVisible())
+    if (!isActiveWindow())
     {
-        // do not popup keyboard configure dialog when invisible.
+        // do not popup keyboard configure dialog when inactive.
         return;
     }
 
