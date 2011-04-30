@@ -22,6 +22,9 @@ KeyboardConfigDialog::KeyboardConfigDialog(bool home_and_back_locked,
     , home_and_back_locked_(home_and_back_locked)
     , page_turning_locked_(page_turning_locked)
 {
+    QSize fix_size(450, 250);
+    setFixedSize(fix_size);
+
     createLayout();
     connectWithChildren();
     updateTitle(tr("Lock Keyboard"));
@@ -38,14 +41,18 @@ void KeyboardConfigDialog::createConfigGroup()
     config_group_.setPreferItemSize(QSize(-1, 60));
 
     ODataPtr first(new OData);
-    QPixmap home_and_back(":/images/lock_home_and_back.png");
-    first->insert(TAG_COVER, home_and_back);
+//    QPixmap home_and_back(":/images/lock_home_and_back.png");
+//    first->insert(TAG_COVER, home_and_back);
+    // Use text temporary
+    first->insert(TAG_TITLE, tr("Lock Menu and Back"));
     first->insert(TAG_CHECKED, home_and_back_locked_);
     config_group_datas_.push_back(first);
 
     ODataPtr second(new OData);
-    QPixmap page_turning(":/images/lock_page_turning.png");
-    second->insert(TAG_COVER, page_turning);
+//    QPixmap page_turning(":/images/lock_page_turning.png");
+//    second->insert(TAG_COVER, page_turning);
+    // Use text temporary
+    second->insert(TAG_TITLE, tr("Lock PageUp and PageDown"));
     second->insert(TAG_CHECKED, page_turning_locked_);
     config_group_datas_.push_back(second);
 
@@ -102,9 +109,6 @@ void KeyboardConfigDialog::setKeyboardConfig()
     {
         page_turning_locked_ = back->data()->value(TAG_CHECKED).toBool();
     }
-
-    qDebug() << "home and back lock? " << home_and_back_locked_;
-    qDebug() << "page turning lock? " << page_turning_locked_;
 }
 
 void KeyboardConfigDialog::createLayout()
@@ -112,15 +116,16 @@ void KeyboardConfigDialog::createLayout()
     vbox_.setSpacing(0);
     content_widget_.setBackgroundRole(QPalette::Button);
     content_widget_.setContentsMargins(0, 0, 0, 0);
+    updateTitleIcon(QPixmap());
 
-    description_.setText(tr("Choose keyboard to lock:"));
-    description_.setAlignment(Qt::AlignLeft);
-    description_.setFixedHeight(defaultItemHeight());
+//    description_.setText(tr("Choose keyboard to lock:"));
+//    description_.setAlignment(Qt::AlignLeft);
+//    description_.setFixedHeight(defaultItemHeight());
 
     createConfigGroup();
     createButtonView();
 
-    big_layout_.addWidget(&description_, 0, Qt::AlignTop);
+//    big_layout_.addWidget(&description_, 0, Qt::AlignTop);
     big_layout_.addWidget(&config_group_, 1, Qt::AlignTop);
 
     button_layout_.addWidget(&button_view_, 0, Qt::AlignRight);
@@ -134,9 +139,15 @@ int KeyboardConfigDialog::popup()
     {
         show();
     }
-    resize(360, 300);
+
+    QWidget * widget = safeParentWidget(parentWidget());
+    int x = (widget->width()-width()) / 2;
+    int y = (widget->height()-height()) / 2;
+    move(x, y);
 
     onyx::screen::watcher().addWatcher(this);
+    // set initial focus
+    config_group_.setFocusTo(0, 0);
     int ret = this->exec();
     onyx::screen::watcher().removeWatcher(this);
     return ret;
