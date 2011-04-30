@@ -378,14 +378,18 @@ void StatusBar::onHideVolumeDialog()
 
 void StatusBar::onConfigKeyboard()
 {
+    if (!isVisible())
+    {
+        // do not popup keyboard configure dialog when invisible.
+        return;
+    }
+
     SysStatus & sys_status = SysStatus::instance();
     unsigned int origin_config = sys_status.keyboardConfiguration();
     qDebug() << "origin value: " << origin_config;
 
     bool home_and_back_locked = (onyx::data::ENABLE_MENU_ESC & origin_config) == 0;
     bool page_turning_locked = (onyx::data::ENABLE_PAGE_UP_DOWN & origin_config) == 0;
-    qDebug() << "origin value, home/back lock? " << home_and_back_locked;
-    qDebug() << "origin value, page turning lock? " << page_turning_locked;
 
     KeyboardConfigDialog config(home_and_back_locked,
             page_turning_locked, 0);
