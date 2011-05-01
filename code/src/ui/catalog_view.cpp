@@ -404,6 +404,7 @@ bool CatalogView::gotoPage(const int p)
     if (paginator().jump(p-1))
     {
         arrangeAll();
+        setFocusTo(0, 0);
         return true;
     }
     return false;
