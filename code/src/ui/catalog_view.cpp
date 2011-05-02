@@ -205,7 +205,7 @@ void CatalogView::associateData(bool force)
     }
     for (int i = count; i < sub_items_.size(); ++i)
     {
-        sub_items_.at(i)->updateData(0);
+        sub_items_.at(i)->updateData(0, force);
     }
 }
 
