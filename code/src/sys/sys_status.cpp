@@ -379,6 +379,14 @@ void SysStatus::installSlots()
     {
         qDebug("\nCan not connect the multiTouchReleaseDetected signal\n");
     }
+
+    if (!connection_.connect(service, object, iface,
+                             "configKeyboard",
+                             this,
+                             SLOT(onConfigKeyboard())))
+    {
+        qDebug("\nCan not connect the configKeyboard signal\n");
+    }
 }
 
 bool SysStatus::batteryStatus(int& current,
@@ -1601,6 +1609,45 @@ void SysStatus::setDefaultHardwareTimerInterval()
     }
 }
 
+void SysStatus::configKeyboard(unsigned int keys)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "configKeyboard"      // method.
+    );
+    message << keys;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+unsigned int SysStatus::keyboardConfiguration()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "keyboardConfiguration"      // method.
+    );
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
+        if (reply.arguments().size() > 0)
+        {
+            return reply.arguments().front().toUInt();
+        }
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return 0;
+}
+
 void SysStatus::dump()
 {
     int left;
@@ -1774,6 +1821,11 @@ void SysStatus::onMultiTouchPressDetected(int x1, int y1, int width1, int height
 void SysStatus::onMultiTouchReleaseDetected(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2)
 {
     emit multiTouchReleaseDetected(QRect(x1, y1, width1, height1), QRect(x2, y2, width2, height2));
+}
+
+void SysStatus::onConfigKeyboard()
+{
+    emit configKeyboard();
 }
 
 }   // namespace sys

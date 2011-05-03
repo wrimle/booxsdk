@@ -20,6 +20,8 @@
 #include "onyx/ui/power_management_dialog.h"
 #include "onyx/ui/clock_dialog.h"
 #include "onyx/ui/ui_utils.h"
+#include "onyx/data/keys.h"
+#include "onyx/ui/keyboard_config_dialog.h"
 
 namespace ui
 {
@@ -87,6 +89,12 @@ void StatusBar::setupConnections()
             SIGNAL(pppConnectionChanged(const QString &, int)),
             this,
             SLOT(onPppConnectionChanged(const QString &, int)));
+
+    // connect configure keyboard signal
+    connect(&sys_status,
+            SIGNAL(configKeyboard()),
+            this,
+            SLOT(onConfigKeyboard()));
 }
 
 /// Update some status when it's created.
@@ -366,6 +374,52 @@ void StatusBar::onVolumeButtonsPressed()
 
 void StatusBar::onHideVolumeDialog()
 {
+}
+
+void StatusBar::onConfigKeyboard()
+{
+    if (!isActiveWindow())
+    {
+        // do not popup keyboard configure dialog when inactive.
+        return;
+    }
+
+    SysStatus & sys_status = SysStatus::instance();
+    unsigned int origin_config = sys_status.keyboardConfiguration();
+    qDebug() << "origin value: " << origin_config;
+
+    bool home_and_back_locked = (onyx::data::ENABLE_MENU_ESC & origin_config) == 0;
+    bool page_turning_locked = (onyx::data::ENABLE_PAGE_UP_DOWN & origin_config) == 0;
+
+    KeyboardConfigDialog config(home_and_back_locked,
+            page_turning_locked, 0);
+    int ret = config.popup();
+    if (QDialog::Accepted == ret)
+    {
+        unsigned int new_value = 0;
+        if (config.homeAndBackLocked())
+        {
+            new_value &= onyx::data::DISABLE_MENU_ESC;
+        }
+        else
+        {
+            new_value |= onyx::data::ENABLE_MENU_ESC;
+        }
+
+        if (config.pageTurningLocked())
+        {
+            new_value &= onyx::data::DISABLE_PAGE_UP_DOWN;
+        }
+        else
+        {
+            new_value |= onyx::data::ENABLE_PAGE_UP_DOWN;
+        }
+        qDebug() << "new value: " << new_value;
+        sys_status.configKeyboard(new_value);
+    }
+    onyx::screen::instance().updateWidget(0, onyx::screen::ScreenProxy::GC,
+            false, onyx::screen::ScreenCommand::WAIT_COMMAND_FINISH);
+
 }
 
 void StatusBar::onVolumeClicked()

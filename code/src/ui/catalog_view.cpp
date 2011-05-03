@@ -39,6 +39,7 @@ CatalogView::CatalogView(Factory * factory, QWidget *parent)
         , sub_item_checked_exclusive_(true)
         , size_(200, 150)
         , bk_color_(Qt::white)
+        , fixed_size_(true)
 {
     createLayout();
 }
@@ -204,7 +205,7 @@ void CatalogView::associateData(bool force)
     }
     for (int i = count; i < sub_items_.size(); ++i)
     {
-        sub_items_.at(i)->updateData(0);
+        sub_items_.at(i)->updateData(0, force);
     }
 }
 
@@ -332,19 +333,33 @@ int CatalogView::moveDown(int current)
         emit outOfDown(this, current / paginator().cols(),
                 current % paginator().cols());
     }
-    return current + paginator().cols();
+
+    // not at edge, we need to find the last view contains data.
+    int last = current + paginator().cols();
+    for(int index = last; index >= 0; --index)
+    {
+        if (sub_items_.at(index)->data())
+        {
+            return index;
+        }
+    }
+    return last;
 }
 
 bool CatalogView::atDownEdge(int current)
 {
     current += paginator().cols();
-    if (current >= visibleSubItems().size())
+    int r = row(current);
+    for(int i = r * cols(); i < (r + 1) * cols(); ++i)
     {
-        return true;
-    }
-    if (visibleSubItems().at(current)->data())
-    {
-        return false;
+        if (i >= visibleSubItems().size())
+        {
+            return true;
+        }
+        if (visibleSubItems().at(i)->data())
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -403,6 +418,7 @@ bool CatalogView::gotoPage(const int p)
     if (paginator().jump(p-1))
     {
         arrangeAll();
+        setFocusTo(0, 0);
         return true;
     }
     return false;
@@ -671,15 +687,24 @@ ContentView* CatalogView::createSubItem()
     QSize s = preferItemSize();
     if (s.height() <= 0)
     {
-        // instance->setFixedWidth(s.width());
+        if (fixed_size_)
+        {
+            // instance->setFixedWidth(s.width());
+        }
     }
     else if (s.width() <= 0)
     {
-        // instance->setFixedHeight(s.height());
+        if (fixed_size_)
+        {
+            // instance->setFixedHeight(s.height());
+        }
     }
     else
     {
-        // instance->setFixedSize(s);
+        if (fixed_size_)
+        {
+            // instance->setFixedSize(s);
+        }
     }
     return instance;
 }
@@ -704,8 +729,9 @@ QSize CatalogView::preferItemSize()
     return size_;
 }
 
-void CatalogView::setPreferItemSize(const QSize &size)
+void CatalogView::setPreferItemSize(const QSize &size, bool fixed)
 {
+    fixed_size_ = fixed;
     if (size_ != size)
     {
         size_ = size;
