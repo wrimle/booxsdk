@@ -333,19 +333,33 @@ int CatalogView::moveDown(int current)
         emit outOfDown(this, current / paginator().cols(),
                 current % paginator().cols());
     }
-    return current + paginator().cols();
+
+    // not at edge, we need to find the last view contains data.
+    int last = current + paginator().cols();
+    for(int index = last; index >= 0; --index)
+    {
+        if (sub_items_.at(index)->data())
+        {
+            return index;
+        }
+    }
+    return last;
 }
 
 bool CatalogView::atDownEdge(int current)
 {
     current += paginator().cols();
-    if (current >= visibleSubItems().size())
+    int r = row(current);
+    for(int i = r * cols(); i < (r + 1) * cols(); ++i)
     {
-        return true;
-    }
-    if (visibleSubItems().at(current)->data())
-    {
-        return false;
+        if (i >= visibleSubItems().size())
+        {
+            return true;
+        }
+        if (visibleSubItems().at(i)->data())
+        {
+            return false;
+        }
     }
     return true;
 }

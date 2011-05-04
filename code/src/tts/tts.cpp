@@ -13,6 +13,35 @@ static const int CHANNELS = 1;
 TTS::TTS(const QLocale & locale)
 : span_(3000), tts_impl_(0)
 {
+    init(locale); //Loading TTS plugins & init;
+}
+
+TTS::~TTS()
+{
+}
+
+void TTS::init(const QLocale & locale)
+{
+    //special for globus branch;
+    if(QString(qgetenv("TTS_PREFERRED_SVOX")).toInt())
+    {
+        if(loadPreferPlugin("/usr/share/tts/plugins/libtts_svox.so"))
+        {
+            if (tts_impl_->initialize(locale, sound()))
+            {
+                connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
+                        this, SLOT(onSynthDone(bool, QByteArray &)));
+                connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
+                connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
+
+                setState(TTS_STOPPED);
+                setValid(TTS_VALID);
+                return;
+           }
+        }
+        tts_impl_.release();
+    }//end globus branch
+
     if (loadPlugin())
     {
         if (tts_impl_->initialize(locale, sound()))
@@ -34,10 +63,6 @@ TTS::TTS(const QLocale & locale)
     {
         setValid(TTS_PLUGIN_INVALID);
     }
-}
-
-TTS::~TTS()
-{
 }
 
 /// Synthesis the text to speech. The data will be ready later.
@@ -287,7 +312,7 @@ bool TTS::loadPlugin()
             pluginLoader.load();
             if (!pluginLoader.isLoaded())
             {
-                qDebug() << "Could not load tts plugin: " << iter->absoluteFilePath(); 
+                qDebug() << "Could not load tts plugin: " << iter->absoluteFilePath();
                 continue;
             }
             QObject *plugin = pluginLoader.instance();
@@ -302,6 +327,34 @@ bool TTS::loadPlugin()
             }
         }
     }
+    return false;
+}
+
+
+bool TTS::loadPreferPlugin(const QString & filePath)
+{
+    QPluginLoader pluginLoader(filePath, this);
+    qDebug() << "TTS begins to create a plugin instance " <<filePath;
+    pluginLoader.load();
+    if (!pluginLoader.isLoaded())
+    {
+        qDebug() << "Could not load tts plugin: ";
+        return false;
+    }
+    QObject *plugin = pluginLoader.instance();
+    if (plugin)
+    {
+        qDebug() << "TTS gets plugin, is to reset tts_impl_";
+        tts_impl_.release();
+        qDebug()<<"OK "<<__LINE__;
+        tts_impl_.reset(qobject_cast<TTSInterface *>(plugin));
+        if (tts_impl_)
+        {
+            qDebug()<<"All seens OK.";
+            return true;
+        }
+    }
+    qDebug()<<"Return OK";
     return false;
 }
 }

@@ -76,6 +76,9 @@ private Q_SLOTS:
     void onPlayFinished(int);
 private:
     bool loadPlugin();
+    bool loadPreferPlugin(const QString & filePath);
+    void init(const QLocale & locale);
+
 private:
     scoped_ptr<Sound> sound_;
     TTS_State state_;
