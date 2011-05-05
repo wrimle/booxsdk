@@ -1653,6 +1653,52 @@ unsigned int SysStatus::keyboardConfiguration()
     return 0;
 }
 
+
+void SysStatus::setOfnThreshold(const int x,
+                                const int y)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "setOfnThreshold"      // method.
+    );
+    message << x;
+    message << y;
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+}
+
+bool SysStatus::ofnThreshold(int & x,
+                             int & y)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(
+        service,            // destination
+        object,             // path
+        iface,              // interface
+        "ofnThreshold"      // method.
+    );
+    QDBusMessage reply = connection_.call(message);
+    if (reply.type() == QDBusMessage::ReplyMessage)
+    {
+        if (reply.arguments().size() >= 2)
+        {
+            x = reply.arguments().at(0).toInt();
+            y = reply.arguments().at(1).toInt();
+            return true;
+        }
+    }
+    else if (reply.type() == QDBusMessage::ErrorMessage)
+    {
+        qWarning("%s", qPrintable(reply.errorMessage()));
+    }
+    return false;
+}
+
+
 void SysStatus::dump()
 {
     int left;

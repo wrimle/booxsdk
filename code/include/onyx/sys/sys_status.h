@@ -139,6 +139,9 @@ class SysStatus : public QObject
     void configKeyboard(unsigned int keys);
     unsigned int keyboardConfiguration();
 
+    void setOfnThreshold(const int x, const int y);
+    bool ofnThreshold(int & x, int & y);
+
     // The following signals must be the same with system manager.
     // Need a better way to sync them.
   signals:
