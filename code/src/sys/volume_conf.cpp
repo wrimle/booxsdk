@@ -57,19 +57,19 @@ QVector<int> VolumeConfig::volumes()
     static QVector<int> VOLUMES;
     if (VOLUMES.size() <= 0)
     {
-        if(sys::isIMX31L())
+        if(sys::soundModule().compare("snd_soc_imx_3stack_wm8976") == 0)
         {
             qDebug()<<"******************** M90/M91 platform *****************************"<<__TIME__;
             VOLUMES.push_back(0);
-            VOLUMES.push_back(40);
+            VOLUMES.push_back(30);
+            VOLUMES.push_back(38);
             VOLUMES.push_back(46);
-            VOLUMES.push_back(52);
-            VOLUMES.push_back(58);
-            VOLUMES.push_back(64);
+            VOLUMES.push_back(54);
+            VOLUMES.push_back(62);
             VOLUMES.push_back(70);
-            VOLUMES.push_back(78);
-            VOLUMES.push_back(86);
-            VOLUMES.push_back(94);
+            VOLUMES.push_back(79);
+            VOLUMES.push_back(88);
+            VOLUMES.push_back(95);
             VOLUMES.push_back(100);
         }
         else
