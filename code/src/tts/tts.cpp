@@ -22,7 +22,7 @@ TTS::~TTS()
 
 void TTS::init(const QLocale & locale)
 {
-    //special for globus branch;
+    // If we have some prefered plugin, load it at first.
     if(QString(qgetenv("TTS_PREFERRED_SVOX")).toInt())
     {
         if(loadPreferPlugin("/usr/share/tts/plugins/libtts_svox.so"))
@@ -30,17 +30,17 @@ void TTS::init(const QLocale & locale)
             if (tts_impl_->initialize(locale, sound()))
             {
                 connect(tts_impl_.get(), SIGNAL(synthDone(bool, QByteArray &)),
-                        this, SLOT(onSynthDone(bool, QByteArray &)));
+                    this, SLOT(onSynthDone(bool, QByteArray &)));
                 connect(&AsyncPlayer::instance(), SIGNAL(playFinished(int)), this, SLOT(onPlayFinished(int)));
                 connect(&timer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
                 setState(TTS_STOPPED);
                 setValid(TTS_VALID);
                 return;
-           }
+            }
         }
         tts_impl_.release();
-    }//end globus branch
+    }
 
     if (loadPlugin())
     {
@@ -181,6 +181,8 @@ void TTS::setState(TTS_State state)
         AsyncPlayer::instance().waitForDone();
         sound_.reset(0);
     }
+
+    sys::SysStatus::instance().enableIdle(state != TTS_PLAYING);
 }
 
 void TTS::onPlayFinished(int)
