@@ -61,16 +61,16 @@ QVector<int> VolumeConfig::volumes()
         {
             qDebug()<<"******************** M90/M91 platform *****************************"<<__TIME__;
             VOLUMES.push_back(0);
-            VOLUMES.push_back(30);
-            VOLUMES.push_back(38);
-            VOLUMES.push_back(46);
-            VOLUMES.push_back(54);
-            VOLUMES.push_back(62);
-            VOLUMES.push_back(70);
-            VOLUMES.push_back(79);
-            VOLUMES.push_back(88);
-            VOLUMES.push_back(95);
-            VOLUMES.push_back(100);
+            VOLUMES.push_back(15);
+            VOLUMES.push_back(22);
+            VOLUMES.push_back(29);
+            VOLUMES.push_back(36);
+            VOLUMES.push_back(43);
+            VOLUMES.push_back(50);
+            VOLUMES.push_back(59);
+            VOLUMES.push_back(68);
+            VOLUMES.push_back(77);
+            VOLUMES.push_back(85);
         }
         else
         {
