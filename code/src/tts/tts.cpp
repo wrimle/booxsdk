@@ -22,10 +22,11 @@ TTS::~TTS()
 
 void TTS::init(const QLocale & locale)
 {
-    // If we have some prefered plugin, load it at first.
-    if(QString(qgetenv("TTS_PREFERRED_SVOX")).toInt())
+    // load preferred tts plugin first.
+    QString plugin = qgetenv("TTS_PREFERRED_PLUGIN");
+    if (!plugin.isEmpty())
     {
-        if(loadPreferPlugin("/usr/share/tts/plugins/libtts_svox.so"))
+        if(loadPreferPlugin(plugin))
         {
             if (tts_impl_->initialize(locale, sound()))
             {
