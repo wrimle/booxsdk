@@ -40,8 +40,8 @@ private:
     void keyClicked(OData *data);
 
 private:
-    QHBoxLayout big_layout_;
-    QVBoxLayout vertical_layout_;
+    QVBoxLayout big_layout_;
+    QHBoxLayout sketch_widget_layout_;
 
     CatalogView menu_;
     CatalogView candidate_char_list_;

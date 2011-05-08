@@ -43,7 +43,7 @@ static KeyBoardKeyViewFactory keyboard_key_view_factory;
 OnyxHandwritingWidget::OnyxHandwritingWidget(QWidget *parent)
     : QWidget(parent, Qt::FramelessWindowHint)
     , big_layout_(this)
-    , vertical_layout_(0)
+    , sketch_widget_layout_(0)
     , menu_(&keyboard_key_view_factory, this)
     , candidate_char_list_(0, this)
     , sketch_widget_(this)
@@ -80,13 +80,14 @@ void OnyxHandwritingWidget::createLayout()
 
     big_layout_.setContentsMargins(0, 2, 0, 2);
     big_layout_.setSpacing(2);
+    big_layout_.addWidget(&menu_, 0, Qt::AlignTop);
+    big_layout_.addWidget(&candidate_char_list_, 0, Qt::AlignTop);
 
-    vertical_layout_.addWidget(&menu_, 0, Qt::AlignTop);
-    vertical_layout_.addWidget(&candidate_char_list_, 0, Qt::AlignTop);
-    vertical_layout_.addWidget(&sketch_widget_, 0);
+    sketch_widget_layout_.addWidget(&sketch_widget_, 1);
+    sketch_widget_layout_.addSpacing(2);
+    sketch_widget_layout_.addWidget(&char_subset_list_);
 
-    big_layout_.addLayout(&vertical_layout_, 1);
-    big_layout_.addWidget(&char_subset_list_, 0, Qt::AlignRight);
+    big_layout_.addLayout(&sketch_widget_layout_);
 }
 
 void OnyxHandwritingWidget::createMenu()
@@ -114,8 +115,7 @@ void OnyxHandwritingWidget::createMenu()
 
     menu_.setData(menu_datas_);
     menu_.setFixedGrid(1, menu_datas_.size());
-    menu_.setNeighbor(&char_subset_list_, CatalogView::RIGHT);
-    menu_.setNeighbor(&char_subset_list_, CatalogView::RECYCLE_RIGHT);
+    menu_.setNeighbor(&char_subset_list_, CatalogView::RECYCLE_DOWN);
 }
 
 void OnyxHandwritingWidget::createCandidateCharList()
@@ -135,9 +135,7 @@ void OnyxHandwritingWidget::createCandidateCharList()
     candidate_char_list_.setData(candidate_char_list_datas_);
     candidate_char_list_.setFixedGrid(1, candidate_char_list_datas_.size());
     candidate_char_list_.setNeighbor(&menu_, CatalogView::UP);
-    candidate_char_list_.setNeighbor(&menu_, CatalogView::RECYCLE_UP);
-    candidate_char_list_.setNeighbor(&char_subset_list_, CatalogView::RIGHT);
-    candidate_char_list_.setNeighbor(&char_subset_list_, CatalogView::RECYCLE_RIGHT);
+    candidate_char_list_.setNeighbor(&char_subset_list_, CatalogView::DOWN);
 }
 
 void OnyxHandwritingWidget::createSketchWidget()
