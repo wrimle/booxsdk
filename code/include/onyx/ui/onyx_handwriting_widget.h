@@ -20,12 +20,24 @@ public:
     explicit OnyxHandwritingWidget(QWidget *parent);
     ~OnyxHandwritingWidget();
 
+Q_SIGNALS:
+    void showKeyboard();
+
+protected Q_SLOTS:
+    void onItemActivated(CatalogView *catalog, ContentView *item,
+            int user_data);
+
 private:
     void createLayout();
     void createMenu();
     void createCandidateCharList();
     void createSketchWidget();
     void createCharSubsetList();
+    void connectWithChildren();
+
+    void charSubsetClicked(int row);
+    void menuClicked(int menu_type);
+    void keyClicked(OData *data);
 
 private:
     QVBoxLayout big_layout_;
