@@ -90,9 +90,9 @@ bool ScreenUpdateWatcher::eventFilter(QObject *obj, QEvent *event)
         if (widget_map_.contains(wnd))
         {
             UpdateCount & item = widget_map_[wnd];
-            if (++item.current >= item.max && item.max > 0)
+            if (++item.current_ >= item.max_ && item.max_ > 0)
             {
-                item.current = 0;
+                item.current_ = 0;
                 QTimer::singleShot(0, this, SLOT(gcUpdateScreen()));
             }
             else
