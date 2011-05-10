@@ -5,6 +5,7 @@
 #include "onyx/screen/screen_update_watcher.h"
 #include "onyx/data/handwriting_functions_model.h"
 #include "onyx/data/handwriting_manager.h"
+#include "onyx/data/sketch_proxy.h"
 
 namespace handwriting
 {
@@ -17,6 +18,9 @@ enum HandwritingMenuType
 static const QString KEYBOARD_KEY_VIEW_TYPE = "KeyboardKeyView";
 static const QString TAG_ROW = "row";
 static const int SUBSET_ITEM_HEIGHT = 36;
+
+static const int FINISH_CHAR_INTERVAL = 1000;
+static const int AUTO_SELECT_INTERVAL = 2500;
 
 ODataPtr createBackspaceData()
 {
@@ -48,6 +52,10 @@ OnyxHandwritingWidget::OnyxHandwritingWidget(QWidget *parent)
     , candidate_char_list_(0, this)
     , sketch_widget_(this)
     , char_subset_list_(0, this)
+    , sketch_proxy_(0)
+    , finish_character_timer_(FINISH_CHAR_INTERVAL, this,
+            SLOT(onFinishCharacterTimeOut()))
+    , auto_select_timer_(AUTO_SELECT_INTERVAL, this, SLOT(onAutoSelect()))
 {
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Button);
@@ -58,6 +66,7 @@ OnyxHandwritingWidget::OnyxHandwritingWidget(QWidget *parent)
     resize(widget->width(), 400);
 
     connectWithChildren();
+    initHandwrting();
     onyx::screen::watcher().addWatcher(this);
 }
 
@@ -177,6 +186,51 @@ void OnyxHandwritingWidget::connectWithChildren()
             this, SLOT(onItemActivated(CatalogView *, ContentView *, int)));
 }
 
+void OnyxHandwritingWidget::initHandwrting()
+{
+    if (0 == sketch_proxy_)
+    {
+        sketch_proxy_.reset(new sketch::SketchProxy());
+        connect(sketch_proxy_.get(), SIGNAL(strokeStarted()), this, SLOT(onStrokeStarted()));
+        connect(sketch_proxy_.get(), SIGNAL(pointAdded(SketchPoint)), this, SLOT(onPointAdded(SketchPoint)));
+        connect(sketch_proxy_.get(), SIGNAL(strokeAdded(const Points &)), this, SLOT(onStrokeAdded(const Points &)));
+    }
+
+//    sketch_widget_.setFocus();
+    sketch_widget_.attachSketchProxy(sketch_proxy_.get());
+}
+
+void OnyxHandwritingWidget::onFinishCharacterTimeOut()
+{
+    // TODO implement this method
+}
+
+void OnyxHandwritingWidget::onAutoSelect()
+{
+    // TODO implement this method
+}
+
+void OnyxHandwritingWidget::onStrokeStarted()
+{
+    auto_select_timer_.stop();
+    finish_character_timer_.stop();
+}
+
+void OnyxHandwritingWidget::onPointAdded(SketchPoint point)
+{
+    // collect point
+    HandwritingManager::instance().collectPoint(point.x(), point.y());
+}
+
+void OnyxHandwritingWidget::onStrokeAdded(const Points & points)
+{
+    // finish stroke
+    HandwritingManager::instance().finishStroke();
+
+    // start to check whether finishing the character
+    finish_character_timer_.start();
+}
+
 void OnyxHandwritingWidget::charSubsetClicked(int row)
 {
     int row_count = char_subset_model_.rowCount();
@@ -209,6 +263,8 @@ void OnyxHandwritingWidget::menuClicked(int menu_type)
 {
     if (menu_type == HANDWRITING_MENU_TYPE)
     {
+        sketch_widget_.deattachSketchProxy();
+//        this->hide();
         emit showKeyboard();
     }
 }
