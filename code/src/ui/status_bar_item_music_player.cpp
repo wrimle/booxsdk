@@ -74,7 +74,7 @@ void StatusBarItemMusicPlayer::setImage(int state)
         state_ = state;
         img_ = QImage(":/images/music_player_paused.png");
     }
-    else if(state == MUSIC_STOPPED)
+    else if(state == MUSIC_STOPPED && sys::SysStatus::instance().isMusicPlayerRunning())
     {
         state_ = state;
         img_ = QImage(":/images/music_player_stopped.png");
