@@ -12,6 +12,7 @@ class NumberWidget : public QWidget
 public:
     explicit NumberWidget(QWidget *parent);
     ~NumberWidget(void);
+    void setOkButtonFocus(void);
 
 Q_SIGNALS:
     void numberClicked(const int num);
@@ -35,6 +36,7 @@ private Q_SLOTS:
 private:
     AbstractButtons         buttons_;        ///< All number buttons.
     scoped_ptr<QGridLayout> number_layout_;  ///< Layout.
+    AbstractButtonPtr       okButtonPtr;
 
 private:
     NO_COPY_AND_ASSIGN(NumberWidget);

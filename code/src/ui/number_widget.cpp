@@ -122,6 +122,7 @@ void NumberWidget::createLayout()
         ptr->setStyleSheet(PUSH_BUTTON_STYLE);
         ptr->setFocusPolicy(Qt::StrongFocus);
         buttons_.push_back(ptr);
+        okButtonPtr=ptr;
         number_layout_->addWidget(ptr.get(), ROWS - 1, 2);
         connect(ptr.get(), SIGNAL(clicked(bool)),
                 this, SLOT(onOKClicked(bool)), Qt::QueuedConnection);
@@ -207,6 +208,12 @@ void NumberWidget::onOKClicked(bool checked)
 void NumberWidget::keyReleaseEvent(QKeyEvent *e)
 {
     e->ignore();
+}
+
+void NumberWidget::setOkButtonFocus(void)
+{
+    //Focus to OK button;
+    okButtonPtr->setFocus();
 }
 
 }   // namespace ui
