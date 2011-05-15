@@ -712,9 +712,9 @@ bool SysStatus::setScreenTransformation(int degree)
         if (qws_args.isEmpty())
         {
             data = QString("export QWS_DISPLAY=Transformed:Rot%1:OnyxScreen:/dev/mem");
-            #ifdef BUILD_FOR_FB
+#ifdef BUILD_WITH_TFT
             data = QString("export QWS_DISPLAY=Transformed:Rot%1:LinuxFb:/dev/fb0:depth=all"); 
-            #endif
+#endif
             data = data.arg(degree);
         }
         else

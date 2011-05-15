@@ -68,17 +68,17 @@ private:
 
     struct UpdateCount
     {
-        int current;
-        int max;
+        int current_;
+        int max_;
 
         UpdateCount()
-            : current(0)
-            , max(0)
+            : current_(0)
+            , max_(0)
         {}
 
         UpdateCount(int c, int m)
-            : current(c)
-            , max(m)
+            : current_(c)
+            , max_(m)
         {}
     };
 
