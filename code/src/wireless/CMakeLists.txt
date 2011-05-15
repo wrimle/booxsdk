@@ -15,7 +15,12 @@ SET(resource_srcs wifi_images.qrc)
 QT4_ADD_RESOURCES(WIFI_RES ${resource_srcs})
 
 QT4_WRAP_CPP(MOC_SRCS ${HDRS})
-ADD_LIBRARY(onyx_wireless ${SRCS} ${MOC_SRCS} ${WIFI_RES})
+
+ADD_LIBRARY(onyx_wireless_static STATIC ${SRCS} ${MOC_SRCS} ${WIFI_RES})
+ADD_LIBRARY(onyx_wireless SHARED ${SRCS} ${MOC_SRCS} ${WIFI_RES})
+
+SET_TARGET_PROPERTIES(onyx_wireless_static PROPERTIES OUTPUT_NAME "onyx_wireless")
+
 strict_warning(onyx_wireless)
 INSTALL(TARGETS onyx_wireless DESTINATION lib)
 

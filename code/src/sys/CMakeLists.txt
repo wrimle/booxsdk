@@ -13,7 +13,11 @@ QT4_WRAP_CPP(MOC_SRCS ${HDRS})
 FILE(GLOB SRCS *.cpp)
 SET(SRCS ${HDRS} ${SRCS} ${MOC_SRCS})
 
-ADD_LIBRARY(onyx_sys ${SRCS})
+ADD_LIBRARY(onyx_sys_static STATIC ${SRCS})
+ADD_LIBRARY(onyx_sys SHARED ${SRCS})
+
+SET_TARGET_PROPERTIES(onyx_sys_static PROPERTIES OUTPUT_NAME "onyx_sys")
+
 strict_warning(onyx_sys)
 TARGET_LINK_LIBRARIES(onyx_sys onyx_wpa onyx_data)
 

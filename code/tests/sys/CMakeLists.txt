@@ -10,7 +10,7 @@ TARGET_LINK_LIBRARIES(wifi_manager_unittest onyx_cms onyx_sys onyx_data ${QT_LIB
 SET_TARGET_PROPERTIES(wifi_manager_unittest PROPERTIES  RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_PATH})
 
 ADD_EXECUTABLE(generate_default_peers generate_default_peers.cpp)
-TARGET_LINK_LIBRARIES(generate_default_peers onyx_cms onyx_data onyx_sys onyx_data ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(generate_default_peers onyx_cms onyx_data onyx_sys onyx_screen ${QT_LIBRARIES})
 
 
 ADD_EXECUTABLE(unzip_test unzip_test.cpp)

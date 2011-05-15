@@ -61,7 +61,10 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
 SET(resource_srcs tts_images.qrc)
 QT4_ADD_RESOURCES(tts_ui_res ${resource_srcs})
 
-ADD_LIBRARY(tts ${SRCS} ${MOC_SRCS} ${tts_ui_res})
+ADD_LIBRARY(tts_static STATIC ${SRCS} ${MOC_SRCS} ${tts_ui_res})
+ADD_LIBRARY(tts SHARED ${SRCS} ${MOC_SRCS} ${tts_ui_res})
+
+SET_TARGET_PROPERTIES(tts_static PROPERTIES OUTPUT_NAME "tts")
 
 TARGET_LINK_LIBRARIES(tts sound  onyx_ui
    ${QT_LIBRARIES}

@@ -30,11 +30,11 @@ SET_TESTS_PROPERTIES(
   WILL_FAIL TRUE)
 
 onyx_test(conf_unittest conf_unittest.cpp configuration.cpp)
-TARGET_LINK_LIBRARIES(conf_unittest onyx_cms onyx_data ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(conf_unittest onyx_cms onyx_data onyx_screen ${QT_LIBRARIES})
 ADD_TEST(BookmarkUnittest ${TEST_OUTPUT_PATH}/conf_unittest)
 
 ADD_EXECUTABLE(bookmark_unittest bookmark_unittest.cpp)
-TARGET_LINK_LIBRARIES(bookmark_unittest onyx_cms gtest_main onyx_data ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(bookmark_unittest onyx_cms gtest_main onyx_data onyx_screen ${QT_LIBRARIES})
 MAYBE_LINK_TCMALLOC(bookmark_unittest)
 SET_TARGET_PROPERTIES(bookmark_unittest PROPERTIES  RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_PATH})
 ADD_TEST(BookmarkUnittest ${TEST_OUTPUT_PATH}/bookmark_unittest)

@@ -23,7 +23,7 @@ qt4_wrap_cpp(MOC_SRCS
   ${ONYXSDK_DIR}/include/onyx/data/data.h
 )
 
-add_library(onyx_data
+SET(SRCS
   configuration.cpp
   bookmark.cpp
   reading_history.cpp
@@ -49,5 +49,11 @@ add_library(onyx_data
   search_context.cpp
   ${MOC_SRCS}
 )
+
+add_library(onyx_data_static STATIC ${SRCS})
+add_library(onyx_data SHARED ${SRCS})
+
+SET_TARGET_PROPERTIES(onyx_data_static PROPERTIES OUTPUT_NAME "onyx_data")
+
 target_link_libraries(onyx_data onyx_cms onyx_sys)
 strict_warning(onyx_data)

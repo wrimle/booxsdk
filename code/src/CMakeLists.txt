@@ -1,7 +1,10 @@
 enable_qt()
 
+add_library(onyxapp_static STATIC application.cpp onyx_main.cpp)
+add_library(onyxapp SHARED application.cpp onyx_main.cpp)
 
-add_library(onyxapp application.cpp onyx_main.cpp)
+SET_TARGET_PROPERTIES(onyxapp_static PROPERTIES OUTPUT_NAME "onyxapp")
+
 target_link_libraries(onyxapp onyx_sys onyx_screen ${QT_LIBRARIES})
 strict_warning(onyxapp)
 

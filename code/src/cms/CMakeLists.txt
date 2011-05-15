@@ -14,5 +14,9 @@ set(SRCS
   user_db.cpp
   download_db.cpp)
 
-add_library(onyx_cms ${SRCS})
+add_library(onyx_cms_static STATIC ${SRCS})
+add_library(onyx_cms SHARED ${SRCS})
+
+SET_TARGET_PROPERTIES(onyx_cms_static PROPERTIES OUTPUT_NAME "onyx_cms")
+
 strict_warning(onyx_cms)

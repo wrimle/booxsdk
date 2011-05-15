@@ -31,7 +31,11 @@ SET(resource_srcs dictionary_images.qrc)
 QT4_ADD_RESOURCES(dictionary_ui_res ${resource_srcs})
 
 
-ADD_LIBRARY(dictionary ${SRCS} ${MOC_SRCS} ${dictionary_ui_res})
+ADD_LIBRARY(dictionary_static STATIC ${SRCS} ${MOC_SRCS} ${dictionary_ui_res})
+ADD_LIBRARY(dictionary SHARED ${SRCS} ${MOC_SRCS} ${dictionary_ui_res})
+
+SET_TARGET_PROPERTIES(dictionary_static PROPERTIES OUTPUT_NAME "dictionary")
+
 TARGET_LINK_LIBRARIES(dictionary onyx_ui)
 
 ########### Unit Tests #####################

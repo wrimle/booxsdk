@@ -10,7 +10,10 @@ FILE(GLOB srcs *.cpp)
 SET(srcs ${srcs} ${hrds} ${MOC_SRCS})
 
 # Sound library.
-ADD_LIBRARY(sound ${srcs})
+ADD_LIBRARY(sound_static STATIC ${srcs})
+ADD_LIBRARY(sound SHARED ${srcs})
+
+SET_TARGET_PROPERTIES(sound_static PROPERTIES OUTPUT_NAME "sound")
 
 # Unittest
 add_definitions(-DSAMPLE_ROOT="${CMAKE_SOURCE_DIR}/unittest/data")

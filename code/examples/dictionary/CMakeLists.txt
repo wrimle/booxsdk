@@ -12,7 +12,9 @@ add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
+add_library(my_dict_plugin_static STATIC ${DICT_SRCS})
 add_library(my_dict_plugin SHARED ${DICT_SRCS})
+
+SET_TARGET_PROPERTIES(my_dict_plugin_static PROPERTIES OUTPUT_NAME "my_dict_plugin")
+
 target_link_libraries(my_dict_plugin ${QT_LIBRARIES} ${ADD_LIB})
-
-

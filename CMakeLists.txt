@@ -2,16 +2,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # Additional cmake modules
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
-
-# Naboo project.
-Project(SDK CXX C)
-ENABLE_TESTING()
+SET(CMAKE_MODULE_PATH "${ONYX_SDK_ROOT}/cmake_modules")
 
 # Check to use arm toolchain or not
 IF(BUILD_FOR_ARM)
     INCLUDE(arm_toolchain)
     USE_ARM_TOOLCHAIN()
+    link_directories("/opt/onyx/arm/lib")
 ENDIF(BUILD_FOR_ARM)
 
 IF(UNIX OR BUILD_FOR_ARM)
@@ -28,6 +25,10 @@ ADD_DEFINITIONS(-DCONFIG_CTRL_IFACE_NAMED_PIPE)
 ELSE (WIN32)
 ADD_DEFINITIONS(-DCONFIG_CTRL_IFACE_UNIX)
 ENDIF (WIN32)
+
+# Naboo project.
+Project(SDK CXX C)
+ENABLE_TESTING()
 
 INCLUDE(strict_warning)
 
